@@ -19,12 +19,6 @@ defmodule PreviewWeb.Router do
 
     live "/", SearchLive, :index
     live "/preview/:package/:version", PreviewLive, :index
-    # live "/searches", SearchLive.Index, :index
-    # live "/searches/new", SearchLive.Index, :new
-    # live "/searches/:id/edit", SearchLive.Index, :edit
-
-    # live "/searches/:id", SearchLive.Show, :show
-    # live "/searches/:id/show/edit", SearchLive.Show, :edit
   end
 
   # Other scopes may use custom stacks.
