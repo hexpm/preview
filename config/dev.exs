@@ -65,3 +65,9 @@ config :phoenix, :stacktrace_depth, 20
 
 # Initialize plugs at runtime for faster development compilation
 config :phoenix, :plug_init_mode, :runtime
+
+config :preview,
+  tmp_dir: Path.expand("tmp/dev"),
+  storage_impl: Preview.Storage.Local
+
+config :goth, config: %{"project_id" => "preview"}

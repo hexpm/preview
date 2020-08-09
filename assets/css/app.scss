@@ -89,6 +89,21 @@ input.search-input {
   background-color: white;
 }
 
+.select-form {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  width: 400px;
+
+  label { color: #fff; font-weight: normal; }
+  
+  select.file-select {
+    width: 400px;
+    font-size: 16px;
+    background-color: white;
+  }
+}
+
 .version-form {
   width: 400px;
 }
@@ -106,9 +121,12 @@ input.search-input:focus {
   color: #eee;
   cursor: pointer;
   background: #714a94;
-  padding: 2px 4px;
+  padding: 2px 6px;
   border-radius: 5px;
   border-color: #714a94;
+  display: block;
+  float:left;
+  margin: 0 8px 8px 0;
 }
 
 .suggestion:hover {
@@ -144,6 +162,26 @@ input.search-input:focus {
 
 .message-container button {
   margin-top: 50px;
+}
+
+.code_file {
+  background-color: #fff;
+  font-family: Menlo, Consolas, monospace;
+  font-size: 13px;
+  padding: 2em;
+  color: #333;
+  border-radius: 5px;
+  margin-bottom: 2.5em;
+
+  h2 {
+    font-size: 2.2rem;
+    line-height: 2.4em;
+    border-bottom: 1px solid #ccc;
+  }
+
+  section.code{
+    overflow-x: scroll;
+  }
 }
 
 .ghd-container {

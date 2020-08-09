@@ -7,14 +7,11 @@ defmodule Preview.Application do
 
   def start(_type, _args) do
     children = [
-      # Start the Telemetry supervisor
       PreviewWeb.Telemetry,
-      # Start the PubSub system
       {Phoenix.PubSub, name: Preview.PubSub},
-      # Start the Endpoint (http/https)
-      PreviewWeb.Endpoint
-      # Start a worker by calling: Preview.Worker.start_link(arg)
-      # {Preview.Worker, arg}
+      PreviewWeb.Endpoint,
+      {Finch, name: PreviewFinch},
+      Preview.Package.Supervisor
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

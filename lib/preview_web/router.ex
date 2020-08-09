@@ -17,7 +17,8 @@ defmodule PreviewWeb.Router do
   scope "/", PreviewWeb do
     pipe_through :browser
 
-    live "/", PageLive, :index
+    live "/", SearchLive, :index
+    live "/preview/:package/:version", PreviewLive, :index
     # live "/searches", SearchLive.Index, :index
     # live "/searches/new", SearchLive.Index, :new
     # live "/searches/:id/edit", SearchLive.Index, :edit

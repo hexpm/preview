@@ -44,7 +44,11 @@ defmodule Preview.MixProject do
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
       {:plug_cowboy, "~> 2.0"},
-      {:hex_core, "~> 0.6.9"}
+      {:hex_core, "~> 0.6.9"},
+      {:mint, "~> 1.1"},
+      {:finch, "~> 0.3.0"},
+      {:goth, "~> 1.0"},
+      {:snoop, "~> 0.1.0"}
     ]
   end
 

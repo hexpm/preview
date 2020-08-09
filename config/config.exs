@@ -7,6 +7,10 @@
 # General application configuration
 use Mix.Config
 
+config :preview,
+  cache_version: 1,
+  package_store_impl: Preview.Package.DefaultStore
+
 # Configures the endpoint
 config :preview, PreviewWeb.Endpoint,
   url: [host: "localhost"],
