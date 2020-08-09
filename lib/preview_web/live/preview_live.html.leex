@@ -1,0 +1,18 @@
+<%= if @contents != [] do %>
+  <form phx-change="select_file" class="select-form">
+    <label for="file_chooser">Select File:</label>
+    <select class="file-select" name="file_chooser">
+      <%= for {filename, _file_contents} <- @contents do %>
+        <option <%= selected(@filename, filename) %> value="<%= filename %>"><%= filename %></option>
+      <% end %>
+    </select>
+  </form>
+  <%= if @filename && @file_contents do %>
+    <div class="code_file">
+      <h2><%= @filename %></h2>
+      <section class="code">
+        <%= raw @file_contents |> text_to_html() |> safe_to_string() |> String.replace(" ", "&nbsp;") %>
+      </section>
+    </div>
+  <% end %>
+<% end %>

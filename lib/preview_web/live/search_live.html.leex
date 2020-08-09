@@ -1,0 +1,31 @@
+<div class="search-area">
+  <form phx-change="suggest" phx-submit="search" class="search-form">
+    <input class="search-input" type="text" name="q" value="<%= @query %>" placeholder="Search..." list="results" autocomplete="off"/>
+    <div class="suggestions" id="results">
+      <%= for app <- @results do %>
+        <span class="suggestion"  phx-click="search_<%= app %>" onclick=""><%= app %></span>
+      <% end %>
+    </div>
+  </form>
+
+    <%= if @result do %>
+      <form phx-change="select_version" class="version-form">
+        <div class="version-area">
+          <div class="select-area">
+            <label for="from">Version</label>
+            <select name="from">
+              <%= for vsn <- @versions do %>
+                <option value="<%= vsn %>"><%= vsn %></option>
+              <% end %>
+            </select>
+          </div>
+          <button
+            class="diff-button"
+            type="button"
+            phx-click="go"
+          >Preview</button>
+          </a>
+        </div>
+      </form>
+  <% end %>
+</section>

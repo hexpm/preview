@@ -9,6 +9,7 @@ defmodule Preview.Application do
     children = [
       PreviewWeb.Telemetry,
       {Phoenix.PubSub, name: Preview.PubSub},
+      {Task.Supervisor, name: Preview.Tasks},
       PreviewWeb.Endpoint,
       {Finch, name: PreviewFinch},
       Preview.Package.Supervisor
