@@ -9,8 +9,25 @@ defmodule Preview.Storage.Local do
         filename = key(package, version, hash)
         path = Path.join([dir(), package, filename])
 
+        if File.dir?(path) do
+          {:ok, files_in_package(package, filename)}
+        else
+          {:error, :not_found}
+        end
+
+      {:error, :not_found} ->
+        {:error, :not_found}
+    end
+  end
+
+  def get_file(package, version, file) do
+    case package_checksum(package, version) do
+      {:ok, hash} ->
+        filename = key(package, version, hash)
+        path = Path.join([dir(), package, filename, file])
+
         if File.regular?(path) do
-          {:ok, File.stream!(path, [:read_ahead])}
+          {:ok, File.read!(path)}
         else
           {:error, :not_found}
         end
@@ -22,10 +39,20 @@ defmodule Preview.Storage.Local do
 
   def put(package, version, stream) do
     with {:ok, hash} <- package_checksum(package, version),
-         filename = key(package, version, hash),
-         path = Path.join([dir(), package, filename]),
-         :ok <- File.mkdir_p(Path.dirname(path)) do
-      Enum.into(stream, File.stream!(path, [:write_delay]))
+         filename = key(package, version, hash) do
+      files_in_package =
+        Enum.reduce(stream, [], fn {name, contents}, acc ->
+          path = Path.join([dir(), package, filename, name])
+          File.mkdir_p(Path.dirname(path))
+          File.write(path, contents)
+          acc ++ [name]
+        end)
+
+      File.write(
+        Path.join([dir(), package, filename, "files_in_package.ex"]),
+        inspect(files_in_package, limit: :infinity)
+      )
+
       :ok
     else
       {:error, reason} ->
@@ -36,7 +63,7 @@ defmodule Preview.Storage.Local do
 
   def package_checksum(package, version) do
     with checksum <- Preview.Hex.get_checksum(package, version) do
-      {:ok, :erlang.phash2({Application.get_env(:diff, :cache_version), checksum})}
+      {:ok, :erlang.phash2({Application.get_env(:preview, :cache_version), checksum})}
     end
   end
 
@@ -47,5 +74,10 @@ defmodule Preview.Storage.Local do
   defp dir() do
     Application.get_env(:preview, :tmp_dir)
     |> Path.join("storage")
+  end
+
+  defp files_in_package(pkg, key) do
+    {ls, _bindings} = [dir(), pkg, key, "files_in_package.ex"] |> Path.join() |> Code.eval_file()
+    ls
   end
 end
