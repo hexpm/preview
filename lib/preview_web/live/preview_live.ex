@@ -9,16 +9,7 @@ defmodule PreviewWeb.PreviewLive do
     case maybe_cached_contents(params["package"], params["version"]) do
       {:ok, list_of_files} ->
         list_of_files = normalize_file_list(list_of_files)
-
-        file_contents =
-          case maybe_cached_contents(
-                 params["package"],
-                 params["version"],
-                 List.first(list_of_files)
-               ) do
-            {:ok, list} when is_list(list) -> list |> List.first() |> elem(1)
-            {:ok, file_contents} -> file_contents
-          end
+        file_contents = get_file_contents(params["package"], params["version"], list_of_files)
 
         {:ok,
          assign(socket,
@@ -57,6 +48,22 @@ defmodule PreviewWeb.PreviewLive do
 
   def selected(str, io) do
     if to_charlist(str) == io, do: "selected=selected"
+  end
+
+  def print_contents({_filename, file_contents}), do: print_contents(file_contents)
+
+  def print_contents(file_contents) do
+    file_contents
+    |> Phoenix.HTML.Format.text_to_html()
+    |> Phoenix.HTML.safe_to_string()
+    |> String.replace(" ", "&nbsp;")
+  end
+
+  defp get_file_contents(pkg, ver, list_of_files) do
+    case maybe_cached_contents(pkg, ver, List.first(list_of_files)) do
+      {:ok, list} when is_list(list) -> list |> List.first() |> elem(1)
+      {:ok, file_contents} -> file_contents
+    end
   end
 
   defp maybe_cached_contents(pkg, ver) do
@@ -104,23 +111,13 @@ defmodule PreviewWeb.PreviewLive do
 
   defp cache_preview(package, version, contents) do
     Task.Supervisor.start_child(Preview.Tasks, fn ->
-      # this should store each file in the contents separately
       Preview.Storage.put(package, version, contents)
     end)
   end
 
-  def print_contents({_filename, file_contents}), do: print_contents(file_contents)
-
-  def print_contents(file_contents) do
-    file_contents
-    |> Phoenix.HTML.Format.text_to_html()
-    |> Phoenix.HTML.safe_to_string()
-    |> String.replace(" ", "&nbsp;")
-  end
-
-  def normalize_file_list([{_f, _c} | _rest] = list_with_contents) do
+  defp normalize_file_list([{_f, _c} | _rest] = list_with_contents) do
     Enum.map(list_with_contents, &elem(&1, 0))
   end
 
-  def normalize_file_list(list) when is_list(list), do: list
+  defp normalize_file_list(list) when is_list(list), do: list
 end
