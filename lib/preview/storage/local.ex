@@ -4,36 +4,24 @@ defmodule Preview.Storage.Local do
   @behaviour Preview.Storage
 
   def get(package, version) do
-    case package_checksum(package, version) do
-      {:ok, hash} ->
-        filename = key(package, version, hash)
-        path = Path.join([dir(), package, filename])
-
-        if File.dir?(path) do
-          {:ok, files_in_package(package, filename)}
-        else
-          {:error, :not_found}
-        end
-
-      {:error, :not_found} ->
-        {:error, :not_found}
+    with {:ok, hash} <- package_checksum(package, version),
+         filename <- key(package, version, hash),
+         path <- Path.join([dir(), package, filename]),
+         true <- File.dir?(path) do
+      {:ok, files_in_package(package, filename)}
+    else
+      _error -> {:error, :not_found}
     end
   end
 
   def get_file(package, version, file) do
-    case package_checksum(package, version) do
-      {:ok, hash} ->
-        filename = key(package, version, hash)
-        path = Path.join([dir(), package, filename, file])
-
-        if File.regular?(path) do
-          {:ok, File.read!(path)}
-        else
-          {:error, :not_found}
-        end
-
-      {:error, :not_found} ->
-        {:error, :not_found}
+    with {:ok, hash} <- package_checksum(package, version),
+         filename <- key(package, version, hash),
+         path <- Path.join([dir(), package, filename, file]),
+         true <- File.regular?(path) do
+      {:ok, File.read!(path)}
+    else
+      _error -> {:error, :not_found}
     end
   end
 
