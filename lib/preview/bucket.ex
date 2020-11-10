@@ -2,7 +2,11 @@ defmodule Preview.Bucket do
   def get_tarball(package, version) do
     bucket = Application.get_env(:preview, :repo_bucket)
     key = "tarballs/#{package}-#{version}.tar"
-    Preview.Storage.get(bucket, key)
+
+    case Preview.Storage.get(bucket, key) do
+      nil -> :error
+      blob -> {:ok, blob}
+    end
   end
 
   def put_files(package, version, files) do
