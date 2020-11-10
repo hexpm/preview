@@ -3,10 +3,9 @@ defmodule Preview.Storage.Local do
   @behaviour Preview.Storage.Preview
 
   def list(bucket, prefix) do
-    path(bucket, prefix)
-    |> ls()
-    |> Enum.filter(&String.starts_with?(&1, prefix))
-    |> Enum.map(&Path.join(prefix, &1))
+    path(bucket, prefix <> "**")
+    |> Path.wildcard(match_dot: true)
+    |> Enum.map(&Path.relative_to(&1, path(bucket)))
   end
 
   def get(bucket, key, _opts) do
@@ -23,17 +22,14 @@ defmodule Preview.Storage.Local do
   end
 
   def delete_many(bucket, keys) do
-    Enum.each(keys, &File.rm!(path(bucket, &1)))
+    Enum.each(keys, &File.rm_rf!(path(bucket, &1)))
+  end
+
+  defp path(bucket) do
+    Path.join(Application.get_env(:preview, :tmp_dir), bucket)
   end
 
   defp path(bucket, key) do
-    Path.join([Application.get_env(:preview, :tmp_dir), bucket, key])
-  end
-
-  defp ls(path) do
-    case File.ls(path) do
-      {:ok, files} -> files
-      {:error, _} -> []
-    end
+    Path.join(path(bucket), key)
   end
 end
