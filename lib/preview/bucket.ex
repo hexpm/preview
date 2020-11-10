@@ -7,15 +7,16 @@ defmodule Preview.Bucket do
 
   def put_files(package, version, files) do
     bucket = Application.get_env(:preview, :preview_bucket)
-    file_list = Jason.encode!(Enum.map(files, &elem(&1, 0)))
-    file_list = {Path.join("file_lists", "#{package}-#{version}.json"), file_list}
+    original_file_list = Preview.Storage.list(bucket, Path.join(["files", package, version]) <> "/")
+    file_list = Enum.map(files, &elem(&1, 0))
+    file_list_path = {Path.join("file_lists", "#{package}-#{version}.json"), Jason.encode!(file_list)}
 
     files =
       Enum.map(files, fn {filename, contents} ->
         {Path.join(["files", package, version, filename]), contents}
       end)
 
-    [file_list | files]
+    [file_list_path | files]
     |> Task.async_stream(
       fn {key, data} ->
         Preview.Storage.put(bucket, key, data)
@@ -24,6 +25,8 @@ defmodule Preview.Bucket do
       timeout: 10_000
     )
     |> Stream.run()
+
+    delete_old_files(original_file_list, file_list)
   end
 
   def delete_files(package, version) do
@@ -51,5 +54,10 @@ defmodule Preview.Bucket do
     bucket = Application.get_env(:preview, :preview_bucket)
     key = Path.join(["files", package, version, filename])
     Preview.Storage.get(bucket, key)
+  end
+
+  defp delete_old_files(original_file_list, file_list) do
+    bucket = Application.get_env(:preview, :preview_bucket)
+    Preview.Storage.delete_many(bucket, original_file_list -- file_list)
   end
 end
