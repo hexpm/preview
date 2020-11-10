@@ -1,67 +1,76 @@
 defmodule Preview.Storage.GCS do
-  require Logger
-
-  @behaviour Preview.Storage
+  @behaviour Preview.Storage.Preview
 
   @gs_xml_url "https://storage.googleapis.com"
   @oauth_scope "https://www.googleapis.com/auth/devstorage.read_write"
 
-  def get(package, version) do
-    get_file(package, version, "files_in_package.ex")
+  import SweetXml, only: [sigil_x: 2]
+
+  def get(bucket, key, _opts) do
+    url = url(bucket, key)
+
+    {:ok, status, headers, body} =
+      Preview.HTTP.retry("gcs", fn -> Preview.HTTP.get(url, headers()) end)
+
+    {status, headers, body}
   end
 
-  def get_file(package, version, file) do
-    with {:ok, hash} <- package_checksum(package, version),
-         url = Path.join(url(key(package, version, hash)), file),
-         {:ok, 200, _headers, stream} <-
-           Preview.HTTP.retry("gs", fn -> Preview.HTTP.get_stream(url, headers()) end) do
-      {:ok, stream}
-    else
-      {:ok, 404, _headers, _body} ->
-        {:error, :not_found}
+  def list(bucket, prefix) do
+    list_stream(bucket, prefix)
+  end
 
-      {:ok, status, _headers, _body} ->
-        Logger.error("Failed to get preview from storage. Status #{status}")
-        {:error, :not_found}
+  def put(bucket, key, body, _opts) do
+    url = url(bucket, key)
+    Preview.HTTP.retry("gcs", fn -> Preview.HTTP.put(url, headers(), body) end)
+  end
 
-      {:error, reason} ->
-        Logger.error("Failed to get preview from storage. Reason #{inspect(reason)}")
-        {:error, :not_found}
+  def delete_many(bucket, keys) do
+    keys
+    |> Task.async_stream(
+      &delete(bucket, &1),
+      max_concurrency: 10,
+      timeout: 10_000
+    )
+    |> Stream.run()
+  end
+
+  defp delete(bucket, key) do
+    url = url(bucket, key)
+
+    {:ok, 204, _headers, _body} =
+      Preview.HTTP.retry("gcs", fn -> Preview.HTTP.delete(url, headers()) end)
+
+    :ok
+  end
+
+  defp list_stream(bucket, prefix) do
+    start_fun = fn -> nil end
+    after_fun = fn _ -> nil end
+
+    next_fun = fn
+      :halt ->
+        {:halt, nil}
+
+      marker ->
+        {items, marker} = do_list(bucket, prefix, marker)
+        {items, marker || :halt}
     end
+
+    Stream.resource(start_fun, next_fun, after_fun)
   end
 
-  def put(package, version, stream) do
-    with {:ok, hash} <- package_checksum(package, version),
-         url = url(key(package, version, hash)) do
-      files_in_package =
-        Enum.reduce(stream, [], fn {name, contents}, acc ->
-          path = Path.join([url, name])
-          Preview.HTTP.retry("gs", fn -> Preview.HTTP.put_stream(path, headers(), contents) end)
-          acc ++ [name]
-        end)
+  defp do_list(bucket, prefix, marker) do
+    url = url(bucket) <> "?prefix=#{prefix}&marker=#{marker}"
 
-      Preview.HTTP.retry("gs", fn ->
-        Preview.HTTP.put_stream(
-          Path.join([url, "files_in_package.ex"]),
-          headers(),
-          inspect(files_in_package, limit: :infinity)
-        )
-      end)
+    {:ok, 200, _headers, body} =
+      Preview.HTTP.retry("gs", fn -> Preview.HTTP.get(url, headers()) end)
 
-      :ok
-    else
-      {:ok, status, _headers, _body} ->
-        Logger.error("Failed to put diff to storage. Status #{status}")
-        {:error, :not_found}
+    doc = SweetXml.parse(body)
+    marker = SweetXml.xpath(doc, ~x"/ListBucketResult/NextMarker/text()"s)
+    items = SweetXml.xpath(doc, ~x"/ListBucketResult/Contents/Key/text()"ls)
+    marker = if marker != "", do: marker
 
-      error ->
-        Logger.error("Failed to put diff to storage. Reason #{inspect(error)}")
-        error
-    end
-  end
-
-  def package_checksum(package, version) do
-    Preview.Hex.get_checksum(package, version)
+    {items, marker}
   end
 
   defp headers() do
@@ -69,15 +78,11 @@ defmodule Preview.Storage.GCS do
     [{"authorization", "#{token.type} #{token.token}"}]
   end
 
-  defp key(package, version, hash) do
-    "preview/#{package}-#{version}-#{hash}"
+  defp url(bucket) do
+    @gs_xml_url <> "/" <> bucket
   end
 
-  defp url(key) do
-    "#{@gs_xml_url}/#{bucket()}/#{key}"
-  end
-
-  defp bucket() do
-    Application.get_env(:preview, :bucket)
+  defp url(bucket, key) do
+    url(bucket) <> "/" <> key
   end
 end

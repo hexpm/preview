@@ -8,8 +8,18 @@
 use Mix.Config
 
 config :preview,
-  cache_version: 1,
-  package_store_impl: Preview.Package.DefaultStore
+  queue_id: "dummy",
+  queue_producer: Broadway.DummyProducer,
+  package_store_impl: Preview.Package.DefaultStore,
+  tmp_dir: "tmp"
+
+config :preview, :repo_bucket,
+  implementation: Preview.Storage.Local,
+  name: "repo-bucket"
+
+config :preview, :preview_bucket,
+  implementation: Preview.Storage.Local,
+  name: "preview-bucket"
 
 # Configures the endpoint
 config :preview, PreviewWeb.Endpoint,

@@ -2,26 +2,24 @@ defmodule PreviewWeb.PreviewLive do
   use PreviewWeb, :live_view
   require Logger
 
-  @unsafe_files [".DS_Store"]
+  # TODO: Handle binary files when they fail to JSON encode
 
   @impl true
   def mount(params, _session, socket) do
-    case maybe_cached_contents(params["package"], params["version"]) do
-      {:ok, list_of_files} ->
-        list_of_files = normalize_file_list(list_of_files)
-        file_contents = get_file_contents(params["package"], params["version"], list_of_files)
+    if all_files = Preview.Bucket.get_file_list(params["package"], params["version"]) do
+      first_file = hd(all_files)
+      file_contents = Preview.Bucket.get_file(params["package"], params["version"], first_file)
 
-        {:ok,
-         assign(socket,
-           package: params["package"],
-           version: params["version"],
-           contents: list_of_files,
-           filename: List.first(list_of_files),
-           file_contents: file_contents
-         )}
-
-      error ->
-        assign(socket, error: inspect(error))
+      {:ok,
+       assign(socket,
+         package: params["package"],
+         version: params["version"],
+         all_files: all_files,
+         filename: first_file,
+         file_contents: file_contents
+       )}
+    else
+      assign(socket, error: "TODO")
     end
   end
 
@@ -30,15 +28,15 @@ defmodule PreviewWeb.PreviewLive do
   def handle_event(
         "select_file",
         %{"file_chooser" => filename},
-        %{assigns: %{contents: contents, package: package, version: version}} = socket
+        %{assigns: %{all_files: all_files, package: package, version: version}} = socket
       ) do
-    {:ok, file_contents} = maybe_cached_contents(package, version, filename)
+    file_contents = Preview.Bucket.get_file(package, version, filename)
 
     {:noreply,
      assign(socket,
        package: package,
        version: version,
-       contents: contents,
+       all_files: all_files,
        filename: filename,
        file_contents: file_contents
      )}
@@ -50,74 +48,10 @@ defmodule PreviewWeb.PreviewLive do
     if to_charlist(str) == io, do: "selected=selected"
   end
 
-  def print_contents({_filename, file_contents}), do: print_contents(file_contents)
-
-  def print_contents(file_contents) do
+  def print_file_contents(file_contents) do
     file_contents
     |> Phoenix.HTML.Format.text_to_html()
     |> Phoenix.HTML.safe_to_string()
     |> String.replace(" ", "&nbsp;")
   end
-
-  defp get_file_contents(pkg, ver, list_of_files) do
-    case maybe_cached_contents(pkg, ver, List.first(list_of_files)) do
-      {:ok, list} when is_list(list) -> list |> List.first() |> elem(1)
-      {:ok, file_contents} -> file_contents
-    end
-  end
-
-  defp maybe_cached_contents(pkg, ver) do
-    case Preview.Storage.get(pkg, ver) do
-      {:ok, contents} ->
-        Logger.debug("cache hit for #{pkg}/#{ver}")
-        {:ok, contents}
-
-      {:error, :not_found} ->
-        Logger.debug("cache miss for #{pkg}/#{ver}")
-        do_preview(pkg, ver)
-    end
-  end
-
-  defp maybe_cached_contents(pkg, ver, {filename, _contents}) do
-    maybe_cached_contents(pkg, ver, filename)
-  end
-
-  defp maybe_cached_contents(pkg, ver, file) do
-    if String.ends_with?("#{file}", @unsafe_files) do
-      {:ok, "This file cannot be safely parsed."}
-    else
-      case Preview.Storage.get_file(pkg, ver, file) do
-        {:ok, contents} ->
-          Logger.debug("cache hit for #{pkg}/#{ver}/#{file}")
-          {:ok, contents}
-
-        {:error, :not_found} ->
-          Logger.debug("cache miss for #{pkg}/#{ver}/#{file}")
-          do_preview(pkg, ver)
-      end
-    end
-  end
-
-  defp do_preview(pkg, ver) do
-    case Preview.Hex.preview(pkg, ver) do
-      {:ok, contents} ->
-        cache_preview(pkg, ver, contents)
-        {:ok, contents}
-
-      :error ->
-        "Server error"
-    end
-  end
-
-  defp cache_preview(package, version, contents) do
-    Task.Supervisor.start_child(Preview.Tasks, fn ->
-      Preview.Storage.put(package, version, contents)
-    end)
-  end
-
-  defp normalize_file_list([{_f, _c} | _rest] = list_with_contents) do
-    Enum.map(list_with_contents, &elem(&1, 0))
-  end
-
-  defp normalize_file_list(list) when is_list(list), do: list
 end

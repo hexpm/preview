@@ -1,71 +1,39 @@
 defmodule Preview.Storage.Local do
-  require Logger
+  @behaviour Preview.Storage.Repo
+  @behaviour Preview.Storage.Preview
 
-  @behaviour Preview.Storage
+  def list(bucket, prefix) do
+    path(bucket, prefix)
+    |> ls()
+    |> Enum.filter(&String.starts_with?(&1, prefix))
+    |> Enum.map(&Path.join(prefix, &1))
+  end
 
-  def get(package, version) do
-    with {:ok, hash} <- package_checksum(package, version),
-         filename <- key(package, version, hash),
-         path <- Path.join([dir(), package, filename]),
-         true <- File.dir?(path) do
-      {:ok, files_in_package(package, filename)}
-    else
-      _error -> {:error, :not_found}
+  def get(bucket, key, _opts) do
+    case File.read(path(bucket, key)) do
+      {:ok, content} -> content
+      {:error, _} -> nil
     end
   end
 
-  def get_file(package, version, file) do
-    with {:ok, hash} <- package_checksum(package, version),
-         filename <- key(package, version, hash),
-         path <- Path.join([dir(), package, filename, file]),
-         true <- File.regular?(path) do
-      {:ok, File.read!(path)}
-    else
-      _error -> {:error, :not_found}
+  def put(bucket, key, body, _opts) do
+    path = path(bucket, key)
+    File.mkdir_p!(Path.dirname(path))
+    File.write!(path, body)
+  end
+
+  def delete_many(bucket, keys) do
+    Enum.each(keys, &File.rm!(path(bucket, &1)))
+  end
+
+  defp path(bucket, key) do
+    Path.join([Application.get_env(:preview, :tmp_dir), bucket, key])
+  end
+
+  defp ls(path) do
+    case File.ls(path) do
+      {:ok, files} -> files
+      {:error, _} -> []
     end
-  end
-
-  def put(package, version, stream) do
-    with {:ok, hash} <- package_checksum(package, version),
-         filename = key(package, version, hash) do
-      files_in_package =
-        Enum.reduce(stream, [], fn {name, contents}, acc ->
-          path = Path.join([dir(), package, filename, name])
-          File.mkdir_p(Path.dirname(path))
-          File.write(path, contents)
-          acc ++ [name]
-        end)
-
-      File.write(
-        Path.join([dir(), package, filename, "files_in_package.ex"]),
-        inspect(files_in_package, limit: :infinity)
-      )
-
-      :ok
-    else
-      {:error, reason} ->
-        Logger.error("Failed to store preview. Reason: #{inspect(reason)}.")
-        {:error, reason}
-    end
-  end
-
-  def package_checksum(package, version) do
-    with checksum <- Preview.Hex.get_checksum(package, version) do
-      {:ok, :erlang.phash2({Application.get_env(:preview, :cache_version), checksum})}
-    end
-  end
-
-  defp key(package, version, hash) do
-    "#{package}-#{version}-#{hash}"
-  end
-
-  defp dir() do
-    Application.get_env(:preview, :tmp_dir)
-    |> Path.join("storage")
-  end
-
-  defp files_in_package(pkg, key) do
-    {ls, _bindings} = [dir(), pkg, key, "files_in_package.ex"] |> Path.join() |> Code.eval_file()
-    ls
   end
 end

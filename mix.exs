@@ -33,22 +33,27 @@ defmodule Preview.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:phoenix, "~> 1.5.4"},
-      {:phoenix_live_view, "~> 0.13.0"},
-      {:floki, ">= 0.0.0", only: :test},
-      {:phoenix_html, "~> 2.11"},
-      {:phoenix_live_reload, "~> 1.2", only: :dev},
-      {:phoenix_live_dashboard, "~> 0.2"},
-      {:telemetry_metrics, "~> 0.4"},
-      {:telemetry_poller, "~> 0.4"},
-      {:gettext, "~> 0.11"},
-      {:jason, "~> 1.0"},
-      {:plug_cowboy, "~> 2.0"},
-      {:hex_core, "~> 0.6.9"},
-      {:mint, "~> 1.1"},
+      {:broadway, "~> 0.6.2"},
+      {:broadway_sqs, "~> 0.6.1"},
+      {:ex_aws, "~> 2.1"},
+      {:ex_aws_s3, "~> 2.0"},
       {:finch, "~> 0.3.0"},
+      {:floki, ">= 0.0.0", only: :test},
+      {:gettext, "~> 0.11"},
       {:goth, "~> 1.0"},
-      {:snoop, "~> 0.1.0"}
+      {:hex_core, "~> 0.6.9"},
+      {:jason, "~> 1.0"},
+      {:mint, "~> 1.1"},
+      {:phoenix_html, "~> 2.11"},
+      {:phoenix_live_dashboard, "~> 0.2"},
+      {:phoenix_live_reload, "~> 1.2", only: :dev},
+      {:phoenix_live_view, "~> 0.13.0"},
+      {:phoenix, "~> 1.5.4"},
+      {:plug_cowboy, "~> 2.0"},
+      {:snoop, "~> 0.1.0"},
+      {:sweet_xml, "~> 0.6.6"},
+      {:telemetry_metrics, "~> 0.4"},
+      {:telemetry_poller, "~> 0.4"}
     ]
   end
 
