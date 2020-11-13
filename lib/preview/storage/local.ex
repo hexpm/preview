@@ -5,6 +5,7 @@ defmodule Preview.Storage.Local do
   def list(bucket, prefix) do
     path(bucket, prefix <> "**")
     |> Path.wildcard(match_dot: true)
+    |> Enum.filter(&File.regular?/1)
     |> Enum.map(&Path.relative_to(&1, path(bucket)))
   end
 

@@ -1,7 +1,7 @@
 defmodule Preview.Bucket do
   def get_tarball(package, version) do
     bucket = Application.get_env(:preview, :repo_bucket)
-    key = "tarballs/#{package}-#{version}.tar"
+    key = "tarballs/#{package}-#{version}.tar.gz"
 
     case Preview.Storage.get(bucket, key) do
       nil -> :error
@@ -30,7 +30,7 @@ defmodule Preview.Bucket do
     )
     |> Stream.run()
 
-    delete_old_files(original_file_list, file_list)
+    delete_old_files(original_file_list, Enum.map(files, &elem(&1, 0)))
   end
 
   def delete_files(package, version) do
@@ -41,7 +41,7 @@ defmodule Preview.Bucket do
       files = Jason.decode!(files)
       keys = Enum.map(files, &Path.join(["files", package, version, &1]))
 
-      Preview.Storage.delete_many(bucket, keys)
+      Preview.Storage.delete_many(bucket, [key | keys])
     end
   end
 
@@ -60,8 +60,8 @@ defmodule Preview.Bucket do
     Preview.Storage.get(bucket, key)
   end
 
-  defp delete_old_files(original_file_list, file_list) do
+  defp delete_old_files(original_file_list, new_file_list) do
     bucket = Application.get_env(:preview, :preview_bucket)
-    Preview.Storage.delete_many(bucket, original_file_list -- file_list)
+    Preview.Storage.delete_many(bucket, original_file_list -- new_file_list)
   end
 end
