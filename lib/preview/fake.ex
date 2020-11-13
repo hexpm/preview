@@ -1,10 +1,10 @@
 defmodule Preview.Fake do
   @files [
-    :packages,
+    :packages
   ]
 
   @generators [
-    {:package, [:packages]},
+    {:package, [:packages]}
   ]
 
   def start() do

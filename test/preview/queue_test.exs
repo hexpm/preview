@@ -6,7 +6,10 @@ defmodule Preview.QueueTest do
 
   defp create_tar(name, version, files) do
     meta = %{"name" => name, "version" => version}
-    files = Enum.map(files, fn {filename, contents} -> {String.to_charlist(filename), contents} end)
+
+    files =
+      Enum.map(files, fn {filename, contents} -> {String.to_charlist(filename), contents} end)
+
     {:ok, %{tarball: tarball}} = :hex_tarball.create(meta, files)
     tarball
   end

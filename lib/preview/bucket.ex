@@ -11,9 +11,14 @@ defmodule Preview.Bucket do
 
   def put_files(package, version, files) do
     bucket = Application.get_env(:preview, :preview_bucket)
-    original_file_list = Preview.Storage.list(bucket, Path.join(["files", package, version]) <> "/")
+
+    original_file_list =
+      Preview.Storage.list(bucket, Path.join(["files", package, version]) <> "/")
+
     file_list = Enum.map(files, &elem(&1, 0))
-    file_list_path = {Path.join("file_lists", "#{package}-#{version}.json"), Jason.encode!(file_list)}
+
+    file_list_path =
+      {Path.join("file_lists", "#{package}-#{version}.json"), Jason.encode!(file_list)}
 
     files =
       Enum.map(files, fn {filename, contents} ->
