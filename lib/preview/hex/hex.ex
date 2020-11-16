@@ -21,23 +21,6 @@ defmodule Preview.Hex do
     end
   end
 
-  def get_tarball(package, version) do
-    with {:ok, {200, _, tarball}} <- :hex_repo.get_tarball(@config, package, version) do
-      {:ok, tarball}
-    else
-      {:ok, {403, _, _}} ->
-        {:error, :not_found}
-
-      {:ok, {status, _, _}} ->
-        Logger.error("Failed to get package versions. Status: #{status}.")
-        {:error, :not_found}
-
-      {:error, reason} ->
-        Logger.error("Failed to get tarball for package: #{package}. Reason: #{inspect(reason)}.")
-        {:error, :not_found}
-    end
-  end
-
   def unpack_tarball(tarball, :memory) do
     with {:ok, contents} <- :hex_tarball.unpack(tarball, :memory) do
       {:ok, contents}
@@ -69,18 +52,6 @@ defmodule Preview.Hex do
         Logger.error("Failed to get checksum for package: #{package}. Reason: #{inspect(reason)}")
 
         {:error, :not_found}
-    end
-  end
-
-  def preview(package, version) do
-    with {:ok, tarball} <- get_tarball(package, version),
-         {:ok, %{contents: contents}} <- unpack_tarball(tarball, :memory) do
-      {:ok, contents}
-    else
-      error ->
-        Logger.error("Failed to create preview #{package} #{version} with: #{inspect(error)}")
-
-        :error
     end
   end
 end

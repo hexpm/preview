@@ -13,4 +13,4 @@ config :logger, level: :warn
 
 config :preview,
   package_store_impl: Preview.Package.StoreMock,
-  storage_impl: Preview.StorageMock
+  tmp_dir: "tmp/test"

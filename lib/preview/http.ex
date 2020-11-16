@@ -6,30 +6,20 @@ defmodule Preview.HTTP do
 
   def get(url, headers, opts \\ []) do
     Finch.build(:get, url, headers)
-    |> Finch.request(PreviewFinch, opts)
+    |> Finch.request(Preview.Finch, opts)
     |> read_response()
   end
 
   def put(url, headers, body, opts \\ []) do
     Finch.build(:put, url, headers, body)
-    |> Finch.request(PreviewFinch, opts)
+    |> Finch.request(Preview.Finch, opts)
     |> read_response()
   end
 
-  def get_stream(url, headers) do
-    Finch.stream(Finch.build(:get, url, headers), PreviewFinch, %{}, fn
-      {:status, status}, acc -> IO.inspect(status)
-      {:headers, headers}, acc -> IO.inspect(headers)
-      {:data, data}, acc -> IO.inspect(data)
-    end)
-  end
-
-  def put_stream(url, headers, stream) do
-    Finch.stream(Finch.build(:put, url, headers, stream), PreviewFinch, %{}, fn
-      {:status, status}, acc -> IO.inspect(status)
-      {:headers, headers}, acc -> IO.inspect(headers)
-      {:data, data}, acc -> IO.inspect(data)
-    end)
+  def delete(url, headers, opts \\ []) do
+    Finch.build(:delete, url, headers)
+    |> Finch.request(Preview.Finch, opts)
+    |> read_response()
   end
 
   defp read_response(result) do
@@ -56,7 +46,7 @@ defmodule Preview.HTTP do
   end
 
   defp do_retry(fun, service, times, reason) do
-    Logger.warn("#{service} API ERROR: #{inspect(reason)}")
+    Logger.warn("#{service} HTTP ERROR: #{inspect(reason)}")
 
     if times + 1 < @max_retry_times do
       sleep = trunc(:math.pow(3, times) * @base_sleep_time)
