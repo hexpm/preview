@@ -9,7 +9,7 @@ defmodule Preview.BucketTest do
     package = Fake.random(:package)
     assert Bucket.get_tarball(package, "0.1.0") == :error
 
-    Storage.put(@repo_bucket, "tarballs/#{package}-0.1.0.tar.gz", "data")
+    Storage.put(@repo_bucket, "tarballs/#{package}-0.1.0.tar", "data")
     assert Bucket.get_tarball(package, "0.1.0") == {:ok, "data"}
   end
 

@@ -102,7 +102,7 @@ defmodule Preview.Queue do
   end
 
   defp filename_to_release(file) do
-    base = Path.basename(file, ".tar.gz")
+    base = Path.basename(file, ".tar")
     [package, version] = String.split(base, "-", parts: 2)
     {package, version}
   end

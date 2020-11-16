@@ -16,7 +16,7 @@ defmodule Preview.QueueTest do
 
   test "put object" do
     package = Fake.random(:package)
-    key = "tarballs/#{package}-1.0.0.tar.gz"
+    key = "tarballs/#{package}-1.0.0.tar"
     tarball = create_tar(package, "1.0.0", [{"README.md", "readme"}])
     Storage.put(@repo_bucket, key, tarball)
 
@@ -29,7 +29,7 @@ defmodule Preview.QueueTest do
 
   test "delete object" do
     package = Fake.random(:package)
-    key = "tarballs/#{package}-1.0.0.tar.gz"
+    key = "tarballs/#{package}-1.0.0.tar"
     Bucket.put_files(package, "1.0.0", [{"README.md", "readme"}])
 
     ref = Broadway.test_message(Preview.Queue, delete_message(key))
