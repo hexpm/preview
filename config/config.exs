@@ -10,8 +10,7 @@ use Mix.Config
 config :preview,
   queue_id: "dummy",
   queue_producer: Broadway.DummyProducer,
-  package_store_impl: Preview.Package.DefaultStore,
-  tmp_dir: "tmp"
+  package_store_impl: Preview.Package.DefaultStore
 
 config :preview, :repo_bucket,
   implementation: Preview.Storage.Local,
