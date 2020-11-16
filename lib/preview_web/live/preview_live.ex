@@ -19,7 +19,7 @@ defmodule PreviewWeb.PreviewLive do
          file_contents: file_contents
        )}
     else
-      assign(socket, error: "TODO")
+      {:ok, assign(socket, error: "TODO")}
     end
   end
 
