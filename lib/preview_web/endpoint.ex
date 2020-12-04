@@ -40,6 +40,7 @@ defmodule PreviewWeb.Endpoint do
 
   plug Plug.RequestId
   plug Plug.Telemetry, event_prefix: [:phoenix, :endpoint]
+  plug Logster.Plugs.Logger, excludes: [:params]
 
   plug Plug.Parsers,
     parsers: [:urlencoded, :multipart, :json],
