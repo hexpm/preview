@@ -16,6 +16,11 @@ config :preview, PreviewWeb.Endpoint,
 # Do not print debug messages in production
 config :logger, level: :info, metadata: [:request_id]
 
+config :rollbax,
+  environment: "prod",
+  enabled: true,
+  enable_crash_reports: true
+
 # ## SSL Support
 #
 # To get SSL working, you will need to add the `https` key
