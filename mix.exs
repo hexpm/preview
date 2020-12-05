@@ -50,7 +50,7 @@ defmodule Preview.MixProject do
       {:phoenix_live_view, "~> 0.13.0"},
       {:phoenix, "~> 1.5.4"},
       {:plug_cowboy, "~> 2.0"},
-      {:snoop, "~> 0.1.0"},
+      {:rollbax, "~> 0.11.0"},
       {:sweet_xml, "~> 0.6.6"},
       {:telemetry_metrics, "~> 0.4"},
       {:telemetry_poller, "~> 0.4"}
