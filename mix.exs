@@ -43,6 +43,7 @@ defmodule Preview.MixProject do
       {:goth, "~> 1.0"},
       {:hex_core, "~> 0.6.9"},
       {:jason, "~> 1.0"},
+      {:logster, "~> 1.0"},
       {:mint, "~> 1.1"},
       {:phoenix_html, "~> 2.11"},
       {:phoenix_live_dashboard, "~> 0.2"},
