@@ -10,11 +10,15 @@ use Mix.Config
 # which you should run after static files are built and
 # before starting your production server.
 config :preview, PreviewWeb.Endpoint,
-  url: [host: "example.com", port: 80],
+  http: [compress: true],
+  url: [scheme: "https", port: 443],
+  load_from_system_env: true,
   cache_static_manifest: "priv/static/cache_manifest.json"
 
 # Do not print debug messages in production
 config :logger, level: :info, metadata: [:request_id]
+
+config :sasl, sasl_error_logger: false
 
 config :rollbax,
   environment: "prod",
@@ -54,7 +58,3 @@ config :rollbax,
 #       force_ssl: [hsts: true]
 #
 # Check `Plug.SSL` for all available options in `force_ssl`.
-
-# Finally import the config/prod.secret.exs which loads secrets
-# and configuration from environment variables.
-import_config "prod.secret.exs"
