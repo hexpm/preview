@@ -8,7 +8,7 @@ Webbased display for the contents of a Hex release.
 
 1. Run `mix setup` to install Hex and NPM dependencies
 2. Run `mix test`
-3. Run `mix phx.server` and visit [http://localhost:4004/](http://localhost:4005/)
+3. Run `mix phx.server` and visit [http://localhost:4005/](http://localhost:4005/)
 
 ### Updating dependencies
 

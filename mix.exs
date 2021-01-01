@@ -10,6 +10,7 @@ defmodule Preview.MixProject do
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
+      releases: releases(),
       deps: deps()
     ]
   end
@@ -68,5 +69,9 @@ defmodule Preview.MixProject do
     [
       setup: ["deps.get", "run priv/seeds.exs", "cmd npm install --prefix assets"]
     ]
+  end
+
+  defp releases do
+    [preview: [include_executables_for: [:unix]]]
   end
 end
