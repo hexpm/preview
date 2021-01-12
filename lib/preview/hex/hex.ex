@@ -1,7 +1,7 @@
 defmodule Preview.Hex do
   @config %{
     :hex_core.default_config()
-    | http_adapter: Preview.Hex.Adapter,
+    | http_adapter: {Preview.Hex.Adapter, %{}},
       http_user_agent_fragment: "hexpm_preview"
   }
 
