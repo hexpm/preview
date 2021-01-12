@@ -9,10 +9,10 @@ defmodule Preview.Storage.GCS do
   def get(bucket, key, _opts) do
     url = url(bucket, key)
 
-    {:ok, status, headers, body} =
-      Preview.HTTP.retry("gcs", fn -> Preview.HTTP.get(url, headers()) end)
-
-    {status, headers, body}
+    case Preview.HTTP.retry("gcs", fn -> Preview.HTTP.get(url, headers()) end) do
+      {:ok, 200, _headers, body} -> body
+      {:ok, 404, _headers, _body} -> nil
+    end
   end
 
   def list(bucket, prefix) do
@@ -21,7 +21,11 @@ defmodule Preview.Storage.GCS do
 
   def put(bucket, key, body, _opts) do
     url = url(bucket, key)
-    Preview.HTTP.retry("gcs", fn -> Preview.HTTP.put(url, headers(), body) end)
+
+    {:ok, 200, _headers, _body} =
+      Preview.HTTP.retry("gcs", fn -> Preview.HTTP.put(url, headers(), body) end)
+
+    :ok
   end
 
   def delete_many(bucket, keys) do
