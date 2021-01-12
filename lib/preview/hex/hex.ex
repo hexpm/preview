@@ -1,4 +1,5 @@
 defmodule Preview.Hex do
+  # TODO: Change repository based on staging/prod
   @config %{
     :hex_core.default_config()
     | http_adapter: {Preview.Hex.Adapter, %{}},

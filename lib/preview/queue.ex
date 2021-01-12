@@ -56,18 +56,7 @@ defmodule Preview.Queue do
 
     case key_components(key) do
       {:ok, package, version} ->
-        # TODO: Handle errors
-        # TODO: This does not handle symlinks
-        {:ok, tarball} = Preview.Bucket.get_tarball(package, version)
-        {:ok, tarball_contents} = Preview.Hex.unpack_tarball(tarball, :memory)
-
-        files =
-          Enum.map(tarball_contents.contents, fn {filename, blob} ->
-            {List.to_string(filename), blob}
-          end)
-
-        Preview.Bucket.put_files(package, version, files)
-
+        create_package(package, version)
         Logger.info("FINISHED UPLOADING CONTENTS #{key}")
 
       :error ->
@@ -81,8 +70,8 @@ defmodule Preview.Queue do
 
     case key_components(key) do
       {:ok, package, version} ->
+        delete_package(package, version)
         Logger.info("FINISHED DELETING CONTENTS #{key}")
-        Preview.Bucket.delete_files(package, version)
         :ok
 
       :error ->
@@ -105,5 +94,23 @@ defmodule Preview.Queue do
     base = Path.basename(file, ".tar")
     [package, version] = String.split(base, "-", parts: 2)
     {package, version}
+  end
+
+  def create_package(package, version) do
+    # TODO: Handle errors
+    # TODO: This does not handle symlinks
+    {:ok, tarball} = Preview.Bucket.get_tarball(package, version)
+    {:ok, tarball_contents} = Preview.Hex.unpack_tarball(tarball, :memory)
+
+    files =
+      Enum.map(tarball_contents.contents, fn {filename, blob} ->
+        {List.to_string(filename), blob}
+      end)
+
+    Preview.Bucket.put_files(package, version, files)
+  end
+
+  def delete_package(package, version) do
+    Preview.Bucket.delete_files(package, version)
   end
 end
