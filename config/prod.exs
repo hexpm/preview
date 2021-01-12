@@ -25,6 +25,8 @@ config :rollbax,
   enabled: true,
   enable_crash_reports: true
 
+config :phoenix, :serve_endpoints, true
+
 # ## SSL Support
 #
 # To get SSL working, you will need to add the `https` key
