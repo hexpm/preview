@@ -1,7 +1,7 @@
-FROM hexpm/elixir:1.11.2-erlang-23.1.5-alpine-3.12.1
+FROM hexpm/elixir:1.11.2-erlang-23.1.5-alpine-3.12.1 AS build
 
 # install build dependencies
-RUN apk add --update git build-base nodejs yarn python
+RUN apk add --update git build-base nodejs yarn
 
 # prepare build dir
 RUN mkdir /app
