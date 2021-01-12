@@ -35,7 +35,7 @@ defmodule Preview.Bucket do
     )
     |> Stream.run()
 
-    delete_old_files(original_file_list, Enum.map(files, &elem(&1, 0)))
+    delete_old_files(Enum.to_list(original_file_list), Enum.map(files, &elem(&1, 0)))
   end
 
   def delete_files(package, version) do
