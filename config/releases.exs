@@ -1,6 +1,12 @@
 import Config
 
-config :preview, preview_bucket: System.fetch_env!("PREVIEW_BUCKET")
+config :preview, :repo_bucket,
+  implementation: Preview.Storage.S3,
+  name: System.fetch_env!("PREVIEW_REPO_BUCKET")
+
+config :preview, :preview_bucket,
+  implementation: Preview.Storage.GCS,
+  name: System.fetch_env!("PREVIEW_BUCKET")
 
 config :ex_aws,
   access_key_id: System.fetch_env!("PREVIEW_AWS_ACCESS_KEY_ID"),
