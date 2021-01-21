@@ -12,7 +12,7 @@ defmodule Preview.Application do
       PreviewWeb.Telemetry,
       {Phoenix.PubSub, name: Preview.PubSub},
       {Task.Supervisor, name: Preview.Tasks},
-      {Finch, name: Preview.Finch},
+      {Finch, name: Preview.Finch, pools: finch_pools()},
       Preview.Queue,
       PreviewWeb.Endpoint,
       Preview.Package.Supervisor
@@ -36,5 +36,9 @@ defmodule Preview.Application do
       File.mkdir_p!(dir)
       Application.put_env(:preview, :tmp_dir, Path.expand(dir))
     end
+  end
+
+  defp finch_pools() do
+    %{default: [size: 10, count: 1, max_idle_time: 10_000]}
   end
 end
