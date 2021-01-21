@@ -6,8 +6,9 @@ defmodule Preview do
   end
 
   def process_all_objects() do
-    Preview.Hex.get_versions()
-    |> Enum.flat_map(fn package ->
+    {:ok, packages} = Preview.Hex.get_versions()
+
+    Enum.flat_map(packages, fn package ->
       Enum.map(package.versions, &"tarballs/#{package.name}/#{&1}.tar")
     end)
     |> batched_send()
