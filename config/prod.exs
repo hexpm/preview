@@ -15,6 +15,9 @@ config :preview, PreviewWeb.Endpoint,
   load_from_system_env: true,
   cache_static_manifest: "priv/static/cache_manifest.json"
 
+config :preview,
+  queue_producer: BroadwaySQS.Producer
+
 # Do not print debug messages in production
 config :logger, level: :info, metadata: [:request_id]
 

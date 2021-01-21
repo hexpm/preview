@@ -10,7 +10,8 @@ use Mix.Config
 config :preview,
   queue_id: "dummy",
   queue_producer: Broadway.DummyProducer,
-  package_store_impl: Preview.Package.DefaultStore
+  package_store_impl: Preview.Package.DefaultStore,
+  repo_url: "https://repo.hex.pm"
 
 config :preview, :repo_bucket,
   implementation: Preview.Storage.Local,
