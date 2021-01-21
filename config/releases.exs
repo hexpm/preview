@@ -2,6 +2,7 @@ import Config
 
 config :preview,
   repo_url: System.fetch_env!("PREVIEW_REPO_URL"),
+  repo_public_key: System.fetch_env!("PREVIEW_REPO_PUBLIC_KEY"),
   queue_id: System.fetch_env!("PREVIEW_QUEUE_ID")
 
 config :preview, :repo_bucket,

@@ -54,7 +54,8 @@ defmodule Preview.Hex do
       :hex_core.default_config()
       | http_adapter: {Preview.Hex.Adapter, %{}},
         http_user_agent_fragment: "hexpm_preview",
-        repo_url: Application.get_env(:preview, :repo_url)
+        repo_url: Application.get_env(:preview, :repo_url),
+        repo_public_key: Application.get_env(:preview, :repo_public_key),
     }
   end
 end
