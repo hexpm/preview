@@ -9,7 +9,7 @@ defmodule Preview do
     {:ok, packages} = Preview.Hex.get_versions()
 
     Enum.flat_map(packages, fn package ->
-      Enum.map(package.versions, &"tarballs/#{package.name}/#{&1}.tar")
+      Enum.map(package.versions, &"tarballs/#{package.name}-#{&1}.tar")
     end)
     |> batched_send()
   end
