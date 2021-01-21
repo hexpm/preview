@@ -1,5 +1,9 @@
 import Config
 
+config :preview,
+  repo_url: System.fetch_env!("PREVIEW_REPO_URL"),
+  queue_id: System.fetch_env!("PREVIEW_QUEUE_ID")
+
 config :preview, :repo_bucket,
   implementation: Preview.Storage.S3,
   name: System.fetch_env!("PREVIEW_REPO_BUCKET")
