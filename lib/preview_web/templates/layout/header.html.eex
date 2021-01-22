@@ -9,6 +9,10 @@
     <%= live_title_tag assigns[:page_title] || "Preview" %>
     <link phx-track-static rel="stylesheet" href="<%= Routes.static_path(@conn, "/css/app.css") %>"/>
     <script defer phx-track-static type="text/javascript" src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script>
+
+    <%= if host = Application.get_env(:preview, :host) do %>
+    <script async defer data-domain="<%= host %>" src="https://stats.<%= Application.fetch_env!(:preview, :hexpm_host) %>/js/plausible.js"></script>
+    <% end %>
   </head>
   <body>
     <header>
