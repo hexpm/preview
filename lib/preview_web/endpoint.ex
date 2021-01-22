@@ -51,6 +51,11 @@ defmodule PreviewWeb.Endpoint do
   plug Plug.MethodOverride
   plug Plug.Head
   plug Plug.Session, @session_options
+
+  if Mix.env() == :prod do
+    plug Plug.SSL, rewrite_on: [:x_forwarded_proto]
+  end
+
   plug PreviewWeb.Router
 
   def init(_key, config) do
