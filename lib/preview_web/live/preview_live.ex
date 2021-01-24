@@ -2,17 +2,11 @@ defmodule PreviewWeb.PreviewLive do
   use PreviewWeb, :live_view
   require Logger
 
-  # TODO: Handle binary files when they fail to JSON encode
-
   @impl true
   def mount(params, _session, socket) do
     if all_files = Preview.Bucket.get_file_list(params["package"], params["version"]) do
       filename = if params["filename"], do: URI.decode(params["filename"]), else: hd(all_files)
-      file_contents = Preview.Bucket.get_file(params["package"], params["version"], filename)
-
-      if String.valid?(file_contents),
-        do: file_contents,
-        else: "Contents for binary files are not shown."
+      file_contents = file_contents_or_default(params["package"], params["version"], filename)
 
       {:ok,
        assign(socket,
@@ -28,7 +22,7 @@ defmodule PreviewWeb.PreviewLive do
   end
 
   @impl true
-  def handle_params(_params, uri, socket) do
+  def handle_params(_params, _uri, socket) do
     {:noreply, socket}
   end
 
@@ -39,7 +33,7 @@ defmodule PreviewWeb.PreviewLive do
         %{"file_chooser" => filename},
         %{assigns: %{all_files: all_files, package: package, version: version}} = socket
       ) do
-    file_contents = Preview.Bucket.get_file(package, version, filename)
+    file_contents = file_contents_or_default(package, version, filename)
 
     socket =
       assign(socket,
@@ -68,5 +62,13 @@ defmodule PreviewWeb.PreviewLive do
     |> Phoenix.HTML.Format.text_to_html()
     |> Phoenix.HTML.safe_to_string()
     |> String.replace(" ", "&nbsp;")
+  end
+
+  defp file_contents_or_default(package, version, filename) do
+    file_contents = Preview.Bucket.get_file(package, version, filename)
+
+    if String.valid?(file_contents),
+      do: file_contents,
+      else: "Contents for binary files are not shown."
   end
 end
