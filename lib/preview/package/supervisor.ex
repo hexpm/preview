@@ -8,7 +8,6 @@ defmodule Preview.Package.Supervisor do
   end
 
   @impl true
-  @spec init(any) :: {:ok, {%{intensity: any, period: any, strategy: any}, [any]}}
   def init(_opts) do
     children = [
       {Store, []},

@@ -25,19 +25,19 @@ defmodule Preview.Package.Updater do
   end
 
   def update() do
-    Logger.debug("Updating version store")
+    # Logger.debug("Updating version store")
 
-    case Preview.Hex.get_versions() do
-      {:ok, results} ->
-        results
-        |> format_packages()
-        |> Store.fill()
+    # case Preview.Hex.get_versions() do
+    #   {:ok, results} ->
+    #     results
+    #     |> format_packages()
+    #     |> Store.fill()
 
-      {:error, reason} ->
-        Logger.error("Failed to get versions: #{inspect(reason)}")
-    end
+    #   {:error, reason} ->
+    #     Logger.error("Failed to get versions: #{inspect(reason)}")
+    # end
 
-    Process.send_after(self(), :update, 60_000)
+    # Process.send_after(self(), :update, 60_000)
   end
 
   def format_packages(packages) do

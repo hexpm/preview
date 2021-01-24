@@ -7,20 +7,29 @@ defmodule PreviewWeb.PreviewLive do
   @impl true
   def mount(params, _session, socket) do
     if all_files = Preview.Bucket.get_file_list(params["package"], params["version"]) do
-      first_file = hd(all_files)
-      file_contents = Preview.Bucket.get_file(params["package"], params["version"], first_file)
+      filename = if params["filename"], do: URI.decode(params["filename"]), else: hd(all_files)
+      file_contents = Preview.Bucket.get_file(params["package"], params["version"], filename)
+
+      if String.valid?(file_contents),
+        do: file_contents,
+        else: "Contents for binary files are not shown."
 
       {:ok,
        assign(socket,
          package: params["package"],
          version: params["version"],
          all_files: all_files,
-         filename: first_file,
+         filename: filename,
          file_contents: file_contents
        )}
     else
       {:ok, assign(socket, error: "TODO")}
     end
+  end
+
+  @impl true
+  def handle_params(_params, uri, socket) do
+    {:noreply, socket}
   end
 
   @impl true
@@ -32,13 +41,19 @@ defmodule PreviewWeb.PreviewLive do
       ) do
     file_contents = Preview.Bucket.get_file(package, version, filename)
 
+    socket =
+      assign(socket,
+        package: package,
+        version: version,
+        all_files: all_files,
+        filename: filename,
+        file_contents: file_contents
+      )
+
     {:noreply,
-     assign(socket,
-       package: package,
-       version: version,
-       all_files: all_files,
-       filename: filename,
-       file_contents: file_contents
+     push_patch(socket,
+       to: Routes.preview_path(socket, :index, package, version, filename),
+       replace: true
      )}
   end
 
