@@ -10,6 +10,12 @@ Webbased display for the contents of a Hex release.
 2. Run `mix test`
 3. Run `mix phx.server` and visit [http://localhost:4005/](http://localhost:4005/)
 
+### Test routes
+After running `mix setup`, two packages will be available for testing locally.
+
+1. [Decimal 0.2.0](http://localhost:4005/preview/decimal/2.0.0)
+2. [Ecto 0.2.0](http://localhost:4005/preview/ecto/0.2.0)
+
 ### Updating dependencies
 
 If Hex or NPM dependencies are outdated run `mix setup` again.
