@@ -10,6 +10,9 @@
   <%= if @filename && @file_contents do %>
     <div class="code_file">
       <h2><%= @filename %></h2>
+      <style>
+          <%= raw Makeup.stylesheet(Makeup.Styles.HTML.StyleMap.friendly_style()) %>
+      </style>
       <section class="code">
         <%= raw print_file_contents(@file_contents) %>
       </section>

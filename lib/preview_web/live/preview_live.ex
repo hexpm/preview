@@ -59,10 +59,7 @@ defmodule PreviewWeb.PreviewLive do
   end
 
   def print_file_contents(file_contents) do
-    file_contents
-    |> Phoenix.HTML.Format.text_to_html()
-    |> Phoenix.HTML.safe_to_string()
-    |> String.replace(" ", "&nbsp;")
+    Makeup.highlight(file_contents)
   end
 
   def default_file(all_files) do
