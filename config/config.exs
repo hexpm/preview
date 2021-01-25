@@ -11,6 +11,7 @@ config :preview,
   queue_id: "dummy",
   queue_producer: Broadway.DummyProducer,
   package_store_impl: Preview.Package.DefaultStore,
+  package_updater_impl: Preview.Package.Updater,
   repo_url: "https://repo.hex.pm"
 
 config :preview, :repo_bucket,
