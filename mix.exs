@@ -67,7 +67,7 @@ defmodule Preview.MixProject do
   # See the documentation for `Mix` for more info on aliases.
   defp aliases do
     [
-      setup: ["deps.get", "run priv/seeds.exs", "cmd npm install --prefix assets"]
+      setup: ["deps.get", "run priv/seeds.exs", "cmd cd assets && yarn install"]
     ]
   end
 
