@@ -8,6 +8,7 @@ defmodule Preview.Package.LocalUpdater do
 
   def init(_opts) do
     Logger.debug("Skipping version updater")
+    Preview.Package.Store.fill([{"decimal", ["2.0.0"]}, {"ecto", ["0.2.0"]}])
     {:ok, []}
   end
 end

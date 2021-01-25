@@ -6,8 +6,6 @@ defmodule Preview.Application do
   use Application
 
   def start(_type, _args) do
-    setup_tmp_dir()
-
     children = [
       PreviewWeb.Telemetry,
       {Phoenix.PubSub, name: Preview.PubSub},
@@ -21,11 +19,7 @@ defmodule Preview.Application do
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: Preview.Supervisor]
-    sup = Supervisor.start_link(children, opts)
-
-    setup_local_ets()
-
-    sup
+    Supervisor.start_link(children, opts)
   end
 
   # Tell Phoenix to update the endpoint configuration
@@ -40,14 +34,6 @@ defmodule Preview.Application do
       File.mkdir_p!(dir)
       Application.put_env(:preview, :tmp_dir, Path.expand(dir))
     end
-  end
-
-  if Application.get_env(:preview, :package_updater_impl) == Preview.Package.LocalUpdater do
-    defp setup_local_ets do
-      Preview.Package.Store.fill([{"decimal", ["2.0.0"]}, {"ecto", ["0.2.0"]}])
-    end
-  else
-    defp setup_local_ets, do: nil
   end
 
   defp finch_pools() do
