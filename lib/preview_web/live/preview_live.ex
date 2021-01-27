@@ -1,11 +1,12 @@
 defmodule PreviewWeb.PreviewLive do
   use PreviewWeb, :live_view
-  require Logger
 
   @impl true
   def mount(params, _session, socket) do
     if all_files = Preview.Bucket.get_file_list(params["package"], params["version"]) do
-      filename = if params["filename"], do: URI.decode(params["filename"]), else: hd(all_files)
+      filename =
+        if params["filename"], do: URI.decode(params["filename"]), else: default_file(all_files)
+
       file_contents = file_contents_or_default(params["package"], params["version"], filename)
 
       {:ok,
@@ -62,6 +63,14 @@ defmodule PreviewWeb.PreviewLive do
     |> Phoenix.HTML.Format.text_to_html()
     |> Phoenix.HTML.safe_to_string()
     |> String.replace(" ", "&nbsp;")
+  end
+
+  def default_file(all_files) do
+    Enum.find(all_files, &(&1 |> String.downcase() |> String.starts_with?("readme"))) ||
+      Enum.find(all_files, &(&1 == "mix.exs")) ||
+      Enum.find(all_files, &(&1 == "rebar.config")) ||
+      Enum.find(all_files, &(&1 == "Makefile")) ||
+      hd(all_files)
   end
 
   defp file_contents_or_default(package, version, filename) do
