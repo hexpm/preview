@@ -170,17 +170,13 @@
  }
 
  code {
-   background: #f4f5f6;
    border-radius: .4rem;
-   font-size: 86%;
    margin: 0 .2rem;
    padding: .2rem .5rem;
    white-space: nowrap;
  }
 
  pre {
-   background: #f4f5f6;
-   border-left: 0.3rem solid #9b4dca;
    overflow-y: hidden;
  }
 
