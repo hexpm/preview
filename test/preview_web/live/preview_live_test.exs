@@ -30,7 +30,7 @@ defmodule PreviewWeb.PreviewLiveTest do
     end
 
     test "when package contains rebar.config" do
-      all_files = ~w[.DS-Store rebar.config lib.ex]
+      all_files = ~w[.DS-Store rebar.config Makefile lib.ex]
       assert PreviewLive.default_file(all_files) == "rebar.config"
     end
 
