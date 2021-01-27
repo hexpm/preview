@@ -25,7 +25,7 @@ defmodule PreviewWeb.PreviewLiveTest do
     end
 
     test "when package contains mix.exs" do
-      all_files = ~w[.formatter.exs mix.exs lib.ex]
+      all_files = ~w[.formatter.exs rebar.config mix.exs lib.ex]
       assert PreviewLive.default_file(all_files) == "mix.exs"
     end
 
