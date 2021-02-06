@@ -14,7 +14,7 @@
           <%= raw Makeup.stylesheet(Makeup.Styles.HTML.StyleMap.lovelace_style()) %>
       </style>
       <section class="code">
-        <%= raw print_file_contents(@file_contents, Path.extname(@filename)) %>
+        <%= raw print_file_contents(@file_contents, @filename) %>
       </section>
     </div>
   <% end %>
