@@ -58,7 +58,8 @@ defmodule PreviewWeb.PreviewLive do
     if to_charlist(str) == io, do: "selected=selected"
   end
 
-  def print_file_contents(file_contents, ext) when ext in [".ex", ".exs"] do
+  def print_file_contents(file_contents, ext)
+      when ext in [".ex", ".exs", ".erl", ".hrl", ".escript"] do
     file_contents |> Makeup.highlight()
   end
 

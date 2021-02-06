@@ -48,6 +48,7 @@ defmodule Preview.MixProject do
       {:mint, "~> 1.1"},
       {:makeup, "~> 1.0"},
       {:makeup_elixir, "~> 0.15.0"},
+      {:makeup_erlang, "~> 0.1.0"},
       {:phoenix_html, "~> 2.11"},
       {:phoenix_live_dashboard, "~> 0.4"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
