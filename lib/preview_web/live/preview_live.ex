@@ -60,7 +60,7 @@ defmodule PreviewWeb.PreviewLive do
 
   def print_file_contents(file_contents, filename) do
     if makeup_supported?(filename) do
-     Makeup.highlight(file_contents)
+      Makeup.highlight(file_contents)
     else
       file_contents
       |> Phoenix.HTML.Format.text_to_html()
