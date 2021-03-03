@@ -1,6 +1,7 @@
 defmodule Preview.Storage.S3 do
   @behaviour Preview.Storage.Repo
 
+  @impl true
   def get(bucket, key, opts) do
     ExAws.S3.get_object(bucket, key, opts)
     |> ExAws.request()

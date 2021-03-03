@@ -1,7 +1,7 @@
 defmodule Preview.Storage.Local do
-  @behaviour Preview.Storage.Repo
   @behaviour Preview.Storage.Preview
 
+  @impl true
   def list(bucket, prefix) do
     path(bucket, prefix <> "**")
     |> Path.wildcard(match_dot: true)
@@ -9,6 +9,7 @@ defmodule Preview.Storage.Local do
     |> Enum.map(&Path.relative_to(&1, path(bucket)))
   end
 
+  @impl true
   def get(bucket, key, _opts) do
     case File.read(path(bucket, key)) do
       {:ok, content} -> content
@@ -16,12 +17,14 @@ defmodule Preview.Storage.Local do
     end
   end
 
+  @impl true
   def put(bucket, key, body, _opts) do
     path = path(bucket, key)
     File.mkdir_p!(Path.dirname(path))
     File.write!(path, body)
   end
 
+  @impl true
   def delete_many(bucket, keys) do
     Enum.each(keys, &File.rm_rf!(path(bucket, &1)))
   end
