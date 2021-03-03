@@ -6,6 +6,7 @@ defmodule Preview.Storage.GCS do
 
   import SweetXml, only: [sigil_x: 2]
 
+  @impl true
   def get(bucket, key, _opts) do
     url = url(bucket, key)
 
@@ -15,10 +16,12 @@ defmodule Preview.Storage.GCS do
     end
   end
 
+  @impl true
   def list(bucket, prefix) do
     list_stream(bucket, prefix)
   end
 
+  @impl true
   def put(bucket, key, body, _opts) do
     url = url(bucket, key)
 
@@ -28,6 +31,7 @@ defmodule Preview.Storage.GCS do
     :ok
   end
 
+  @impl true
   def delete_many(bucket, keys) do
     keys
     |> Task.async_stream(
