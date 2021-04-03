@@ -1,4 +1,21 @@
 defmodule PreviewWeb.SyntaxHighlighing do
+  @moduledoc """
+  Provides helpers for syntax highlighting files.
+  """
+
+  @doc """
+  Returns corresponding prismjs css class for a file's language. If language is
+  not supported, returns `language-unsupported`.
+
+  ## Examples
+
+      iex> language_class("README.md")
+      "language-markdown"
+
+      iex> language_class("mix.exs")
+      "language-elixir"
+  """
+  @spec language_class(filename :: String.t()) :: String.t()
   def language_class(filename) do
     "language-" <> class_for(Path.extname(filename), filename)
   end
