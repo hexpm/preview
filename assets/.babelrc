@@ -1,5 +1,25 @@
 {
     "presets": [
         "@babel/preset-env"
+    ],
+    "plugins": [
+          [
+              "prismjs",
+              {
+                  "languages": [
+                      "markdown",
+                      "elixir",
+                      "erlang"
+                  ],
+                  "plugins": [
+                      "line-numbers",
+                      "line-highlight"
+                  ],
+                  // themes can be found in this directory:
+                  // assets/node_modules/prismjs/themes
+                  // "theme": "okaidia",
+                  "css": true
+              }
+        ]
     ]
 }
