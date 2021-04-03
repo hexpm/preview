@@ -1,6 +1,8 @@
 defmodule PreviewWeb.PreviewLive do
   use PreviewWeb, :live_view
 
+  alias PreviewWeb.SyntaxHighlighing
+
   @impl true
   def mount(params, _session, socket) do
     if all_files = Preview.Bucket.get_file_list(params["package"], params["version"]) do
@@ -58,15 +60,8 @@ defmodule PreviewWeb.PreviewLive do
     if to_charlist(str) == io, do: "selected=selected"
   end
 
-  def print_file_contents(file_contents, filename) do
-    if makeup_supported?(filename) do
-      Makeup.highlight(file_contents)
-    else
-      file_contents
-      |> Phoenix.HTML.Format.text_to_html()
-      |> Phoenix.HTML.safe_to_string()
-      |> String.replace(" ", "&nbsp;")
-    end
+  def language_class(filename) do
+    SyntaxHighlighing.language_class(filename)
   end
 
   def default_file(all_files) do
@@ -83,11 +78,5 @@ defmodule PreviewWeb.PreviewLive do
     if String.valid?(file_contents),
       do: file_contents,
       else: "Contents for binary files are not shown."
-  end
-
-  defp makeup_supported?(filename) do
-    Path.extname(filename) in [".ex", ".exs", ".erl", ".hrl", ".escript"] ||
-      filename in ["rebar.config", "rebar.config.script"] ||
-      String.ends_with?(filename, ".app.src")
   end
 end
