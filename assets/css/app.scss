@@ -1,6 +1,7 @@
 /* This file is for your main application css. */
 @import "./milligram.css";
 @import "../node_modules/nprogress/nprogress.css";
+@import "./code-theme.css";
 
 html, body {
   display:flex;
@@ -190,7 +191,7 @@ code {
 .code_file {
   background-color: #fff;
   font-family: Menlo, Consolas, monospace;
-  font-size: 13px;
+  font-size: 18px;
   padding: 2em;
   color: #333;
   border-radius: 5px;
@@ -202,8 +203,10 @@ code {
     border-bottom: 1px solid #ccc;
   }
 
-  section.code{
-    overflow-x: scroll;
+  section.code {
+    pre > code {
+      padding-top: 0;
+    }
   }
 }
 
