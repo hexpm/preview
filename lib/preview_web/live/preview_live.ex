@@ -62,10 +62,7 @@ defmodule PreviewWeb.PreviewLive do
     if makeup_supported?(filename) do
       Makeup.highlight(file_contents)
     else
-      file_contents
-      |> Phoenix.HTML.Format.text_to_html()
-      |> Phoenix.HTML.safe_to_string()
-      |> String.replace(" ", "&nbsp;")
+      content_tag(:pre, content_tag(:code, file_contents), class: "highlight")
     end
   end
 

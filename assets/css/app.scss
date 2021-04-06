@@ -204,6 +204,37 @@ code {
 
   section.code{
     overflow-x: scroll;
+    position: relative;
+
+    pre.highlight {
+      position: relative;
+      background: transparent;
+    }
+
+    pre > code {
+      padding-left: 4em;
+    }
+  }
+
+  ul.left_gutter{
+    position: absolute;
+    left: 0;
+    top:0;
+    list-style: none;
+    padding: 2rem 0 0;
+    width: 100%;
+
+    li {
+      padding: 0;
+      margin: 0;
+      font-size: 13px;
+      height: 1.6em;
+      line-height: 2em;
+    }
+
+    li.highlighted {
+      background-color:rgb(255, 251, 194);
+    }
   }
 }
 

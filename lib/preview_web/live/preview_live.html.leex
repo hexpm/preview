@@ -14,8 +14,13 @@
           <%= raw Makeup.stylesheet(Makeup.Styles.HTML.StyleMap.lovelace_style()) %>
       </style>
       <section class="code">
+        <% lines = String.split(@file_contents, "\n") |> length() %>
+        <ul class="left_gutter">
+          <%= raw for ln <- 1..lines, do: "<li id=\"l#{ln}\">#{ln}</li>" %>
+        </ul>
         <%= raw print_file_contents(@file_contents, @filename) %>
       </section>
+
     </div>
   <% end %>
 <% end %>
