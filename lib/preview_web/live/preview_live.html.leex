@@ -15,7 +15,7 @@
       </style>
       <section class="code">
         <% lines = String.split(@file_contents, "\n") |> length() %>
-        <ul class="left_gutter">
+        <ul id="left_gutter" phx-hook="HighlightLineNumber">
           <%= raw for ln <- 1..lines, do: "<li id=\"l#{ln}\">#{ln}</li>" %>
         </ul>
         <%= raw print_file_contents(@file_contents, @filename) %>
