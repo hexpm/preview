@@ -238,9 +238,19 @@ code {
       height: 1.6em;
       line-height: 2em;
       cursor: pointer;
+      opacity: 0.50;
+
+      &:hover {
+        opacity: 1.0;
+      }
+
+      &::before {
+        content: attr(data-line-number);
+      }
     }
 
     li.highlighted {
+      opacity: 1.0;
       background-color: rgb(255, 251, 194);
     }
   }

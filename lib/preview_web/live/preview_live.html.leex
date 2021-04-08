@@ -15,8 +15,11 @@
       </style>
       <section class="code">
         <% lines = String.split(@file_contents, "\n") |> length() %>
-        <ul id="left_gutter" phx-hook="HighlightLineNumber">
-          <%= raw for ln <- 1..lines, do: "<li id=\"l#{ln}\">#{ln}</li>" %>
+        <ul id="left_gutter">
+          <%= for ln <- 1..lines do %>
+            <% class = if @selected_line == ln, do: "highlighted", else: "" %>
+            <li class="<%= class %>" phx-click="highlight_line" phx-value-line-number="<%= ln %>" id="l<%= ln %>" data-line-number="<%= ln %>"></li>
+          <% end %>
         </ul>
         <%= raw print_file_contents(@file_contents, @filename) %>
       </section>

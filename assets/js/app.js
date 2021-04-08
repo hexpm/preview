@@ -18,34 +18,6 @@ import NProgress from "nprogress"
 import LiveSocket from "phoenix_live_view"
 
 let Hooks = {}
-Hooks.HighlightLineNumber = {
-    mounted() {
-        let lis = [...this.el.getElementsByTagName('li')];
-        lis.forEach(function (ln) {
-            ln.addEventListener("click", e => {
-                if (ln.classList.contains('highlighted')) {
-                    reset_highlighted_lines();
-                    history.pushState(null, null, ' ')
-                } else {
-                    reset_highlighted_lines();
-                    ln.classList.add("highlighted");
-                    history.pushState(null, null, '#' + ln.id)
-                }
-
-                e.preventDefault();
-            })
-        });
-
-    }
-}
-
-function reset_highlighted_lines() {
-    let ul = document.getElementById("left_gutter");
-    let lis = [...ul.getElementsByTagName('li')];
-    lis.forEach(function (ln) {
-        ln.classList.remove('highlighted')
-    })
-}
 
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 let liveSocket = new LiveSocket("/live", Socket, { params: { _csrf_token: csrfToken }, hooks: Hooks })
