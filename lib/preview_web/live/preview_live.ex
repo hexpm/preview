@@ -30,12 +30,20 @@ defmodule PreviewWeb.PreviewLive do
     {:noreply, socket}
   end
 
-
   @impl true
   def handle_event("highlight_line", %{"line-number" => line_number}, socket) do
     {line_number, _} = Integer.parse(line_number)
     socket = assign(socket, :selected_line, line_number)
-    live_uri = PreviewWeb.Router.Helpers.preview_path(socket.endpoint, :index, socket.assigns.package, socket.assigns.version, socket.assigns.filename)
+
+    live_uri =
+      PreviewWeb.Router.Helpers.preview_path(
+        socket.endpoint,
+        :index,
+        socket.assigns.package,
+        socket.assigns.version,
+        socket.assigns.filename
+      )
+
     {:noreply, push_redirect(socket, to: live_uri <> "#l#{line_number}", replace: true)}
   end
 
@@ -100,7 +108,7 @@ defmodule PreviewWeb.PreviewLive do
       String.ends_with?(filename, ".app.src")
   end
 
-  defp maybe_assign_selected_line(<<"l", number :: binary>>, socket) do
+  defp maybe_assign_selected_line(<<"l", number::binary>>, socket) do
     {line_number, _} = Integer.parse(number)
     assign(socket, :selected_line, line_number)
   end
