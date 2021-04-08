@@ -2,14 +2,16 @@
 @import "./milligram.css";
 @import "../node_modules/nprogress/nprogress.css";
 
-html, body {
-  display:flex;
-  flex-direction:column;
-  height:100%;
-  margin:0;
+html,
+body {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  margin: 0;
 }
 
-html, body {
+html,
+body {
   background-color: #3e424d;
 }
 
@@ -108,8 +110,11 @@ input.search-input {
   flex-direction: column;
   width: 100%;
 
-  label { color: #fff; font-weight: normal; }
-  
+  label {
+    color: #fff;
+    font-weight: normal;
+  }
+
   select.file-select {
     width: 100%;
     font-size: 16px;
@@ -118,6 +123,7 @@ input.search-input {
     appearance: none;
     background: white url("data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Ctitle%3Edown-arrow%3C%2Ftitle%3E%3Cg%20fill%3D%22%23333333%22%3E%3Cpath%20d%3D%22M10.293%2C3.293%2C6%2C7.586%2C1.707%2C3.293A1%2C1%2C0%2C0%2C0%2C.293%2C4.707l5%2C5a1%2C1%2C0%2C0%2C0%2C1.414%2C0l5-5a1%2C1%2C0%2C1%2C0-1.414-1.414Z%22%20fill%3D%22%23333333%22%3E%3C%2Fpath%3E%3C%2Fg%3E%3C%2Fsvg%3E") calc(100% - 1.3em) center no-repeat;
   }
+
   select.file-select::-ms-expand {
     display: none;
   }
@@ -144,7 +150,7 @@ input.search-input:focus {
   border-radius: 5px;
   border-color: #714a94;
   display: block;
-  float:left;
+  float: left;
   margin: 0 8px 8px 0;
 }
 
@@ -202,8 +208,51 @@ code {
     border-bottom: 1px solid #ccc;
   }
 
-  section.code{
+  section.code {
     overflow-x: scroll;
+    position: relative;
+
+    pre.highlight {
+      position: relative;
+      background: transparent;
+      margin-left: 4em;
+    }
+
+    pre>code {
+      padding-left: 0em;
+    }
+  }
+
+  ul#left_gutter {
+    position: absolute;
+    left: 0;
+    top: 0;
+    list-style: none;
+    padding: 2rem 0 0;
+    width: 100%;
+
+    li {
+      padding: 0;
+      margin: 0;
+      font-size: 13px;
+      height: 1.6em;
+      line-height: 2em;
+      cursor: pointer;
+      opacity: 0.50;
+
+      &:hover {
+        opacity: 1.0;
+      }
+
+      &::before {
+        content: attr(data-line-number);
+      }
+    }
+
+    li.highlighted {
+      opacity: 1.0;
+      background-color: rgb(255, 251, 194);
+    }
   }
 }
 
@@ -283,13 +332,13 @@ code {
   overflow-y: hidden;
 }
 
-.ghd-diff.hidden{
+.ghd-diff.hidden {
   display: none;
 }
 
 .ghd-chunk-header {
   background-color: #f8fafd;
-  color: rgba(0,0,0,.3);
+  color: rgba(0, 0, 0, .3);
 }
 
 .ghd-line-number {
@@ -297,7 +346,7 @@ code {
   width: 80px;
   background-color: white;
   display: flex;
-  color: rgba(0,0,0,.3);
+  color: rgba(0, 0, 0, .3);
   cursor: pointer;
 }
 
@@ -344,25 +393,23 @@ code {
   padding: 0 90px;
 }
 
-@media only screen
-  and (min-device-width: 320px)
-  and (max-device-width: 480px) {
-    input.search-input {
-      margin-top: 3rem;
-      width: 200px;
-    }
+@media only screen and (min-device-width: 320px) and (max-device-width: 480px) {
+  input.search-input {
+    margin-top: 3rem;
+    width: 200px;
+  }
 
-    .search-form {
-      width: 200px;
-    }
+  .search-form {
+    width: 200px;
+  }
 
-    .version-form {
-      width: 200px;
-    }
+  .version-form {
+    width: 200px;
+  }
 
-    .ghd-container {
-      font-size: 10px;
-    }
+  .ghd-container {
+    font-size: 10px;
+  }
 }
 
 /* LiveView specific classes for your customizations */
@@ -376,10 +423,11 @@ code {
   transition: opacity 1s ease-out;
 }
 
-.phx-disconnected{
+.phx-disconnected {
   cursor: wait;
 }
-.phx-disconnected *{
+
+.phx-disconnected * {
   pointer-events: none;
 }
 
@@ -390,27 +438,33 @@ code {
   border: 1px solid transparent;
   border-radius: 4px;
 }
+
 .alert-info {
   color: #31708f;
   background-color: #d9edf7;
   border-color: #bce8f1;
 }
+
 .alert-warning {
   color: #8a6d3b;
   background-color: #fcf8e3;
   border-color: #faebcc;
 }
+
 .alert-danger {
   color: #a94442;
   background-color: #f2dede;
   border-color: #ebccd1;
 }
+
 .alert p {
   margin-bottom: 0;
 }
+
 .alert:empty {
   display: none;
 }
+
 .invalid-feedback {
   color: #a94442;
   display: block;

@@ -15,7 +15,8 @@ defmodule PreviewWeb.PreviewLive do
          version: params["version"],
          all_files: all_files,
          filename: filename,
-         file_contents: file_contents
+         file_contents: file_contents,
+         selected_line: 0
        )}
     else
       {:ok, assign(socket, error: "TODO")}
@@ -23,8 +24,27 @@ defmodule PreviewWeb.PreviewLive do
   end
 
   @impl true
-  def handle_params(_params, _uri, socket) do
+  def handle_params(_params, uri, socket) do
+    %{fragment: hash} = URI.parse(uri)
+    socket = maybe_assign_selected_line(hash, socket)
     {:noreply, socket}
+  end
+
+  @impl true
+  def handle_event("highlight_line", %{"line-number" => line_number}, socket) do
+    {line_number, _} = Integer.parse(line_number)
+    socket = assign(socket, :selected_line, line_number)
+
+    live_uri =
+      PreviewWeb.Router.Helpers.preview_path(
+        socket.endpoint,
+        :index,
+        socket.assigns.package,
+        socket.assigns.version,
+        socket.assigns.filename
+      )
+
+    {:noreply, push_redirect(socket, to: live_uri <> "#l#{line_number}", replace: true)}
   end
 
   @impl true
@@ -62,10 +82,7 @@ defmodule PreviewWeb.PreviewLive do
     if makeup_supported?(filename) do
       Makeup.highlight(file_contents)
     else
-      file_contents
-      |> Phoenix.HTML.Format.text_to_html()
-      |> Phoenix.HTML.safe_to_string()
-      |> String.replace(" ", "&nbsp;")
+      content_tag(:pre, content_tag(:code, file_contents), class: "highlight")
     end
   end
 
@@ -90,4 +107,11 @@ defmodule PreviewWeb.PreviewLive do
       filename in ["rebar.config", "rebar.config.script"] ||
       String.ends_with?(filename, ".app.src")
   end
+
+  defp maybe_assign_selected_line(<<"l", number::binary>>, socket) do
+    {line_number, _} = Integer.parse(number)
+    assign(socket, :selected_line, line_number)
+  end
+
+  defp maybe_assign_selected_line(_, socket), do: assign(socket, :selected_line, nil)
 end
