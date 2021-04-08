@@ -44,7 +44,7 @@ defmodule PreviewWeb.PreviewLive do
         socket.assigns.filename
       )
 
-    {:noreply, push_redirect(socket, to: live_uri <> "#l#{line_number}", replace: true)}
+    {:noreply, push_redirect(socket, to: live_uri <> "#L#{line_number}", replace: true)}
   end
 
   @impl true
@@ -108,7 +108,7 @@ defmodule PreviewWeb.PreviewLive do
       String.ends_with?(filename, ".app.src")
   end
 
-  defp maybe_assign_selected_line(<<"l", number::binary>>, socket) do
+  defp maybe_assign_selected_line(<<"L", number::binary>>, socket) do
     {line_number, _} = Integer.parse(number)
     assign(socket, :selected_line, line_number)
   end
