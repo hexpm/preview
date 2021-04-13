@@ -18,6 +18,16 @@ import NProgress from "nprogress"
 import LiveSocket from "phoenix_live_view"
 
 let Hooks = {}
+Hooks.updateHash = {
+    mounted() {
+        this.el.addEventListener("click", e => {
+            let loc = window.location;
+            let url = loc.protocol + '//' + loc.host + loc.pathname + '#L' + this.el.dataset.lineNumber;
+            history.pushState(history.state, document.title, url);
+            e.preventDefault();
+        })
+    }
+}
 
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 let liveSocket = new LiveSocket("/live", Socket, { params: { _csrf_token: csrfToken }, hooks: Hooks })

@@ -18,7 +18,7 @@
         <ul id="left_gutter">
           <%= for ln <- 1..lines do %>
             <% class = if @selected_line == ln, do: "highlighted", else: "" %>
-            <li class="<%= class %>" phx-click="highlight_line" phx-value-line-number="<%= ln %>" id="L<%= ln %>" data-line-number="<%= ln %>"></li>
+            <li class="<%= class %>" phx-hook="updateHash" phx-click="highlight_line" phx-value-line-number="<%= ln %>" id="L<%= ln %>" data-line-number="<%= ln %>"></li>
           <% end %>
         </ul>
         <%= raw print_file_contents(@file_contents, @filename) %>

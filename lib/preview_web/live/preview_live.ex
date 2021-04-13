@@ -44,7 +44,7 @@ defmodule PreviewWeb.PreviewLive do
         socket.assigns.filename
       )
 
-    {:noreply, push_redirect(socket, to: live_uri <> "#L#{line_number}", replace: true)}
+    {:noreply, socket}
   end
 
   @impl true
