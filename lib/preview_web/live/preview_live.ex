@@ -35,16 +35,7 @@ defmodule PreviewWeb.PreviewLive do
     {line_number, _} = Integer.parse(line_number)
     socket = assign(socket, :selected_line, line_number)
 
-    live_uri =
-      PreviewWeb.Router.Helpers.preview_path(
-        socket.endpoint,
-        :index,
-        socket.assigns.package,
-        socket.assigns.version,
-        socket.assigns.filename
-      )
-
-    {:noreply, push_redirect(socket, to: live_uri <> "#L#{line_number}", replace: true)}
+    {:noreply, socket}
   end
 
   @impl true
