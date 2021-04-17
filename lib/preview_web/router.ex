@@ -20,8 +20,8 @@ defmodule PreviewWeb.Router do
     pipe_through :browser
 
     live "/", SearchLive, :index
-    live "/preview/:package/:version/:filename", PreviewLive, :index
     live "/preview/:package/:version", PreviewLive, :index
+    live "/preview/:package/:version/show/*filename", PreviewLive, :index
   end
 
   # Other scopes may use custom stacks.
