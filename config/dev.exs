@@ -1,5 +1,9 @@
 use Mix.Config
 
+config :preview,
+  hexpm_url: "http://localhost:4000",
+  hexpm_secret: "2cd6d09334d4b00a2be4d532342b799b"
+
 # For development, we disable any cache and enable
 # debugging and code reloading.
 #
