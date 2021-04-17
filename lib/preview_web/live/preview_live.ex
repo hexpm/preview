@@ -5,7 +5,11 @@ defmodule PreviewWeb.PreviewLive do
   def mount(params, _session, socket) do
     if all_files = Preview.Bucket.get_file_list(params["package"], params["version"]) do
       filename =
-        if params["filename"], do: URI.decode(params["filename"]), else: default_file(all_files)
+        if params["filename"] do
+          Path.join(params["filename"])
+        else
+          default_file(all_files)
+        end
 
       file_contents = file_contents_or_default(params["package"], params["version"], filename)
 
@@ -58,7 +62,7 @@ defmodule PreviewWeb.PreviewLive do
 
     {:noreply,
      push_patch(socket,
-       to: Routes.preview_path(socket, :index, package, version, filename),
+       to: Routes.preview_path(socket, :index, package, version) <> "/show/#{filename}",
        replace: true
      )}
   end
