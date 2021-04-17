@@ -5,7 +5,7 @@ defmodule Preview.MixProject do
     [
       app: :preview,
       version: "0.1.0",
-      elixir: "~> 1.7",
+      elixir: "~> 1.11",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
@@ -21,7 +21,7 @@ defmodule Preview.MixProject do
   def application do
     [
       mod: {Preview.Application, []},
-      extra_applications: [:logger, :runtime_tools]
+      extra_applications: [:logger, :runtime_tools, :eex]
     ]
   end
 
@@ -75,6 +75,11 @@ defmodule Preview.MixProject do
   end
 
   defp releases do
-    [preview: [include_executables_for: [:unix]]]
+    [
+      preview: [
+        include_executables_for: [:unix],
+        reboot_system_after_config: true
+      ]
+    ]
   end
 end
