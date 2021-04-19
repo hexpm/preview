@@ -80,9 +80,7 @@ defmodule Preview.Bucket do
 
   defp upload_sitemap(key, path, sitemap) do
     opts = [
-      content_type: "text/xml",
-      cache_control: "public, max-age=3600",
-      meta: [{"surrogate-key", key}]
+      content_type: "text/xml"
     ]
 
     bucket = Application.get_env(:preview, :preview_bucket)
