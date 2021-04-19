@@ -39,7 +39,6 @@ defmodule Preview.MixProject do
       {:ex_aws, "~> 2.1"},
       {:ex_aws_s3, "~> 2.0"},
       {:finch, "~> 0.6.0"},
-      {:floki, ">= 0.0.0", only: :test},
       {:gettext, "~> 0.11"},
       {:goth, "~> 1.0"},
       {:hex_core, "~> 0.7.0"},
@@ -58,7 +57,9 @@ defmodule Preview.MixProject do
       {:rollbax, "~> 0.11.0"},
       {:sweet_xml, "~> 0.6.6"},
       {:telemetry_metrics, "~> 0.6"},
-      {:telemetry_poller, "~> 0.4"}
+      {:telemetry_poller, "~> 0.4"},
+      {:floki, ">= 0.0.0", only: :test},
+      {:mox, "~> 1.0", only: :test}
     ]
   end
 

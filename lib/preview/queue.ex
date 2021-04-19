@@ -45,6 +45,25 @@ defmodule Preview.Queue do
     message
   end
 
+  def handle_message(%{data: %{"preview:sitemap" => key}} = message) do
+    Logger.info("#{key}: start")
+
+    case key_components(key) do
+      {:ok, package, version} ->
+        {:ok, tarball} = Preview.Bucket.get_tarball(package, version)
+        {:ok, %{contents: contents}} = Preview.Hex.unpack_tarball(tarball, :memory)
+        files = for {path, data} <- contents, do: {List.to_string(path), data}
+        update_index_sitemap()
+        update_package_sitemap(package, version, files)
+        Logger.info("#{key}: done")
+
+      :error ->
+        Logger.info("#{key}: skip")
+    end
+
+    message
+  end
+
   @impl true
   def handle_batch(_batcher, messages, _batch_info, _context) do
     messages
@@ -56,7 +75,16 @@ defmodule Preview.Queue do
 
     case key_components(key) do
       {:ok, package, version} ->
-        create_package(package, version)
+        files = create_package(package, version)
+
+        all_versions = all_versions(package)
+        version = Version.parse!(version)
+
+        if Preview.Utils.latest_version?(version, all_versions) do
+          update_index_sitemap()
+          update_package_sitemap(package, version, files)
+        end
+
         Logger.info("FINISHED UPLOADING CONTENTS #{key}")
 
       :error ->
@@ -71,6 +99,7 @@ defmodule Preview.Queue do
     case key_components(key) do
       {:ok, package, version} ->
         delete_package(package, version)
+        update_index_sitemap()
         Logger.info("FINISHED DELETING CONTENTS #{key}")
         :ok
 
@@ -108,9 +137,64 @@ defmodule Preview.Queue do
       end)
 
     Preview.Bucket.put_files(package, version, files)
+    files
   end
 
   def delete_package(package, version) do
     Preview.Bucket.delete_files(package, version)
+  end
+
+  defp update_index_sitemap() do
+    Logger.info("UPDATING INDEX SITEMAP")
+
+    body = Preview.Hexpm.preview_sitemap()
+    Preview.Bucket.upload_index_sitemap(body)
+
+    Logger.info("UPDATED INDEX SITEMAP")
+  end
+
+  defp update_package_sitemap(package, version, files) do
+    Logger.info("UPDATING PACKAGE SITEMAP #{package}")
+
+    files = for {path, _content} <- files, do: path
+    body = Preview.PackageSitemap.render(package, to_string(version), files, DateTime.utc_now())
+    Preview.Bucket.upload_package_sitemap(package, version, body)
+
+    Logger.info("UPDATED PACKAGE SITEMAP #{package}")
+  end
+
+  defp all_versions(package) do
+    if package = Preview.Hexpm.get_package(package) do
+      package["releases"]
+      |> Enum.filter(& &1["has_docs"])
+      |> Enum.map(&Version.parse!(&1["version"]))
+      |> Enum.sort(&(Version.compare(&1, &2) == :gt))
+    else
+      []
+    end
+  end
+
+  @doc false
+  def paths_for_sitemaps() do
+    repo_bucket = Application.fetch_env!(:preview, :repo_bucket)
+    key_regex = ~r"tarballs/(.*)-(.*).tar$"
+
+    Preview.Storage.list(repo_bucket, "tarballs/")
+    |> Stream.filter(&Regex.match?(key_regex, &1))
+    |> Stream.map(fn path ->
+      {package, version} = filename_to_release(path)
+      {path, package, Version.parse!(version)}
+    end)
+    |> Stream.chunk_by(fn {_, package, _} -> package end)
+    |> Stream.flat_map(fn entries ->
+      entries = Enum.sort_by(entries, fn {_, _, version} -> version end, {:desc, Version})
+      all_versions = for {_, _, version} <- entries, do: version
+
+      List.wrap(
+        Enum.find_value(entries, fn {path, _, version} ->
+          Preview.Utils.latest_version?(version, all_versions) && path
+        end)
+      )
+    end)
   end
 end

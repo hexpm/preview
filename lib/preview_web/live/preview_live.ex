@@ -2,6 +2,11 @@ defmodule PreviewWeb.PreviewLive do
   use PreviewWeb, :live_view
 
   @impl true
+  def mount(%{"version" => "latest"} = params, session, socket) do
+    params = %{params | "version" => "2.0.0"}
+    mount(params, session, socket)
+  end
+
   def mount(params, _session, socket) do
     if all_files = Preview.Bucket.get_file_list(params["package"], params["version"]) do
       filename =

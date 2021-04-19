@@ -69,4 +69,18 @@ defmodule Preview.Bucket do
     bucket = Application.get_env(:preview, :preview_bucket)
     Preview.Storage.delete_many(bucket, original_file_list -- new_file_list)
   end
+
+  def upload_index_sitemap(sitemap) do
+    upload_sitemap("sitemaps/sitemap.xml", sitemap)
+  end
+
+  def upload_package_sitemap(package, version, sitemap) do
+    upload_sitemap("sitemaps/#{package}-#{version}.xml", sitemap)
+  end
+
+  defp upload_sitemap(path, sitemap) do
+    opts = []
+    bucket = Application.get_env(:preview, :preview_bucket)
+    :ok = Preview.Storage.put(bucket, path, sitemap, opts)
+  end
 end

@@ -19,6 +19,9 @@ defmodule PreviewWeb.Router do
   scope "/", PreviewWeb do
     pipe_through :browser
 
+    get "/sitemap.xml", SitemapController, :index
+    get "/preview/:package/:version/sitemap.xml", SitemapController, :package
+
     live "/", SearchLive, :index
     live "/preview/:package/:version", PreviewLive, :index
     live "/preview/:package/:version/show/*filename", PreviewLive, :index

@@ -14,6 +14,13 @@ defmodule Preview do
     |> batched_send()
   end
 
+  def process_all_sitemaps(paths) do
+    paths
+    |> Stream.map(&%{"preview:sitemap" => &1})
+    |> Task.async_stream(&send_message/1, max_concurrency: 10, ordered: false)
+    |> Stream.run()
+  end
+
   defp build_message(key) do
     %{
       "Records" => [%{"eventName" => "ObjectCreated:Put", "s3" => %{"object" => %{"key" => key}}}]
@@ -30,8 +37,25 @@ defmodule Preview do
   defp send_message(map) do
     queue = Application.fetch_env!(:preview, :queue_id)
     message = Jason.encode!(map)
+    do_send_message(queue, message)
+  end
 
-    ExAws.SQS.send_message(queue, message)
-    |> ExAws.request!()
+  if Mix.env() == :prod do
+    defp do_send_message(queue, message) do
+      ExAws.SQS.send_message(queue, message)
+      |> ExAws.request!()
+    end
+  else
+    defp do_send_message(_queue, message) do
+      ref = Broadway.test_message(Preview.Queue, message)
+
+      receive do
+        {:ack, ^ref, [_], []} ->
+          :ok
+      after
+        1000 ->
+          raise "message timeout"
+      end
+    end
   end
 end

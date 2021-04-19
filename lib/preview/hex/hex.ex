@@ -2,9 +2,10 @@ defmodule Preview.Hex do
   require Logger
 
   def get_versions() do
-    with {:ok, {200, _, results}} <- :hex_repo.get_versions(config()) do
-      {:ok, results}
-    else
+    case :hex_repo.get_versions(config()) do
+      {:ok, {200, _, results}} ->
+        {:ok, results}
+
       {:ok, {status, _, _}} ->
         Logger.error("Failed to get package versions. Status: #{status}.")
         {:error, :not_found}
@@ -30,21 +31,21 @@ defmodule Preview.Hex do
   end
 
   def get_checksum(package, version) do
-    with {:ok, {200, _, releases}} <- :hex_repo.get_package(config(), package) do
-      checksum =
-        for release <- releases, release.version == version do
-          release.outer_checksum
-        end
+    case :hex_repo.get_package(config(), package) do
+      {:ok, {200, _, releases}} ->
+        checksum =
+          for release <- releases, release.version == version do
+            release.outer_checksum
+          end
 
-      {:ok, checksum}
-    else
+        {:ok, checksum}
+
       {:ok, {status, _, _}} ->
         Logger.error("Failed to get checksum for package: #{package}. Status: #{status}.")
         {:error, :not_found}
 
       {:error, reason} ->
         Logger.error("Failed to get checksum for package: #{package}. Reason: #{inspect(reason)}")
-
         {:error, :not_found}
     end
   end
