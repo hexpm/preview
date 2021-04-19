@@ -79,10 +79,7 @@ defmodule Preview.Bucket do
   end
 
   defp upload_sitemap(key, path, sitemap) do
-    opts = [
-      content_type: "text/xml"
-    ]
-
+    opts = []
     bucket = Application.get_env(:preview, :preview_bucket)
     :ok = Preview.Storage.put(bucket, path, sitemap, opts)
   end
