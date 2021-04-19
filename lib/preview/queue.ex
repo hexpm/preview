@@ -99,6 +99,7 @@ defmodule Preview.Queue do
     case key_components(key) do
       {:ok, package, version} ->
         delete_package(package, version)
+        update_index_sitemap()
         Logger.info("FINISHED DELETING CONTENTS #{key}")
         :ok
 

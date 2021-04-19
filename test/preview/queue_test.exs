@@ -44,6 +44,12 @@ defmodule Preview.QueueTest do
   end
 
   test "delete object" do
+    Mox.set_mox_global()
+
+    Mox.expect(Preview.HexpmMock, :preview_sitemap, fn ->
+      "the sitemap"
+    end)
+
     package = Fake.random(:package)
     key = "tarballs/#{package}-1.0.0.tar"
     Bucket.put_files(package, "1.0.0", [{"README.md", "readme"}])
@@ -53,6 +59,8 @@ defmodule Preview.QueueTest do
 
     refute Bucket.get_file_list(package, "1.0.0")
     refute Bucket.get_file(package, "1.0.0", "README.md")
+
+    assert Storage.get(@preview_bucket, "sitemaps/sitemap.xml") == "the sitemap"
   end
 
   defp put_message(key) do
