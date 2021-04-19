@@ -71,14 +71,14 @@ defmodule Preview.Bucket do
   end
 
   def upload_index_sitemap(sitemap) do
-    upload_sitemap("sitemap", "sitemaps/sitemap.xml", sitemap)
+    upload_sitemap("sitemaps/sitemap.xml", sitemap)
   end
 
   def upload_package_sitemap(package, version, sitemap) do
-    upload_sitemap("sitemap/#{package}-#{version}", "sitemaps/#{package}-#{version}.xml", sitemap)
+    upload_sitemap("sitemaps/#{package}-#{version}.xml", sitemap)
   end
 
-  defp upload_sitemap(key, path, sitemap) do
+  defp upload_sitemap(path, sitemap) do
     opts = []
     bucket = Application.get_env(:preview, :preview_bucket)
     :ok = Preview.Storage.put(bucket, path, sitemap, opts)
