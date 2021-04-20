@@ -32,7 +32,7 @@ defmodule Preview.QueueTest do
     Storage.put(@repo_bucket, key, tarball)
 
     ref = Broadway.test_message(Preview.Queue, put_message(key))
-    assert_receive {:ack, ^ref, [_], []}
+    assert_receive {:ack, ^ref, [_], []}, 1000
 
     assert Bucket.get_file_list(package, "1.0.0") == ["lib/foo.exs"]
     assert Bucket.get_file(package, "1.0.0", "lib/foo.exs") == "Foo"
@@ -55,7 +55,7 @@ defmodule Preview.QueueTest do
     Bucket.put_files(package, "1.0.0", [{"README.md", "readme"}])
 
     ref = Broadway.test_message(Preview.Queue, delete_message(key))
-    assert_receive {:ack, ^ref, [_], []}
+    assert_receive {:ack, ^ref, [_], []}, 1000
 
     refute Bucket.get_file_list(package, "1.0.0")
     refute Bucket.get_file(package, "1.0.0", "README.md")
