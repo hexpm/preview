@@ -14,6 +14,7 @@ defmodule Preview do
     |> batched_send()
   end
 
+  # Remember to call Preview.Queue.update_index_sitemap() when all messages were processed.
   def process_all_sitemaps(paths) do
     paths
     |> Stream.map(&%{"preview:sitemap" => &1})

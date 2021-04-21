@@ -37,3 +37,4 @@ after
 end
 
 Preview.Queue.paths_for_sitemaps() |> Preview.process_all_sitemaps()
+Preview.Queue.update_index_sitemap()

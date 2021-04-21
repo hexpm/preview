@@ -53,7 +53,6 @@ defmodule Preview.Queue do
         {:ok, tarball} = Preview.Bucket.get_tarball(package, version)
         {:ok, %{contents: contents}} = Preview.Hex.unpack_tarball(tarball, :memory)
         files = for {path, data} <- contents, do: {List.to_string(path), data}
-        update_index_sitemap()
         update_package_sitemap(package, version, files)
         Logger.info("#{key}: done")
 
@@ -144,7 +143,8 @@ defmodule Preview.Queue do
     Preview.Bucket.delete_files(package, version)
   end
 
-  defp update_index_sitemap() do
+  @doc false
+  def update_index_sitemap() do
     Logger.info("UPDATING INDEX SITEMAP")
 
     body = Preview.Hexpm.preview_sitemap()
