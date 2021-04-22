@@ -25,7 +25,9 @@ defmodule PreviewWeb.PreviewLive do
          all_files: all_files,
          filename: filename,
          file_contents: file_contents,
-         selected_line: 0
+         selected_line: 0,
+         page_title: filename,
+         meta_description: meta_description(params["package"], params["version"], filename)
        )}
     else
       {:ok, assign(socket, error: "TODO")}
@@ -62,7 +64,9 @@ defmodule PreviewWeb.PreviewLive do
         version: version,
         all_files: all_files,
         filename: filename,
-        file_contents: file_contents
+        file_contents: file_contents,
+        page_title: filename,
+        meta_description: meta_description(package, version, filename)
       )
 
     {:noreply,
@@ -114,4 +118,15 @@ defmodule PreviewWeb.PreviewLive do
   end
 
   defp maybe_assign_selected_line(_, socket), do: assign(socket, :selected_line, nil)
+
+  defp meta_description(package, version, filename) do
+    if language = language(Path.extname(filename)) do
+      "#{filename} from #{package} #{version} written in #{language}"
+    end
+  end
+
+  defp language(ext) when ext in ~w(.ex .exs), do: "the Elixir programming language"
+  defp language(ext) when ext in ~w(.erl .hrl .escript), do: "the Erlang programming language"
+  defp language(".md"), do: "Markdown"
+  defp language(_), do: nil
 end
