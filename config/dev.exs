@@ -1,4 +1,4 @@
-use Mix.Config
+import Config
 
 config :preview,
   hexpm_url: "http://localhost:4000",
