@@ -20,7 +20,9 @@ defmodule PreviewWeb.SitemapController do
       |> put_resp_header("cache-control", "public, max-age=300")
       |> send_resp(200, body)
     else
-      send_resp(conn, 404, "not found")
+      conn
+      |> put_resp_content_type("text/html")
+      |> send_resp(404, "not found")
     end
   end
 end
