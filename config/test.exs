@@ -6,8 +6,6 @@ config :preview, PreviewWeb.Endpoint,
   http: [port: 5005],
   server: false
 
-config :goth, config: %{"project_id" => "preview"}
-
 # Print only warnings and errors during test
 config :logger, level: :warn
 
