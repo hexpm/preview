@@ -33,7 +33,7 @@ defmodule Preview.MixProject do
       {:ex_aws_s3, "~> 2.0"},
       {:finch, "~> 0.6.0"},
       {:gettext, "~> 0.11"},
-      {:goth, "~> 1.0"},
+      {:goth, "~> 1.3-rc"},
       {:hex_core, "~> 0.7.0"},
       {:jason, "~> 1.0"},
       {:logster, "~> 1.0"},

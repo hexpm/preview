@@ -73,5 +73,3 @@ config :phoenix, :plug_init_mode, :runtime
 config :preview,
   tmp_dir: "tmp/dev",
   package_updater_impl: Preview.Package.LocalUpdater
-
-config :goth, config: %{"project_id" => "preview"}

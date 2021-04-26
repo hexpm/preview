@@ -13,6 +13,7 @@ defmodule Preview.Application do
       {Phoenix.PubSub, name: Preview.PubSub},
       {Task.Supervisor, name: Preview.Tasks},
       {Finch, name: Preview.Finch, pools: finch_pools()},
+      goth_spec(),
       Preview.Queue,
       PreviewWeb.Endpoint,
       Preview.Package.Supervisor
@@ -40,5 +41,21 @@ defmodule Preview.Application do
 
   defp finch_pools() do
     %{default: [size: 10, count: 1, max_idle_time: 10_000]}
+  end
+
+  if Mix.env() == :prod do
+    defp goth_spec() do
+      credentials =
+        "PREVIEW_GCP_CREDENTIALS"
+        |> System.fetch_env!()
+        |> Jason.decode!()
+
+      options = [scopes: ["https://www.googleapis.com/auth/devstorage.read_write"]]
+      {Goth, name: Preview.Goth, source: {:service_account, credentials, options}}
+    end
+  else
+    defp goth_spec() do
+      {Task, fn -> :ok end}
+    end
   end
 end
