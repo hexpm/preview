@@ -2,13 +2,10 @@ defmodule PreviewWeb.PreviewLive do
   use PreviewWeb, :live_view
 
   @impl true
-  def mount(%{"version" => "latest"} = params, session, socket) do
-    params = %{params | "version" => "2.0.0"}
-    mount(params, session, socket)
-  end
-
   def mount(params, _session, socket) do
-    if all_files = Preview.Bucket.get_file_list(params["package"], params["version"]) do
+    version = params["version"] || Preview.Bucket.get_latest_version(params["package"])
+
+    if all_files = Preview.Bucket.get_file_list(params["package"], version) do
       filename =
         if params["filename"] do
           Path.join(params["filename"])
@@ -16,18 +13,19 @@ defmodule PreviewWeb.PreviewLive do
           default_file(all_files)
         end
 
-      file_contents = file_contents_or_default(params["package"], params["version"], filename)
+      file_contents = file_contents_or_default(params["package"], version, filename)
 
       {:ok,
        assign(socket,
          package: params["package"],
-         version: params["version"],
+         version: version,
          all_files: all_files,
          filename: filename,
          file_contents: file_contents,
          selected_line: 0,
          page_title: filename,
-         meta_description: meta_description(params["package"], params["version"], filename)
+         meta_description: meta_description(params["package"], version, filename),
+         canonical: canonical_url(params["package"], filename)
        )}
     else
       {:ok, assign(socket, error: "TODO")}
@@ -66,7 +64,8 @@ defmodule PreviewWeb.PreviewLive do
         filename: filename,
         file_contents: file_contents,
         page_title: filename,
-        meta_description: meta_description(package, version, filename)
+        meta_description: meta_description(package, version, filename),
+        canonical: canonical_url(package, filename)
       )
 
     {:noreply,
@@ -129,4 +128,9 @@ defmodule PreviewWeb.PreviewLive do
   defp language(ext) when ext in ~w(.erl .hrl .escript), do: "the Erlang programming language"
   defp language(".md"), do: "Markdown"
   defp language(_), do: nil
+
+  defp canonical_url(package, filename) do
+    PreviewWeb.Router.Helpers.preview_url(PreviewWeb.Endpoint, :latest, package) <>
+      "/show/" <> filename
+  end
 end

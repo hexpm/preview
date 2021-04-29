@@ -22,6 +22,21 @@ defmodule Preview do
     |> Stream.run()
   end
 
+  def process_all_latest_versions() do
+    {:ok, names} = Preview.Hex.get_names()
+
+    Task.async_stream(
+      names,
+      fn %{name: name} ->
+        %{"latest_stable_version" => version} = Preview.Hexpm.get_package(name)
+        Preview.Bucket.update_latest_version(name, version)
+      end,
+      max_concurrency: 10,
+      ordered: false
+    )
+    |> Stream.run()
+  end
+
   defp build_message(key) do
     %{
       "Records" => [%{"eventName" => "ObjectCreated:Put", "s3" => %{"object" => %{"key" => key}}}]

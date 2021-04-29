@@ -1,6 +1,21 @@
 defmodule Preview.Hex do
   require Logger
 
+  def get_names() do
+    case :hex_repo.get_names(config()) do
+      {:ok, {200, _, results}} ->
+        {:ok, results}
+
+      {:ok, {status, _, _}} ->
+        Logger.error("Failed to get package names. Status: #{status}.")
+        {:error, :not_found}
+
+      {:error, reason} ->
+        Logger.error("Failed to get package names. Reason: #{inspect(reason)}.")
+        {:error, :not_found}
+    end
+  end
+
   def get_versions() do
     case :hex_repo.get_versions(config()) do
       {:ok, {200, _, results}} ->

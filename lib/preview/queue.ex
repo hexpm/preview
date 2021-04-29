@@ -80,6 +80,7 @@ defmodule Preview.Queue do
         version = Version.parse!(version)
 
         if Preview.Utils.latest_version?(version, all_versions) do
+          Preview.Bucket.update_latest_version(package, version)
           update_index_sitemap()
           update_package_sitemap(package, version, files)
         end

@@ -23,6 +23,8 @@ defmodule PreviewWeb.Router do
     get "/preview/:package/:version/sitemap.xml", SitemapController, :package
 
     live "/", SearchLive, :index
+    live "/preview/:package", PreviewLive, :latest
+    live "/preview/:package/show/*filename", PreviewLive, :latest
     live "/preview/:package/:version", PreviewLive, :index
     live "/preview/:package/:version/show/*filename", PreviewLive, :index
   end
