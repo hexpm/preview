@@ -74,8 +74,8 @@ defmodule Preview.Bucket do
     upload_sitemap("sitemaps/sitemap.xml", sitemap)
   end
 
-  def upload_package_sitemap(package, version, sitemap) do
-    upload_sitemap("sitemaps/#{package}-#{version}.xml", sitemap)
+  def upload_package_sitemap(package, sitemap) do
+    upload_sitemap("sitemaps/#{package}.xml", sitemap)
   end
 
   defp upload_sitemap(path, sitemap) do

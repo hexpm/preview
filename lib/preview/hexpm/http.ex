@@ -16,16 +16,6 @@ defmodule Preview.Hexpm.HTTP do
     end
   end
 
-  @impl true
-  def preview_sitemap() do
-    {:ok, 200, _headers, body} =
-      Preview.HTTP.retry("hexpm", fn ->
-        Preview.HTTP.get(url("/preview_sitemap.xml"), [])
-      end)
-
-    body
-  end
-
   defp url(path) do
     Application.fetch_env!(:preview, :hexpm_url) <> path
   end

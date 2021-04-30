@@ -53,7 +53,7 @@ defmodule Preview.Queue do
         {:ok, tarball} = Preview.Bucket.get_tarball(package, version)
         {:ok, %{contents: contents}} = Preview.Hex.unpack_tarball(tarball, :memory)
         files = for {path, data} <- contents, do: {List.to_string(path), data}
-        update_package_sitemap(package, version, files)
+        update_package_sitemap(package, files)
         Logger.info("#{key}: done")
 
       :error ->
@@ -82,7 +82,7 @@ defmodule Preview.Queue do
         if Preview.Utils.latest_version?(version, all_versions) do
           Preview.Bucket.update_latest_version(package, version)
           update_index_sitemap()
-          update_package_sitemap(package, version, files)
+          update_package_sitemap(package, files)
         end
 
         Logger.info("FINISHED UPLOADING CONTENTS #{key}")
@@ -148,18 +148,19 @@ defmodule Preview.Queue do
   def update_index_sitemap() do
     Logger.info("UPDATING INDEX SITEMAP")
 
-    body = Preview.Hexpm.preview_sitemap()
+    {:ok, packages} = Preview.Hex.get_names()
+    body = Preview.Sitemaps.render_index(packages)
     Preview.Bucket.upload_index_sitemap(body)
 
     Logger.info("UPDATED INDEX SITEMAP")
   end
 
-  defp update_package_sitemap(package, version, files) do
+  defp update_package_sitemap(package, files) do
     Logger.info("UPDATING PACKAGE SITEMAP #{package}")
 
     files = for {path, _content} <- files, do: path
-    body = Preview.PackageSitemap.render(package, to_string(version), files, DateTime.utc_now())
-    Preview.Bucket.upload_package_sitemap(package, version, body)
+    body = Preview.Sitemaps.render_package(package, files, DateTime.utc_now())
+    Preview.Bucket.upload_package_sitemap(package, body)
 
     Logger.info("UPDATED PACKAGE SITEMAP #{package}")
   end

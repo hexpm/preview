@@ -7,9 +7,9 @@ defmodule PreviewWeb.SitemapController do
     render_sitemap(conn, body)
   end
 
-  def package(conn, %{"package" => package, "version" => version}) do
+  def package(conn, %{"package" => package}) do
     bucket = Application.get_env(:preview, :preview_bucket)
-    body = Preview.Storage.get(bucket, "sitemaps/#{package}-#{version}.xml")
+    body = Preview.Storage.get(bucket, "sitemaps/#{package}.xml")
     render_sitemap(conn, body)
   end
 

@@ -32,7 +32,7 @@ receive do
   {:ack, ^ref, [_], []} ->
     :ok
 after
-  1000 ->
+  2000 ->
     raise "message timeout"
 end
 

@@ -1,35 +1,15 @@
 defmodule Preview.Hex do
-  require Logger
+  @callback get_names() :: {:ok, [map()]} | {:error, term()}
+  @callback get_versions() :: {:ok, [map()]} | {:error, term()}
+  @callback get_checksum(String.t(), String.t()) :: {:ok, [binary()]} | {:error, term()}
 
-  def get_names() do
-    case :hex_repo.get_names(config()) do
-      {:ok, {200, _, results}} ->
-        {:ok, results}
+  def get_names(), do: impl().get_names()
 
-      {:ok, {status, _, _}} ->
-        Logger.error("Failed to get package names. Status: #{status}.")
-        {:error, :not_found}
+  def get_versions(), do: impl().get_versions()
 
-      {:error, reason} ->
-        Logger.error("Failed to get package names. Reason: #{inspect(reason)}.")
-        {:error, :not_found}
-    end
-  end
+  def get_checksum(package, version), do: impl().get_checksum(package, version)
 
-  def get_versions() do
-    case :hex_repo.get_versions(config()) do
-      {:ok, {200, _, results}} ->
-        {:ok, results}
-
-      {:ok, {status, _, _}} ->
-        Logger.error("Failed to get package versions. Status: #{status}.")
-        {:error, :not_found}
-
-      {:error, reason} ->
-        Logger.error("Failed to get package versions. Reason: #{inspect(reason)}.")
-        {:error, :not_found}
-    end
-  end
+  defp impl(), do: Application.get_env(:preview, :hex_impl)
 
   def unpack_tarball(tarball, :memory) do
     with {:ok, contents} <- :hex_tarball.unpack(tarball, :memory) do
@@ -38,45 +18,8 @@ defmodule Preview.Hex do
   end
 
   def unpack_tarball(tarball, path) when is_binary(path) do
-    path = to_charlist(path)
-
-    with {:ok, _} <- :hex_tarball.unpack(tarball, path) do
+    with {:ok, _} <- :hex_tarball.unpack(tarball, String.to_charlist(path)) do
       :ok
-    end
-  end
-
-  def get_checksum(package, version) do
-    case :hex_repo.get_package(config(), package) do
-      {:ok, {200, _, releases}} ->
-        checksum =
-          for release <- releases, release.version == version do
-            release.outer_checksum
-          end
-
-        {:ok, checksum}
-
-      {:ok, {status, _, _}} ->
-        Logger.error("Failed to get checksum for package: #{package}. Status: #{status}.")
-        {:error, :not_found}
-
-      {:error, reason} ->
-        Logger.error("Failed to get checksum for package: #{package}. Reason: #{inspect(reason)}")
-        {:error, :not_found}
-    end
-  end
-
-  defp config() do
-    config = %{
-      :hex_core.default_config()
-      | http_adapter: {Preview.Hex.Adapter, %{}},
-        http_user_agent_fragment: "hexpm_preview",
-        repo_url: Application.fetch_env!(:preview, :repo_url)
-    }
-
-    if repo_public_key = Application.get_env(:preview, :repo_public_key) do
-      %{config | repo_public_key: repo_public_key}
-    else
-      config
     end
   end
 end
