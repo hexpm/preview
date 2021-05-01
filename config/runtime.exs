@@ -3,8 +3,6 @@ import Config
 if config_env() == :prod do
   config :preview,
     host: System.fetch_env!("PREVIEW_HOST"),
-    hexpm_url: System.fetch_env!("PREVIEW_HEXPM_URL"),
-    hexpm_secret: System.fetch_env!("PREVIEW_HEXPM_SECRET"),
     repo_url: System.fetch_env!("PREVIEW_REPO_URL"),
     repo_public_key: System.fetch_env!("PREVIEW_REPO_PUBLIC_KEY"),
     queue_id: System.fetch_env!("PREVIEW_QUEUE_ID"),

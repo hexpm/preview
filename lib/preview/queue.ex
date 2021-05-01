@@ -76,10 +76,7 @@ defmodule Preview.Queue do
       {:ok, package, version} ->
         files = create_package(package, version)
 
-        all_versions = all_versions(package)
-        version = Version.parse!(version)
-
-        if Preview.Utils.latest_version?(version, all_versions) do
+        if Version.compare(Preview.Utils.latest_version(package), version) == :eq do
           Preview.Bucket.update_latest_version(package, version)
           update_index_sitemap()
           update_package_sitemap(package, files)
@@ -165,17 +162,6 @@ defmodule Preview.Queue do
     Logger.info("UPDATED PACKAGE SITEMAP #{package}")
   end
 
-  defp all_versions(package) do
-    if package = Preview.Hexpm.get_package(package) do
-      package["releases"]
-      |> Enum.filter(& &1["has_docs"])
-      |> Enum.map(&Version.parse!(&1["version"]))
-      |> Enum.sort(&(Version.compare(&1, &2) == :gt))
-    else
-      []
-    end
-  end
-
   @doc false
   def paths_for_sitemaps() do
     repo_bucket = Application.fetch_env!(:preview, :repo_bucket)
@@ -194,7 +180,7 @@ defmodule Preview.Queue do
 
       List.wrap(
         Enum.find_value(entries, fn {path, _, version} ->
-          Preview.Utils.latest_version?(version, all_versions) && path
+          Version.compare(Preview.Utils.latest_version(all_versions), version) == :eq && path
         end)
       )
     end)

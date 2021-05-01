@@ -1,11 +1,14 @@
 defmodule Preview.Hex do
   @callback get_names() :: {:ok, [map()]} | {:error, term()}
   @callback get_versions() :: {:ok, [map()]} | {:error, term()}
+  @callback get_package(String.t()) :: {:ok, [map()]} | {:error, term()}
   @callback get_checksum(String.t(), String.t()) :: {:ok, [binary()]} | {:error, term()}
 
   def get_names(), do: impl().get_names()
 
   def get_versions(), do: impl().get_versions()
+
+  def get_package(package), do: impl().get_package(package)
 
   def get_checksum(package, version), do: impl().get_checksum(package, version)
 

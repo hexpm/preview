@@ -10,10 +10,6 @@ defmodule Preview.QueueTest do
 
     Mox.set_mox_global()
 
-    Mox.expect(Preview.HexpmMock, :get_package, fn _package ->
-      %{"releases" => []}
-    end)
-
     Mox.expect(Preview.HexMock, :get_names, fn ->
       packages = [
         %{
@@ -23,6 +19,14 @@ defmodule Preview.QueueTest do
       ]
 
       {:ok, packages}
+    end)
+
+    Mox.expect(Preview.HexMock, :get_package, fn _ ->
+      releases = [
+        %{version: "1.0.0"}
+      ]
+
+      {:ok, releases}
     end)
 
     key = "tarballs/#{package}-1.0.0.tar"

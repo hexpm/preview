@@ -5,8 +5,6 @@ config :preview,
   queue_producer: Broadway.DummyProducer,
   package_store_impl: Preview.Package.DefaultStore,
   package_updater_impl: Preview.Package.Updater,
-  hexpm_impl: Preview.Hexpm.HTTP,
-  hexpm_url: "https://hex.pm",
   hex_impl: Preview.Hex.HTTP,
   repo_url: "https://repo.hex.pm"
 

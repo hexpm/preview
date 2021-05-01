@@ -3,6 +3,7 @@ defmodule Preview.Hex.HTTP do
 
   require Logger
 
+  @impl true
   def get_names() do
     case :hex_repo.get_names(config()) do
       {:ok, {200, _, results}} ->
@@ -18,6 +19,7 @@ defmodule Preview.Hex.HTTP do
     end
   end
 
+  @impl true
   def get_versions() do
     case :hex_repo.get_versions(config()) do
       {:ok, {200, _, results}} ->
@@ -33,15 +35,11 @@ defmodule Preview.Hex.HTTP do
     end
   end
 
-  def get_checksum(package, version) do
+  @impl true
+  def get_package(package) do
     case :hex_repo.get_package(config(), package) do
       {:ok, {200, _, releases}} ->
-        checksum =
-          for release <- releases, release.version == version do
-            release.outer_checksum
-          end
-
-        {:ok, checksum}
+        {:ok, releases}
 
       {:ok, {status, _, _}} ->
         Logger.error("Failed to get checksum for package: #{package}. Status: #{status}.")
@@ -50,6 +48,18 @@ defmodule Preview.Hex.HTTP do
       {:error, reason} ->
         Logger.error("Failed to get checksum for package: #{package}. Reason: #{inspect(reason)}")
         {:error, :not_found}
+    end
+  end
+
+  @impl true
+  def get_checksum(package, version) do
+    with {:ok, releases} <- get_package(package) do
+      checksum =
+        for release <- releases, release.version == version do
+          release.outer_checksum
+        end
+
+      {:ok, checksum}
     end
   end
 

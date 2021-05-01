@@ -1,4 +1,6 @@
 defmodule Preview do
+  require Logger
+
   def process_object(key) do
     key
     |> build_message()
@@ -23,12 +25,13 @@ defmodule Preview do
   end
 
   def process_all_latest_versions() do
-    {:ok, names} = Preview.Hex.get_names()
+    {:ok, versions} = Preview.Hex.get_versions()
 
     Task.async_stream(
-      names,
-      fn %{name: name} ->
-        %{"latest_stable_version" => version} = Preview.Hexpm.get_package(name)
+      versions,
+      fn %{name: name, versions: versions} ->
+        version = versions |> Enum.map(&Version.parse!/1) |> Preview.Utils.latest_version()
+        Logger.info("Setting latest version: #{name} #{version}")
         Preview.Bucket.update_latest_version(name, version)
       end,
       max_concurrency: 10,
