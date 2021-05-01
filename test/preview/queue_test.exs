@@ -16,7 +16,10 @@ defmodule Preview.QueueTest do
 
     Mox.expect(Preview.HexMock, :get_names, fn ->
       packages = [
-        %{name: package, updated_at: DateTime.utc_now() |> DateTime.to_unix()}
+        %{
+          name: package,
+          updated_at: %{seconds: DateTime.utc_now() |> DateTime.to_unix(), nanos: 0}
+        }
       ]
 
       {:ok, packages}

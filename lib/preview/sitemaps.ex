@@ -40,7 +40,9 @@ defmodule Preview.Sitemaps do
     datetime |> DateTime.truncate(:second) |> DateTime.to_iso8601()
   end
 
-  defp format_datetime(unix_timestamp) when is_integer(unix_timestamp) do
-    unix_timestamp |> DateTime.from_unix!() |> format_datetime()
+  defp format_datetime(%{seconds: seconds}) do
+    seconds
+    |> DateTime.from_unix!()
+    |> format_datetime()
   end
 end
