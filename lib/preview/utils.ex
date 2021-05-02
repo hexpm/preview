@@ -1,26 +1,30 @@
 defmodule Preview.Utils do
   @moduledoc false
 
-  def latest_version?(version, all_versions) do
-    pre_release? = version.pre != []
-    first_release? = all_versions == []
-    all_pre_releases? = Enum.all?(all_versions, &(&1.pre != []))
+  def latest_version(package) when is_binary(package) do
+    {:ok, releases} = Preview.Hex.get_package(package)
+    releases |> Enum.map(&Version.parse!(&1.version)) |> latest_version()
+  end
 
-    cond do
-      first_release? ->
-        true
+  def latest_version(versions) do
+    stable_versions = Enum.filter(versions, &(&1.pre == []))
 
-      all_pre_releases? ->
-        latest_version = List.first(all_versions)
-        Version.compare(version, latest_version) in [:eq, :gt]
-
-      pre_release? ->
-        false
-
-      true ->
-        nonpre_versions = Enum.filter(all_versions, &(&1.pre == []))
-        latest_version = List.first(nonpre_versions)
-        Version.compare(version, latest_version) in [:eq, :gt]
+    if stable_versions == [] do
+      latest(versions)
+    else
+      latest(stable_versions)
     end
+  end
+
+  defp latest([]), do: nil
+
+  defp latest(versions) do
+    Enum.reduce(versions, fn version, latest ->
+      if Version.compare(version, latest) == :lt do
+        latest
+      else
+        version
+      end
+    end)
   end
 end

@@ -16,7 +16,7 @@ defmodule Preview.Application do
       goth_spec(),
       Preview.Queue,
       PreviewWeb.Endpoint,
-      Preview.Package.Supervisor
+      package_spec()
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
@@ -55,7 +55,17 @@ defmodule Preview.Application do
     end
   else
     defp goth_spec() do
-      {Task, fn -> :ok end}
+      Supervisor.child_spec({Task, fn -> :ok end}, id: :goth)
+    end
+  end
+
+  if Mix.env() != :test do
+    defp package_spec() do
+      Preview.Package.Supervisor
+    end
+  else
+    defp package_spec() do
+      Supervisor.child_spec({Task, fn -> :ok end}, id: :package)
     end
   end
 end

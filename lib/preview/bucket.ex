@@ -74,13 +74,25 @@ defmodule Preview.Bucket do
     upload_sitemap("sitemaps/sitemap.xml", sitemap)
   end
 
-  def upload_package_sitemap(package, version, sitemap) do
-    upload_sitemap("sitemaps/#{package}-#{version}.xml", sitemap)
+  def upload_package_sitemap(package, sitemap) do
+    upload_sitemap("sitemaps/#{package}.xml", sitemap)
   end
 
   defp upload_sitemap(path, sitemap) do
     opts = []
     bucket = Application.get_env(:preview, :preview_bucket)
     :ok = Preview.Storage.put(bucket, path, sitemap, opts)
+  end
+
+  def update_latest_version(package, version) do
+    bucket = Application.fetch_env!(:preview, :preview_bucket)
+    key = Path.join("latest_versions", package)
+    :ok = Preview.Storage.put(bucket, key, to_string(version), [])
+  end
+
+  def get_latest_version(package) do
+    bucket = Application.fetch_env!(:preview, :preview_bucket)
+    key = Path.join("latest_versions", package)
+    Preview.Storage.get(bucket, key)
   end
 end

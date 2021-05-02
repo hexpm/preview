@@ -1,4 +1,6 @@
 defmodule Preview do
+  require Logger
+
   def process_object(key) do
     key
     |> build_message()
@@ -19,6 +21,22 @@ defmodule Preview do
     paths
     |> Stream.map(&%{"preview:sitemap" => &1})
     |> Task.async_stream(&send_message/1, max_concurrency: 10, ordered: false)
+    |> Stream.run()
+  end
+
+  def process_all_latest_versions() do
+    {:ok, versions} = Preview.Hex.get_versions()
+
+    Task.async_stream(
+      versions,
+      fn %{name: name, versions: versions} ->
+        version = versions |> Enum.map(&Version.parse!/1) |> Preview.Utils.latest_version()
+        Logger.info("Setting latest version: #{name} #{version}")
+        Preview.Bucket.update_latest_version(name, version)
+      end,
+      max_concurrency: 10,
+      ordered: false
+    )
     |> Stream.run()
   end
 

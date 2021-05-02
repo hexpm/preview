@@ -53,7 +53,7 @@ defmodule Preview.Queue do
         {:ok, tarball} = Preview.Bucket.get_tarball(package, version)
         {:ok, %{contents: contents}} = Preview.Hex.unpack_tarball(tarball, :memory)
         files = for {path, data} <- contents, do: {List.to_string(path), data}
-        update_package_sitemap(package, version, files)
+        update_package_sitemap(package, files)
         Logger.info("#{key}: done")
 
       :error ->
@@ -76,12 +76,10 @@ defmodule Preview.Queue do
       {:ok, package, version} ->
         files = create_package(package, version)
 
-        all_versions = all_versions(package)
-        version = Version.parse!(version)
-
-        if Preview.Utils.latest_version?(version, all_versions) do
+        if Version.compare(Preview.Utils.latest_version(package), version) == :eq do
+          Preview.Bucket.update_latest_version(package, version)
           update_index_sitemap()
-          update_package_sitemap(package, version, files)
+          update_package_sitemap(package, files)
         end
 
         Logger.info("FINISHED UPLOADING CONTENTS #{key}")
@@ -147,31 +145,21 @@ defmodule Preview.Queue do
   def update_index_sitemap() do
     Logger.info("UPDATING INDEX SITEMAP")
 
-    body = Preview.Hexpm.preview_sitemap()
+    {:ok, packages} = Preview.Hex.get_names()
+    body = Preview.Sitemaps.render_index(packages)
     Preview.Bucket.upload_index_sitemap(body)
 
     Logger.info("UPDATED INDEX SITEMAP")
   end
 
-  defp update_package_sitemap(package, version, files) do
+  defp update_package_sitemap(package, files) do
     Logger.info("UPDATING PACKAGE SITEMAP #{package}")
 
     files = for {path, _content} <- files, do: path
-    body = Preview.PackageSitemap.render(package, to_string(version), files, DateTime.utc_now())
-    Preview.Bucket.upload_package_sitemap(package, version, body)
+    body = Preview.Sitemaps.render_package(package, files, DateTime.utc_now())
+    Preview.Bucket.upload_package_sitemap(package, body)
 
     Logger.info("UPDATED PACKAGE SITEMAP #{package}")
-  end
-
-  defp all_versions(package) do
-    if package = Preview.Hexpm.get_package(package) do
-      package["releases"]
-      |> Enum.filter(& &1["has_docs"])
-      |> Enum.map(&Version.parse!(&1["version"]))
-      |> Enum.sort(&(Version.compare(&1, &2) == :gt))
-    else
-      []
-    end
   end
 
   @doc false
@@ -192,7 +180,7 @@ defmodule Preview.Queue do
 
       List.wrap(
         Enum.find_value(entries, fn {path, _, version} ->
-          Preview.Utils.latest_version?(version, all_versions) && path
+          Version.compare(Preview.Utils.latest_version(all_versions), version) == :eq && path
         end)
       )
     end)
