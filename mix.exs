@@ -34,7 +34,7 @@ defmodule Preview.MixProject do
       {:finch, "~> 0.6.0"},
       {:gettext, "~> 0.11"},
       {:goth, "~> 1.3-rc"},
-      {:hex_core, "~> 0.7.0", github: "hexpm/hex_core", branch: "wm-names-updated-at"},
+      {:hex_core, "~> 0.8"},
       {:jason, "~> 1.0"},
       {:logster, "~> 1.0"},
       {:mint, "~> 1.1"},
