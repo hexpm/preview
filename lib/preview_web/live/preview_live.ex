@@ -7,7 +7,7 @@ defmodule PreviewWeb.PreviewLive do
 
     if all_files = Preview.Bucket.get_file_list(params["package"], version) do
       filename =
-        if params["filename"] do
+        if params["filename"] && params["filename"] != [] do
           Path.join(params["filename"])
         else
           default_file(all_files)
