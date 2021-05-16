@@ -24,8 +24,24 @@ Hooks.updateHash = {
             let loc = window.location;
             let url = loc.protocol + '//' + loc.host + loc.pathname + '#L' + this.el.dataset.lineNumber;
             history.pushState(history.state, document.title, url);
+            update_hash()
             e.preventDefault();
-        })
+        });
+    }
+}
+
+window.onhashchange = function () {
+    update_hash()
+}
+
+function update_hash() {
+    let hash = location.hash
+    // clear existing highlighted lines
+    Array.from(document.getElementsByClassName("highlighted")).forEach(function (n, i) { n.classList.remove('highlighted') })
+
+    if (hash.startsWith("#L")) {
+        let id = hash.slice(1)
+        document.getElementById(id).classList.add("highlighted");
     }
 }
 
@@ -34,7 +50,7 @@ let liveSocket = new LiveSocket("/live", Socket, { params: { _csrf_token: csrfTo
 
 // Show progress bar on live navigation and form submits
 window.addEventListener("phx:page-loading-start", info => NProgress.start())
-window.addEventListener("phx:page-loading-stop", info => NProgress.done())
+window.addEventListener("phx:page-loading-stop", info => { NProgress.done(); update_hash(); })
 
 // connect if there are any LiveViews on the page
 liveSocket.connect()
