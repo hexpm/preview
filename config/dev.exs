@@ -1,8 +1,5 @@
 import Config
 
-config :preview,
-  repo_url: "http://localhost:4000/repo"
-
 # For development, we disable any cache and enable
 # debugging and code reloading.
 #
@@ -11,7 +8,7 @@ config :preview,
 # with webpack to recompile .js and .css sources.
 config :preview, PreviewWeb.Endpoint,
   http: [port: 4005],
-  debug_errors: true,
+  # debug_errors: true,
   code_reloader: true,
   check_origin: false,
   watchers: [
