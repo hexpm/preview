@@ -20,7 +20,11 @@ config :preview, :preview_bucket,
 config :preview, PreviewWeb.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "GhQNRpJEoVuQ3wOfIKRgVn/hRDKKKUQIPjJXAXDwe2gqYxk8UOsgNOghTtr94S3E",
-  render_errors: [view: PreviewWeb.ErrorView, accepts: ~w(html json), layout: false],
+  render_errors: [
+    view: PreviewWeb.ErrorView,
+    accepts: ~w(html json),
+    layout: {PreviewWeb.LayoutView, "root.html"}
+  ],
   pubsub_server: Preview.PubSub,
   live_view: [signing_salt: "oPF55p/T"]
 

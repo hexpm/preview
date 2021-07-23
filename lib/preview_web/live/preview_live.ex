@@ -1,6 +1,14 @@
 defmodule PreviewWeb.PreviewLive do
   use PreviewWeb, :live_view
 
+  defmodule Exception do
+    defexception [:plug_status]
+
+    def message(%{plug_status: status}) do
+      "plug status: #{status}"
+    end
+  end
+
   @impl true
   def mount(params, _session, socket) do
     version = params["version"] || Preview.Bucket.get_latest_version(params["package"])
@@ -28,7 +36,7 @@ defmodule PreviewWeb.PreviewLive do
          canonical: canonical_url(params["package"], filename)
        )}
     else
-      {:ok, assign(socket, error: "TODO")}
+      raise Exception, plug_status: 404
     end
   end
 

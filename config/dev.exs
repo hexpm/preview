@@ -1,8 +1,5 @@
 import Config
 
-config :preview,
-  repo_url: "http://localhost:4000/repo"
-
 # For development, we disable any cache and enable
 # debugging and code reloading.
 #
