@@ -25,6 +25,7 @@ defmodule Preview.HTTP do
   defp read_response(result) do
     case result do
       {:ok, %{body: body, headers: headers, status: status}} -> {:ok, status, headers, body}
+      {:error, reason} -> {:error, reason}
     end
   end
 
