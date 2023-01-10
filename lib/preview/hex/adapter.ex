@@ -7,7 +7,8 @@ defmodule Preview.Hex.Adapter do
   def request(:get, uri, req_headers, _req_body, _config) do
     req_headers = prepare_headers(req_headers, nil)
 
-    {:ok, status, resp_headers, resp_body} = Preview.HTTP.get(uri, req_headers, @opts)
+    {:ok, status, resp_headers, resp_body} =
+      Preview.HTTP.retry("hex_adapter", fn -> Preview.HTTP.get(uri, req_headers, @opts) end)
 
     # :hex_core expects headers to be a Map
     resp_headers = Map.new(resp_headers)
@@ -18,7 +19,10 @@ defmodule Preview.Hex.Adapter do
     {content_type, payload} = deconstruct_body(req_body)
     req_headers = prepare_headers(req_headers, content_type)
 
-    {:ok, status, resp_headers, resp_body} = Preview.HTTP.put(uri, req_headers, payload, @opts)
+    {:ok, status, resp_headers, resp_body} =
+      Preview.HTTP.retry("hex_adapter", fn ->
+        Preview.HTTP.put(uri, req_headers, payload, @opts)
+      end)
 
     # :hex_core expects headers to be a Map
     resp_headers = Map.new(resp_headers)
