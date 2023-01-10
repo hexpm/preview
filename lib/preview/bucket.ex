@@ -61,7 +61,7 @@ defmodule Preview.Bucket do
 
   def get_file(package, version, filename) do
     bucket = Application.get_env(:preview, :preview_bucket)
-    key = Path.join(["files", package, version, filename])
+    key = Path.join(["files", package, version, URI.encode(filename)])
     Preview.Storage.get(bucket, key)
   end
 
