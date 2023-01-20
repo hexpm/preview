@@ -89,6 +89,7 @@ defmodule PreviewWeb do
 
       import PreviewWeb.ErrorHelpers
       import PreviewWeb.Gettext
+      import Phoenix.Component
       alias PreviewWeb.Router.Helpers, as: Routes
     end
   end
