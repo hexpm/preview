@@ -15,7 +15,7 @@ import "../css/app.scss"
 import "phoenix_html"
 import { Socket } from "phoenix"
 import NProgress from "nprogress"
-import LiveSocket from "phoenix_live_view"
+import { LiveSocket } from "phoenix_live_view"
 
 let Hooks = {}
 Hooks.updateHash = {
