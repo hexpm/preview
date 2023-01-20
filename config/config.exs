@@ -23,7 +23,7 @@ config :preview, PreviewWeb.Endpoint,
   render_errors: [
     view: PreviewWeb.ErrorView,
     accepts: ~w(html json),
-    layout: {PreviewWeb.LayoutView, "root.html"}
+    layout: {PreviewWeb.LayoutView, :root}
   ],
   pubsub_server: Preview.PubSub,
   live_view: [signing_salt: "oPF55p/T"]
