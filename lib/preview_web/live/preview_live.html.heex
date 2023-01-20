@@ -3,7 +3,8 @@
     <label for="file_chooser">Select File:</label>
     <select class="file-select" name="file_chooser">
       <%= for filename <- @all_files do %>
-        <option <%= selected(@filename, filename) %> value="<%= filename %>"><%= filename %></option>
+
+        <option {selected(@filename, filename)} value={filename}><%= filename %></option>
       <% end %>
     </select>
   </form>
@@ -17,7 +18,7 @@
         <% lines = String.split(@file_contents, "\n") |> length() %>
         <ul id="left_gutter">
           <%= for ln <- 1..lines do %>
-            <li phx-hook="updateHash" id="L<%= ln %>" data-line-number="<%= ln %>"></li>
+            <li phx-hook="updateHash" id={"L#{ln}"} data-line-number={ln}></li>
           <% end %>
         </ul>
         <%= raw print_file_contents(@file_contents, @filename) %>

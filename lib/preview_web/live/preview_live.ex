@@ -83,10 +83,10 @@ defmodule PreviewWeb.PreviewLive do
      )}
   end
 
-  def selected(x, x), do: "selected=selected"
+  def selected(x, x), do: [selected: "selected"]
 
   def selected(str, io) do
-    if to_charlist(str) == io, do: "selected=selected"
+    if to_charlist(str) == io, do: [selected: "selected"], else: []
   end
 
   def print_file_contents(file_contents, filename) do
