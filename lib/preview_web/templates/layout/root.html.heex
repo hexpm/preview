@@ -1,21 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="utf-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <meta name="description" content={ assigns[:meta_description] || "Web based preview of Hex packages" }>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta
+      name="description"
+      content={assigns[:meta_description] || "Web based preview of Hex packages"}
+    />
     <%= if assigns[:canonical] do %>
-      <link rel="canonical" href={ assigns[:canonical] }>
+      <link rel="canonical" href={assigns[:canonical]} />
     <% end %>
     <%= csrf_meta_tag() %>
-    <%= live_title_tag assigns[:page_title] || "Home", suffix: " | Hex Preview" %>
-    <link phx-track-static rel="stylesheet" href={ Routes.static_path(@conn, "/css/app.css") }/>
-    <script defer phx-track-static type="text/javascript" src={ Routes.static_path(@conn, "/js/app.js") }></script>
+    <%= live_title_tag(assigns[:page_title] || "Home", suffix: " | Hex Preview") %>
+    <link phx-track-static rel="stylesheet" href={Routes.static_path(@conn, "/css/app.css")} />
+    <script
+      defer
+      phx-track-static
+      type="text/javascript"
+      src={Routes.static_path(@conn, "/js/app.js")}
+    >
+    </script>
 
     <%= if plausible_url = Application.get_env(:preview, :plausible_url) do %>
       <% host = Application.fetch_env!(:preview, :host) %>
-      <script async defer data-domain={ host } src={ plausible_url }></script>
+      <script async defer data-domain={host} src={plausible_url}>
+      </script>
     <% end %>
   </head>
   <body>
@@ -24,7 +34,7 @@
         <div class="container">
           <h1 class="logo">
             <a href="/">
-              <img src={ Routes.static_path(@conn, "/images/hexpreview.svg") } alt="hexpreview"/>
+              <img src={Routes.static_path(@conn, "/images/hexpreview.svg")} alt="hexpreview" />
             </a>
           </h1>
         </div>
@@ -32,9 +42,7 @@
     </header>
 
     <main role="main" class="main container">
-
-<%= @inner_content %>
-
+      <%= @inner_content %>
     </main>
 
     <nav class="footer">
@@ -75,12 +83,16 @@
 
           <div class="column copyright">
             <p><%= Date.utc_today().year %> © Six Colors AB.</p>
-            <p>Powered by the <a href="https://www.erlang.org/">Erlang VM</a> and the <a href="https://elixir-lang.org/">Elixir programming language</a>.</p>
+            <p>
+              Powered by the <a href="https://www.erlang.org/">Erlang VM</a>
+              and the <a href="https://elixir-lang.org/">Elixir programming language</a>.
+            </p>
           </div>
         </div>
       </div>
-  </nav>
+    </nav>
 
-    <script type="text/javascript" src={ Routes.static_path(@conn, "/js/app.js") }></script>
+    <script type="text/javascript" src={Routes.static_path(@conn, "/js/app.js")}>
+    </script>
   </body>
 </html>
