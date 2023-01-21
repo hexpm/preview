@@ -47,7 +47,7 @@ defmodule Preview.HTTP do
   end
 
   defp do_retry(fun, service, times, reason) do
-    Logger.warn("#{service} HTTP ERROR: #{inspect(reason)}")
+    Logger.warning("#{service} HTTP ERROR: #{inspect(reason)}")
 
     if times + 1 < @max_retry_times do
       sleep = trunc(:math.pow(3, times) * @base_sleep_time)
