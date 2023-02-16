@@ -5,6 +5,7 @@ defmodule Preview.Queue do
   def start_link(_opts) do
     url = Application.fetch_env!(:preview, :queue_id)
     producer = Application.fetch_env!(:preview, :queue_producer)
+    concurrency = Application.fetch_env!(:preview, :queue_concurrency)
 
     Broadway.start_link(__MODULE__,
       name: __MODULE__,
@@ -20,9 +21,9 @@ defmodule Preview.Queue do
       ],
       processors: [
         default: [
-          concurrency: 2,
+          concurrency: concurrency,
           min_demand: 1,
-          max_demand: 2
+          max_demand: concurrency
         ]
       ]
     )
