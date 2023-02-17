@@ -3,7 +3,7 @@ import Config
 config :preview,
   queue_id: "dummy",
   queue_producer: Broadway.DummyProducer,
-  queue_concurrency: 1,
+  queue_concurrency: 2,
   package_store_impl: Preview.Package.DefaultStore,
   package_updater_impl: Preview.Package.Updater,
   hex_impl: Preview.Hex.HTTP,
