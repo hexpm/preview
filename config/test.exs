@@ -7,7 +7,7 @@ config :preview, PreviewWeb.Endpoint,
   server: false
 
 # Print only warnings and errors during test
-config :logger, level: :warn
+config :logger, level: :warning
 
 config :preview,
   package_store_impl: Preview.Package.StoreMock,

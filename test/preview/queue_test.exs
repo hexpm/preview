@@ -2,8 +2,8 @@ defmodule Preview.QueueTest do
   use ExUnit.Case
   alias Preview.{Bucket, Fake, Storage}
 
-  @repo_bucket Application.get_env(:preview, :repo_bucket)
-  @preview_bucket Application.get_env(:preview, :preview_bucket)
+  @repo_bucket Application.compile_env(:preview, :repo_bucket)
+  @preview_bucket Application.compile_env(:preview, :preview_bucket)
 
   test "put object" do
     package = Fake.random(:package)

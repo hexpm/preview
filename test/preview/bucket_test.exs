@@ -2,8 +2,8 @@ defmodule Preview.BucketTest do
   use ExUnit.Case, async: true
   alias Preview.{Bucket, Fake, Storage}
 
-  @repo_bucket Application.get_env(:preview, :repo_bucket)
-  @preview_bucket Application.get_env(:preview, :preview_bucket)
+  @repo_bucket Application.compile_env(:preview, :repo_bucket)
+  @preview_bucket Application.compile_env(:preview, :preview_bucket)
 
   test "get_tarball/2" do
     package = Fake.random(:package)
