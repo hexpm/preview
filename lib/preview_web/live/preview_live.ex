@@ -1,6 +1,8 @@
 defmodule PreviewWeb.PreviewLive do
   use PreviewWeb, :live_view
 
+  @max_file_size 2 * 1000 * 1000
+
   defmodule Exception do
     defexception [:plug_status]
 
@@ -108,9 +110,19 @@ defmodule PreviewWeb.PreviewLive do
   defp file_contents_or_default(package, version, filename) do
     file_contents = Preview.Bucket.get_file(package, version, filename)
 
-    if String.valid?(file_contents),
-      do: file_contents,
-      else: "Contents for binary files are not shown."
+    cond do
+      !file_contents ->
+        "No file with this name."
+
+      not String.valid?(file_contents) ->
+        "Contents for binary files are not shown."
+
+      byte_size(file_contents) > @max_file_size  ->
+        "File is too large to be displayed #{div(byte_size(file_contents), 1_000_000)}MB."
+
+      true ->
+        file_contents
+    end
   end
 
   defp makeup_supported?(filename) do
