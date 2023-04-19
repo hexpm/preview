@@ -36,7 +36,7 @@ RUN mix release
 
 # prepare release image
 FROM alpine:3.17.0 AS app
-RUN apk add --update bash openssl
+RUN apk add --update bash openssl libstdc++
 
 RUN mkdir /app
 WORKDIR /app
