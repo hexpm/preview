@@ -40,7 +40,7 @@ defmodule Preview.Application do
   end
 
   defp finch_pools() do
-    %{default: [size: 10, count: 1, max_idle_time: 10_000]}
+    %{default: [size: 10, count: 1, conn_max_idle_time: 10_000]}
   end
 
   if Mix.env() == :prod do
