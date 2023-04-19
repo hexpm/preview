@@ -16,6 +16,8 @@ defmodule PreviewWeb.PreviewLive do
     version = params["version"] || Preview.Bucket.get_latest_version(params["package"])
 
     if all_files = Preview.Bucket.get_file_list(params["package"], version) do
+      all_files = Enum.sort(all_files)
+
       filename =
         if params["filename"] && params["filename"] != [] do
           Path.join(params["filename"])
