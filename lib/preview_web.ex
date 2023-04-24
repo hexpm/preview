@@ -17,6 +17,8 @@ defmodule PreviewWeb do
   and import those modules here.
   """
 
+  def static_paths, do: ~w(css images js favicon.ico robots.txt)
+
   def controller do
     quote do
       use Phoenix.Controller, namespace: PreviewWeb
@@ -24,6 +26,7 @@ defmodule PreviewWeb do
       import Plug.Conn
       import PreviewWeb.Gettext
       alias PreviewWeb.Router.Helpers, as: Routes
+      unquote(verified_routes())
     end
   end
 
@@ -37,7 +40,6 @@ defmodule PreviewWeb do
       import Phoenix.Controller,
         only: [get_flash: 1, get_flash: 2, view_module: 1, view_template: 1]
 
-      # Include shared imports and aliases for views
       unquote(view_helpers())
     end
   end
@@ -91,6 +93,16 @@ defmodule PreviewWeb do
       import PreviewWeb.Gettext
       import Phoenix.Component
       alias PreviewWeb.Router.Helpers, as: Routes
+      unquote(verified_routes())
+    end
+  end
+
+  def verified_routes do
+    quote do
+      use Phoenix.VerifiedRoutes,
+        endpoint: PreviewWeb.Endpoint,
+        router: PreviewWeb.Router,
+        statics: PreviewWeb.static_paths()
     end
   end
 

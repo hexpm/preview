@@ -22,6 +22,8 @@
         </ul>
         <%= raw(print_file_contents(@file_contents, @filename)) %>
       </section>
+
+      <a href={~p"/preview/#{@package}/#{@version}/raw/#{@filename}"} class="button">View Raw</a>
     </div>
   <% end %>
 <% end %>

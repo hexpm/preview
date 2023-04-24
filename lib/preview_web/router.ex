@@ -16,6 +16,10 @@ defmodule PreviewWeb.Router do
     plug :accepts, ["json"]
   end
 
+  pipeline :raw do
+    plug :put_secure_browser_headers
+  end
+
   scope "/", PreviewWeb do
     pipe_through :browser
 
@@ -29,18 +33,13 @@ defmodule PreviewWeb.Router do
     live "/preview/:package/:version/show/*filename", PreviewLive, :index
   end
 
-  # Other scopes may use custom stacks.
-  # scope "/api", PreviewWeb do
-  #   pipe_through :api
-  # end
+  scope "/", PreviewWeb do
+    pipe_through :raw
 
-  # Enables LiveDashboard only for development
-  #
-  # If you want to use the LiveDashboard in production, you should put
-  # it behind authentication and allow only admins to access it.
-  # If your application does not have an admins-only section yet,
-  # you can use Plug.BasicAuth to set up some basic authentication
-  # as long as you are also using SSL (which you should anyway).
+    get "/preview/:package/raw/*filename", PackageController, :raw
+    get "/preview/:package/:version/raw/*filename", PackageController, :raw
+  end
+
   if Mix.env() in [:dev, :test] do
     import Phoenix.LiveDashboard.Router
 
