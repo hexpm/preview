@@ -119,7 +119,7 @@ defmodule PreviewWeb.PreviewLive do
       not String.valid?(file_contents) ->
         "Contents for binary files are not shown."
 
-      byte_size(file_contents) > @max_file_size  ->
+      byte_size(file_contents) > @max_file_size ->
         "File is too large to be displayed #{div(byte_size(file_contents), 1_000_000)}MB."
 
       true ->
