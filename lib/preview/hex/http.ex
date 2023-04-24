@@ -6,8 +6,8 @@ defmodule Preview.Hex.HTTP do
   @impl true
   def get_names() do
     case :hex_repo.get_names(config()) do
-      {:ok, {200, _, results}} ->
-        {:ok, results}
+      {:ok, {200, _, %{packages: packages}}} ->
+        {:ok, packages}
 
       {:ok, {status, _, _}} ->
         Logger.error("Failed to get package names. Status: #{status}.")
@@ -22,8 +22,8 @@ defmodule Preview.Hex.HTTP do
   @impl true
   def get_versions() do
     case :hex_repo.get_versions(config()) do
-      {:ok, {200, _, results}} ->
-        {:ok, results}
+      {:ok, {200, _, %{packages: packages}}} ->
+        {:ok, packages}
 
       {:ok, {status, _, _}} ->
         Logger.error("Failed to get package versions. Status: #{status}.")
@@ -38,7 +38,7 @@ defmodule Preview.Hex.HTTP do
   @impl true
   def get_package(package) do
     case :hex_repo.get_package(config(), package) do
-      {:ok, {200, _, releases}} ->
+      {:ok, {200, _, %{releases: releases}}} ->
         {:ok, releases}
 
       {:ok, {status, _, _}} ->
