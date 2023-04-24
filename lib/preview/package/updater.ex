@@ -28,8 +28,8 @@ defmodule Preview.Package.Updater do
     Logger.debug("Updating version store")
 
     case Preview.Hex.get_versions() do
-      {:ok, %{packages: results}} ->
-        results
+      {:ok, packages} ->
+        packages
         |> format_packages()
         |> Store.fill()
 
