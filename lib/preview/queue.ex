@@ -53,7 +53,19 @@ defmodule Preview.Queue do
       {:ok, package, version} ->
         {:ok, tarball} = Preview.Bucket.get_tarball(package, version)
         {:ok, %{contents: contents}} = Preview.Hex.unpack_tarball(tarball, :memory)
-        files = for {path, data} <- contents, do: {List.to_string(path), data}
+
+        files =
+          Enum.flat_map(contents, fn {path, blob} ->
+            case safe_charlist_path(path) do
+              {:ok, path} ->
+                [{path, blob}]
+
+              :error ->
+                Logger.error("Unsafe path from #{package} #{version}: #{path}")
+                []
+            end
+          end)
+
         update_package_sitemap(package, files)
         Logger.info("#{key}: done")
 
@@ -130,8 +142,15 @@ defmodule Preview.Queue do
     {:ok, tarball_contents} = Preview.Hex.unpack_tarball(tarball, :memory)
 
     files =
-      Enum.map(tarball_contents.contents, fn {filename, blob} ->
-        {List.to_string(filename), blob}
+      Enum.flat_map(tarball_contents.contents, fn {path, blob} ->
+        case safe_charlist_path(path) do
+          {:ok, path} ->
+            [{path, blob}]
+
+          :error ->
+            Logger.error("Unsafe path from #{package} #{version}: #{path}")
+            []
+        end
       end)
 
     Preview.Bucket.put_files(package, version, files)
@@ -192,4 +211,18 @@ defmodule Preview.Queue do
   defp purge_key(package, version) do
     Preview.CDN.purge_key(:fastly_repo, "preview/#{package}/#{version}")
   end
+
+  defp safe_charlist_path(list) do
+    case list |> List.to_string() |> Path.split() |> safe_path([]) do
+      {:ok, path} -> {:ok, Path.join(path)}
+      :error -> :error
+    end
+  end
+
+  defp safe_path(["." | rest], acc), do: safe_path(rest, acc)
+  defp safe_path([".." | rest], [_prev | acc]), do: safe_path(rest, acc)
+  defp safe_path([".." | _rest], []), do: :error
+  defp safe_path([path | rest], acc), do: safe_path(rest, [path | acc])
+  defp safe_path([], []), do: :error
+  defp safe_path([], acc), do: {:ok, Enum.reverse(acc)}
 end
