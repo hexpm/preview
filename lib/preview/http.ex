@@ -51,7 +51,7 @@ defmodule Preview.HTTP do
 
     if times + 1 < @max_retry_times do
       sleep = trunc(:math.pow(3, times) * @base_sleep_time)
-      :timer.sleep(sleep)
+      Process.sleep(sleep)
       retry(fun, service, times + 1)
     else
       {:error, reason}
