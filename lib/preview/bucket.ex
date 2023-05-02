@@ -26,10 +26,7 @@ defmodule Preview.Bucket do
       end)
 
     [file_list_path | files]
-    |> Task.async_stream(
-      fn {key, data} ->
-        Preview.Storage.put(bucket, key, data)
-      end,
+    |> Task.async_stream(fn {key, data} -> put_file(bucket, key, data, package, version) end,
       max_concurrency: 10,
       timeout: 10_000
     )
@@ -94,5 +91,15 @@ defmodule Preview.Bucket do
     bucket = Application.fetch_env!(:preview, :preview_bucket)
     key = Path.join("latest_versions", package)
     Preview.Storage.get(bucket, key)
+  end
+
+  def put_file(bucket, key, data, package, version) do
+    meta = [
+      {"surrogate-key", "preview/#{package}/#{version}"},
+      {"surrogate-control", "public, max-age=604800"}
+    ]
+
+    opts = [cache_control: "public, max-age=3600", meta: meta]
+    Preview.Storage.put(bucket, key, data, opts)
   end
 end
