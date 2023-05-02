@@ -76,15 +76,21 @@ defmodule Preview.Bucket do
   end
 
   defp upload_sitemap(path, sitemap) do
-    opts = []
     bucket = Application.get_env(:preview, :preview_bucket)
-    :ok = Preview.Storage.put(bucket, path, sitemap, opts)
+    :ok = Preview.Storage.put(bucket, path, sitemap, put_opts("preview/SITEMAP"))
   end
 
   def update_latest_version(package, version) do
     bucket = Application.fetch_env!(:preview, :preview_bucket)
     key = Path.join("latest_versions", package)
-    :ok = Preview.Storage.put(bucket, key, to_string(version), [])
+
+    :ok =
+      Preview.Storage.put(
+        bucket,
+        key,
+        to_string(version),
+        put_opts("preview/#{package}/#{version}")
+      )
   end
 
   def get_latest_version(package) do
@@ -94,12 +100,15 @@ defmodule Preview.Bucket do
   end
 
   def put_file(bucket, key, data, package, version) do
+    Preview.Storage.put(bucket, key, data, put_opts("preview/#{package}/#{version}"))
+  end
+
+  defp put_opts(key) do
     meta = [
-      {"surrogate-key", "preview/#{package}/#{version}"},
+      {"surrogate-key", key},
       {"surrogate-control", "public, max-age=604800"}
     ]
 
-    opts = [cache_control: "public, max-age=3600", meta: meta]
-    Preview.Storage.put(bucket, key, data, opts)
+    [cache_control: "public, max-age=3600", meta: meta]
   end
 end
