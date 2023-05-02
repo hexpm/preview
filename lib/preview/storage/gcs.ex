@@ -1,9 +1,9 @@
 defmodule Preview.Storage.GCS do
   @behaviour Preview.Storage.Preview
-
   @gs_xml_url "https://storage.googleapis.com"
 
   import SweetXml, only: [sigil_x: 2]
+  require Logger
 
   @impl true
   def get(bucket, key, _opts) do
@@ -34,10 +34,17 @@ defmodule Preview.Storage.GCS do
 
     headers = filter_nil_values(headers)
 
-    {:ok, 200, _headers, _body} =
-      Preview.HTTP.retry("gcs", fn -> Preview.HTTP.put(url, headers, body) end)
+    case Preview.HTTP.retry("gcs", fn -> Preview.HTTP.put(url, headers, body) end) do
+      {:ok, 200, _headers, _body} ->
+        Logger.info("file upload success #{url}")
+        :ok
 
-    :ok
+      {:ok, status, headers, body} ->
+        raise "file upload error #{url}\nstatus: #{status} headers: #{inspect(headers)} body: #{inspect(body)}"
+
+      {:error, reason} ->
+        raise "file upload error #{url}\nreason: #{inspect(reason)}"
+    end
   end
 
   @impl true
