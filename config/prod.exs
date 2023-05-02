@@ -16,7 +16,8 @@ config :preview, PreviewWeb.Endpoint,
   cache_static_manifest: "priv/static/cache_manifest.json"
 
 config :preview,
-  queue_producer: BroadwaySQS.Producer
+  queue_producer: BroadwaySQS.Producer,
+  cdn_impl: Preview.CDN.Fastly
 
 # Do not print debug messages in production
 config :logger, level: :info, metadata: [:request_id]

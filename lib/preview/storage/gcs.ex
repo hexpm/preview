@@ -21,11 +21,21 @@ defmodule Preview.Storage.GCS do
   end
 
   @impl true
-  def put(bucket, key, body, _opts) do
+  def put(bucket, key, body, opts) do
     url = url(bucket, key)
 
+    headers =
+      headers() ++
+        meta_headers(Keyword.fetch!(opts, :meta)) ++
+        [
+          {"cache-control", Keyword.fetch!(opts, :cache_control)},
+          {"content-type", Keyword.get(opts, :content_type)}
+        ]
+
+    headers = filter_nil_values(headers)
+
     {:ok, 200, _headers, _body} =
-      Preview.HTTP.retry("gcs", fn -> Preview.HTTP.put(url, headers(), body) end)
+      Preview.HTTP.retry("gcs", fn -> Preview.HTTP.put(url, headers, body) end)
 
     :ok
   end
@@ -91,5 +101,15 @@ defmodule Preview.Storage.GCS do
 
   defp url(bucket, key) do
     url(bucket) <> "/" <> key
+  end
+
+  defp filter_nil_values(keyword) do
+    Enum.reject(keyword, fn {_key, value} -> is_nil(value) end)
+  end
+
+  defp meta_headers(meta) do
+    Enum.map(meta, fn {key, value} ->
+      {"x-goog-meta-#{key}", value}
+    end)
   end
 end

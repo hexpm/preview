@@ -135,11 +135,13 @@ defmodule Preview.Queue do
       end)
 
     Preview.Bucket.put_files(package, version, files)
+    purge_key(package, version)
     files
   end
 
   def delete_package(package, version) do
     Preview.Bucket.delete_files(package, version)
+    purge_key(package, version)
   end
 
   @doc false
@@ -185,5 +187,9 @@ defmodule Preview.Queue do
         end)
       )
     end)
+  end
+
+  defp purge_key(package, version) do
+    Preview.CDN.purge_key(:fastly_repo, "preview/#{package}/#{version}")
   end
 end

@@ -7,6 +7,7 @@ config :preview,
   package_store_impl: Preview.Package.DefaultStore,
   package_updater_impl: Preview.Package.Updater,
   hex_impl: Preview.Hex.HTTP,
+  cdn_impl: Preview.CDN.Local,
   repo_url: "https://repo.hex.pm"
 
 config :preview, :repo_bucket,
