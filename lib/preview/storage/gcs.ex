@@ -95,7 +95,7 @@ defmodule Preview.Storage.GCS do
     items = SweetXml.xpath(doc, ~x"/ListBucketResult/Contents/Key/text()"ls)
     marker = if marker != "", do: marker
 
-    {items, marker}
+    {Enum.map(items, &URI.decode/1), marker}
   end
 
   defp headers() do
@@ -108,7 +108,7 @@ defmodule Preview.Storage.GCS do
   end
 
   defp url(bucket, key) do
-    url(bucket) <> "/" <> key
+    url(bucket) <> "/" <> URI.encode(key)
   end
 
   defp filter_nil_values(keyword) do
