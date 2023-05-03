@@ -114,7 +114,7 @@ defmodule PreviewWeb.PreviewLive do
 
     cond do
       !file_contents ->
-        "No file with this name."
+        raise Exception, plug_status: 404
 
       not String.valid?(file_contents) ->
         "Contents for binary files are not shown."
