@@ -55,6 +55,7 @@ defmodule Preview.Storage.GCS do
       max_concurrency: 10,
       timeout: 10_000
     )
+    |> Preview.Utils.raise_async_stream_error()
     |> Stream.run()
   end
 

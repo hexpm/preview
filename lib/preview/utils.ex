@@ -27,4 +27,11 @@ defmodule Preview.Utils do
       end
     end)
   end
+
+  def raise_async_stream_error(stream) do
+    Stream.each(stream, fn
+      {:ok, _} -> :ok
+      {:exit, {error, stacktrace}} -> reraise(error, stacktrace)
+    end)
+  end
 end

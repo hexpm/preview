@@ -30,6 +30,7 @@ defmodule Preview.Bucket do
       max_concurrency: 10,
       timeout: 10_000
     )
+    |> Preview.Utils.raise_async_stream_error()
     |> Stream.run()
 
     delete_old_files(Enum.to_list(original_file_list), Enum.map(files, &elem(&1, 0)))
