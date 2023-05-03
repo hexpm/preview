@@ -1,6 +1,8 @@
 defmodule Preview do
   require Logger
 
+  @timeout 20_000
+
   def process_object(key) do
     key
     |> build_message()
@@ -20,7 +22,7 @@ defmodule Preview do
   def process_all_sitemaps(paths) do
     paths
     |> Stream.map(&%{"preview:sitemap" => &1})
-    |> Task.async_stream(&send_message/1, max_concurrency: 10, ordered: false)
+    |> Task.async_stream(&send_message/1, max_concurrency: 10, ordered: false, timeout: @timeout)
     |> Stream.run()
   end
 
@@ -35,7 +37,7 @@ defmodule Preview do
         Preview.Bucket.update_latest_version(name, version)
       end,
       max_concurrency: 10,
-      ordered: false
+      ordered: false, timeout: @timeout
     )
     |> Stream.run()
   end
@@ -49,7 +51,7 @@ defmodule Preview do
   defp batched_send(keys) do
     keys
     |> Stream.map(&build_message/1)
-    |> Task.async_stream(&send_message/1, max_concurrency: 10, ordered: false)
+    |> Task.async_stream(&send_message/1, max_concurrency: 10, ordered: false, timeout: @timeout)
     |> Stream.run()
   end
 
