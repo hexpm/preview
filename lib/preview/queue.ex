@@ -91,10 +91,11 @@ defmodule Preview.Queue do
 
         if Version.compare(Preview.Utils.latest_version(package), version) == :eq do
           Preview.Bucket.update_latest_version(package, version)
-          update_index_sitemap()
           update_package_sitemap(package, files)
+          update_index_sitemap()
         end
 
+        purge_key(package, version)
         Logger.info("FINISHED UPLOADING CONTENTS #{key}")
 
       :error ->
@@ -110,6 +111,7 @@ defmodule Preview.Queue do
       {:ok, package, version} ->
         delete_package(package, version)
         update_index_sitemap()
+        purge_key(package, version)
         Logger.info("FINISHED DELETING CONTENTS #{key}")
         :ok
 
@@ -154,13 +156,11 @@ defmodule Preview.Queue do
       end)
 
     Preview.Bucket.put_files(package, version, files)
-    purge_key(package, version)
     files
   end
 
   def delete_package(package, version) do
     Preview.Bucket.delete_files(package, version)
-    purge_key(package, version)
   end
 
   @doc false
@@ -209,7 +209,11 @@ defmodule Preview.Queue do
   end
 
   defp purge_key(package, version) do
-    Preview.CDN.purge_key(:fastly_repo, "preview/#{package}/#{version}")
+    Preview.CDN.purge_key(:fastly_repo, [
+      "preview/sitemap",
+      "preview/package/#{package}",
+      "preview/package/#{package}/version/#{version}"
+    ])
   end
 
   defp safe_charlist_path(list) do

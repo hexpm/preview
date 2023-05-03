@@ -37,7 +37,8 @@ defmodule Preview do
         Preview.Bucket.update_latest_version(name, version)
       end,
       max_concurrency: 10,
-      ordered: false, timeout: @timeout
+      ordered: false,
+      timeout: @timeout
     )
     |> Stream.run()
   end

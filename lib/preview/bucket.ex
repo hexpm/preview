@@ -69,16 +69,16 @@ defmodule Preview.Bucket do
   end
 
   def upload_index_sitemap(sitemap) do
-    upload_sitemap("sitemaps/sitemap.xml", sitemap)
+    upload_sitemap("sitemaps/sitemap.xml", "preview/sitemap", sitemap)
   end
 
   def upload_package_sitemap(package, sitemap) do
-    upload_sitemap("sitemaps/#{package}.xml", sitemap)
+    upload_sitemap("sitemaps/#{package}.xml", "preview/package/#{package}", sitemap)
   end
 
-  defp upload_sitemap(path, sitemap) do
+  defp upload_sitemap(path, key, sitemap) do
     bucket = Application.get_env(:preview, :preview_bucket)
-    :ok = Preview.Storage.put(bucket, path, sitemap, put_opts("preview/SITEMAP"))
+    :ok = Preview.Storage.put(bucket, path, sitemap, put_opts(key))
   end
 
   def update_latest_version(package, version) do
@@ -90,7 +90,7 @@ defmodule Preview.Bucket do
         bucket,
         key,
         to_string(version),
-        put_opts("preview/#{package}/#{version}")
+        put_opts("preview/package/#{package}")
       )
   end
 
@@ -101,12 +101,17 @@ defmodule Preview.Bucket do
   end
 
   def put_file(bucket, key, data, package, version) do
-    Preview.Storage.put(bucket, key, data, put_opts("preview/#{package}/#{version}"))
+    Preview.Storage.put(
+      bucket,
+      key,
+      data,
+      put_opts("preview/package/#{package}/version/#{version}")
+    )
   end
 
   defp put_opts(key) do
     meta = [
-      {"surrogate-key", key},
+      {"surrogate-key", "preview #{key}"},
       {"surrogate-control", "public, max-age=604800"}
     ]
 
