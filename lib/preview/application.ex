@@ -14,6 +14,7 @@ defmodule Preview.Application do
       {Task.Supervisor, name: Preview.Tasks},
       {Finch, name: Preview.Finch, pools: finch_pools()},
       goth_spec(),
+      {Preview.Debouncer, name: Preview.Debouncer},
       Preview.Queue,
       PreviewWeb.Endpoint,
       package_spec()

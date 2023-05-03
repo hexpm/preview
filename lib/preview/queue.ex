@@ -2,6 +2,8 @@ defmodule Preview.Queue do
   use Broadway
   require Logger
 
+  @gcs_put_debounce Application.compile_env!(:preview, :gcs_put_debounce)
+
   def start_link(_opts) do
     url = Application.fetch_env!(:preview, :queue_id)
     producer = Application.fetch_env!(:preview, :queue_producer)
@@ -167,9 +169,16 @@ defmodule Preview.Queue do
   def update_index_sitemap() do
     Logger.info("UPDATING INDEX SITEMAP")
 
-    {:ok, packages} = Preview.Hex.get_names()
-    body = Preview.Sitemaps.render_index(packages)
-    Preview.Bucket.upload_index_sitemap(body)
+    Preview.Debouncer.debounce(
+      Preview.Debouncer,
+      :sitemap_index,
+      fn ->
+        {:ok, packages} = Preview.Hex.get_names()
+        body = Preview.Sitemaps.render_index(packages)
+        Preview.Bucket.upload_index_sitemap(body)
+      end,
+      @gcs_put_debounce
+    )
 
     Logger.info("UPDATED INDEX SITEMAP")
   end

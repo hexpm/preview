@@ -17,7 +17,8 @@ config :preview, PreviewWeb.Endpoint,
 
 config :preview,
   queue_producer: BroadwaySQS.Producer,
-  cdn_impl: Preview.CDN.Fastly
+  cdn_impl: Preview.CDN.Fastly,
+  gcs_put_debounce: 1000
 
 # Do not print debug messages in production
 config :logger, level: :info, metadata: [:request_id]

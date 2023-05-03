@@ -8,7 +8,8 @@ config :preview,
   package_updater_impl: Preview.Package.Updater,
   hex_impl: Preview.Hex.HTTP,
   cdn_impl: Preview.CDN.Local,
-  repo_url: "https://repo.hex.pm"
+  repo_url: "https://repo.hex.pm",
+  gcs_put_debounce: 0
 
 config :preview, :repo_bucket,
   implementation: Preview.Storage.Local,
