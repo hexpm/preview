@@ -24,7 +24,7 @@ defmodule Preview.Queue do
       processors: [
         default: [
           concurrency: concurrency,
-          min_demand: 1,
+          min_demand: 0,
           max_demand: concurrency
         ]
       ]
@@ -169,16 +169,11 @@ defmodule Preview.Queue do
   def update_index_sitemap() do
     Logger.info("UPDATING INDEX SITEMAP")
 
-    Preview.Debouncer.debounce(
-      Preview.Debouncer,
-      :sitemap_index,
-      fn ->
-        {:ok, packages} = Preview.Hex.get_names()
-        body = Preview.Sitemaps.render_index(packages)
-        Preview.Bucket.upload_index_sitemap(body)
-      end,
-      @gcs_put_debounce
-    )
+    Preview.Debouncer.debounce(Preview.Debouncer, :sitemap_index, @gcs_put_debounce, fn ->
+      {:ok, packages} = Preview.Hex.get_names()
+      body = Preview.Sitemaps.render_index(packages)
+      Preview.Bucket.upload_index_sitemap(body)
+    end)
 
     Logger.info("UPDATED INDEX SITEMAP")
   end

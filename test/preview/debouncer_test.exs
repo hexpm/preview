@@ -14,11 +14,11 @@ defmodule Preview.DebouncerTest do
   test "zero same key", %{pid: pid} do
     self = self()
 
-    assert {:ok, _} = Debouncer.debounce(pid, :key, send_fun(self, :msg1), 0)
+    assert {:ok, _} = Debouncer.debounce(pid, :key, 0, send_fun(self, :msg1))
     Process.sleep(@short_grace_time)
-    assert {:ok, _} = Debouncer.debounce(pid, :key, send_fun(self, :msg2), 0)
+    assert {:ok, _} = Debouncer.debounce(pid, :key, 0, send_fun(self, :msg2))
     Process.sleep(@short_grace_time)
-    assert {:ok, _} = Debouncer.debounce(pid, :key, send_fun(self, :msg3), 0)
+    assert {:ok, _} = Debouncer.debounce(pid, :key, 0, send_fun(self, :msg3))
 
     now = System.monotonic_time(:millisecond)
     assert_receive_within(:msg1, now, 0)
@@ -30,9 +30,9 @@ defmodule Preview.DebouncerTest do
     self = self()
 
     run_stream([
-      fn -> assert {:ok, _} = Debouncer.debounce(pid, :a, send_fun(self, :msg1), 500) end,
-      fn -> assert {:ok, _} = Debouncer.debounce(pid, :b, send_fun(self, :msg2), 500) end,
-      fn -> assert {:ok, _} = Debouncer.debounce(pid, :c, send_fun(self, :msg3), 500) end
+      fn -> assert {:ok, _} = Debouncer.debounce(pid, :a, 500, send_fun(self, :msg1)) end,
+      fn -> assert {:ok, _} = Debouncer.debounce(pid, :b, 500, send_fun(self, :msg2)) end,
+      fn -> assert {:ok, _} = Debouncer.debounce(pid, :c, 500, send_fun(self, :msg3)) end
     ])
 
     now = System.monotonic_time(:millisecond)
@@ -45,10 +45,10 @@ defmodule Preview.DebouncerTest do
     self = self()
 
     run_stream([
-      fn -> assert {:ok, _} = Debouncer.debounce(pid, :key, send_fun(self, :msg1), 500) end,
-      fn -> assert {:ok, _} = Debouncer.debounce(pid, :key, send_fun(self, :msg2), 500) end,
-      fn -> assert :debounced = Debouncer.debounce(pid, :key, send_fun(self, :msg3), 500) end,
-      fn -> assert :debounced = Debouncer.debounce(pid, :key, send_fun(self, :msg4), 500) end
+      fn -> assert {:ok, _} = Debouncer.debounce(pid, :key, 500, send_fun(self, :msg1)) end,
+      fn -> assert {:ok, _} = Debouncer.debounce(pid, :key, 500, send_fun(self, :msg2)) end,
+      fn -> assert :debounced = Debouncer.debounce(pid, :key, 500, send_fun(self, :msg3)) end,
+      fn -> assert :debounced = Debouncer.debounce(pid, :key, 500, send_fun(self, :msg4)) end
     ])
 
     now = System.monotonic_time(:millisecond)

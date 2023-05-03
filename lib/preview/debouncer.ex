@@ -7,7 +7,7 @@ defmodule Preview.Debouncer do
     GenServer.start_link(__MODULE__, [], Keyword.take(opts, [:name]))
   end
 
-  def debounce(server, key, fun, timeout) do
+  def debounce(server, key, timeout, fun) do
     case GenServer.call(server, {:debounce, key}, timeout + @timeout_buffer) do
       :go ->
         result = {:ok, fun.()}
@@ -33,7 +33,7 @@ defmodule Preview.Debouncer do
 
       :error ->
         state = Map.put(state, key, [])
-      {:reply, :go, state}
+        {:reply, :go, state}
     end
   end
 
