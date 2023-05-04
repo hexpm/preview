@@ -15,7 +15,7 @@ defmodule Preview.Queue do
         module: {
           producer,
           queue_url: url,
-          max_number_of_messages: 8,
+          max_number_of_messages: concurrency,
           wait_time_seconds: 10,
           visibility_timeout: 120
         },
@@ -25,7 +25,7 @@ defmodule Preview.Queue do
         default: [
           concurrency: concurrency,
           min_demand: 0,
-          max_demand: concurrency
+          max_demand: 1
         ]
       ]
     )
