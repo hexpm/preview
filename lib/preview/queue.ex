@@ -92,7 +92,15 @@ defmodule Preview.Queue do
         files = create_package(package, version)
 
         if Version.compare(Preview.Utils.latest_version(package), version) == :eq do
-          Preview.Bucket.update_latest_version(package, version)
+          Preview.Debouncer.debounce(
+            Preview.Debouncer,
+            {:latest_version, package},
+            @gcs_put_debounce,
+            fn ->
+              Preview.Bucket.update_latest_version(package, version)
+            end
+          )
+
           update_package_sitemap(package, files)
           update_index_sitemap()
         end
