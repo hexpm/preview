@@ -36,7 +36,7 @@ defmodule Preview.CDN.Fastly do
 
     body = Jason.encode!(body)
 
-    Preview.HTTP.retry("fastly", fn -> :hackney.post(url, headers, body, []) end)
+    Preview.HTTP.retry("fastly", url, fn -> :hackney.post(url, headers, body, []) end)
     |> read_body()
   end
 
