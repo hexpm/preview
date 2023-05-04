@@ -15,6 +15,7 @@ defmodule Preview do
     Enum.flat_map(packages, fn package ->
       Enum.map(package.versions, &"tarballs/#{package.name}-#{&1}.tar")
     end)
+    |> Enum.shuffle()
     |> batched_send()
   end
 
@@ -30,7 +31,7 @@ defmodule Preview do
     {:ok, versions} = Preview.Hex.get_versions()
 
     Task.async_stream(
-      versions,
+      Enum.shuffle(versions),
       fn %{name: name, versions: versions} ->
         version = versions |> Enum.map(&Version.parse!/1) |> Preview.Utils.latest_version()
         Logger.info("Setting latest version: #{name} #{version}")
