@@ -84,6 +84,7 @@ defmodule Preview.Queue do
   end
 
   defp handle_record(%{"eventName" => "ObjectCreated:" <> _, "s3" => s3}) do
+    start = System.os_time(:millisecond)
     key = s3["object"]["key"]
     Logger.info("OBJECT CREATED #{key}")
 
@@ -106,7 +107,8 @@ defmodule Preview.Queue do
         end
 
         purge_key(package, version)
-        Logger.info("FINISHED UPLOADING CONTENTS #{key}")
+        elapsed = System.os_time(:millisecond) - start
+        Logger.info("FINISHED UPLOADING CONTENTS #{key} #{elapsed}ms")
 
       :error ->
         :skip
@@ -114,6 +116,7 @@ defmodule Preview.Queue do
   end
 
   defp handle_record(%{"eventName" => "ObjectRemoved:" <> _, "s3" => s3}) do
+    start = System.os_time(:millisecond)
     key = s3["object"]["key"]
     Logger.info("OBJECT DELETED #{key}")
 
@@ -122,7 +125,9 @@ defmodule Preview.Queue do
         delete_package(package, version)
         update_index_sitemap()
         purge_key(package, version)
-        Logger.info("FINISHED DELETING CONTENTS #{key}")
+
+        elapsed = System.os_time(:millisecond) - start
+        Logger.info("FINISHED DELETING CONTENTS #{key} #{elapsed}ms")
         :ok
 
       :error ->
