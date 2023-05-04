@@ -9,7 +9,7 @@ defmodule Preview.Storage.GCS do
   def get(bucket, key, _opts) do
     url = url(bucket, key)
 
-    case Preview.HTTP.retry("gcs", fn -> Preview.HTTP.get(url, headers()) end) do
+    case Preview.HTTP.retry("gcs", url, fn -> Preview.HTTP.get(url, headers()) end) do
       {:ok, 200, _headers, body} -> body
       {:ok, 404, _headers, _body} -> nil
     end
@@ -34,7 +34,7 @@ defmodule Preview.Storage.GCS do
 
     headers = filter_nil_values(headers)
 
-    case Preview.HTTP.retry("gcs", fn -> Preview.HTTP.put(url, headers, body) end) do
+    case Preview.HTTP.retry("gcs", url, fn -> Preview.HTTP.put(url, headers, body) end) do
       {:ok, 200, _headers, _body} ->
         Logger.info("file upload success #{url}")
         :ok
@@ -63,7 +63,7 @@ defmodule Preview.Storage.GCS do
     url = url(bucket, key)
 
     {:ok, 204, _headers, _body} =
-      Preview.HTTP.retry("gcs", fn -> Preview.HTTP.delete(url, headers()) end)
+      Preview.HTTP.retry("gcs", url, fn -> Preview.HTTP.delete(url, headers()) end)
 
     :ok
   end
@@ -88,7 +88,7 @@ defmodule Preview.Storage.GCS do
     url = url(bucket) <> "?prefix=#{prefix}&marker=#{marker}"
 
     {:ok, 200, _headers, body} =
-      Preview.HTTP.retry("gs", fn -> Preview.HTTP.get(url, headers()) end)
+      Preview.HTTP.retry("gs", url, fn -> Preview.HTTP.get(url, headers()) end)
 
     doc = SweetXml.parse(body)
     marker = SweetXml.xpath(doc, ~x"/ListBucketResult/NextMarker/text()"s)
