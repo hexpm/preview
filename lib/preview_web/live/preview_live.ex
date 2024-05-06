@@ -113,7 +113,7 @@ defmodule PreviewWeb.PreviewLive do
           {:ok, makeup} ->
             makeup
 
-          {:error, reason} ->
+          {:exit, reason} ->
             name = "#{package} #{version} #{filename}"
             reason = inspect(reason)
             Logger.warning("Failed to makeup #{name}, reason: #{reason}")
