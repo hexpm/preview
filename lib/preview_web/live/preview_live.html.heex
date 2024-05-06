@@ -20,7 +20,7 @@
             <li phx-hook="updateHash" id={"L#{ln}"} data-line-number={ln}></li>
           <% end %>
         </ul>
-        <%= raw(print_file_contents(@file_contents, @filename)) %>
+        <%= raw(@makeup_file_contents) %>
       </section>
     </div>
   <% end %>

@@ -37,6 +37,7 @@ defmodule Preview.MixProject do
       {:hex_core, "~> 0.8"},
       {:jason, "~> 1.0"},
       {:logster, "~> 1.0"},
+      {:makeup_eex, "~> 0.1.2"},
       {:makeup_elixir, "~> 0.16.0"},
       {:makeup_erlang, "~> 0.1.0"},
       {:makeup, "~> 1.0"},
