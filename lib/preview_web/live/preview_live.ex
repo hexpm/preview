@@ -1,7 +1,12 @@
 defmodule PreviewWeb.PreviewLive do
   use PreviewWeb, :live_view
 
+  alias Makeup.Lexers.{EExLexer, ElixirLexer, ErlangLexer}
+
+  require Logger
+
   @max_file_size 2 * 1000 * 1000
+  @makeup_timeout 1000
 
   defmodule Exception do
     defexception [:plug_status]
@@ -13,9 +18,10 @@ defmodule PreviewWeb.PreviewLive do
 
   @impl true
   def mount(params, _session, socket) do
-    version = params["version"] || Preview.Bucket.get_latest_version(params["package"])
+    package = params["package"]
+    version = params["version"] || Preview.Bucket.get_latest_version(package)
 
-    if all_files = Preview.Bucket.get_file_list(params["package"], version) do
+    if all_files = Preview.Bucket.get_file_list(package, version) do
       all_files = Enum.sort(all_files)
 
       filename =
@@ -25,19 +31,20 @@ defmodule PreviewWeb.PreviewLive do
           default_file(all_files)
         end
 
-      file_contents = file_contents_or_default(params["package"], version, filename)
+      file_contents = file_contents_or_default(package, version, filename)
 
       {:ok,
        assign(socket,
-         package: params["package"],
+         package: package,
          version: version,
          all_files: all_files,
          filename: filename,
          file_contents: file_contents,
+         makeup_file_contents: makeup_file_contents(package, version, filename, file_contents),
          selected_line: 0,
          page_title: filename,
-         meta_description: meta_description(params["package"], version, filename),
-         canonical: canonical_url(params["package"], filename)
+         meta_description: meta_description(package, version, filename),
+         canonical: canonical_url(package, filename)
        )}
     else
       raise Exception, plug_status: 404
@@ -75,6 +82,7 @@ defmodule PreviewWeb.PreviewLive do
         all_files: all_files,
         filename: filename,
         file_contents: file_contents,
+        makeup_file_contents: makeup_file_contents(package, version, filename, file_contents),
         page_title: filename,
         meta_description: meta_description(package, version, filename),
         canonical: canonical_url(package, filename)
@@ -93,12 +101,38 @@ defmodule PreviewWeb.PreviewLive do
     if to_charlist(str) == io, do: [selected: "selected"], else: []
   end
 
-  def print_file_contents(file_contents, filename) do
-    if makeup_supported?(filename) do
-      Makeup.highlight(file_contents)
-    else
-      content_tag(:pre, content_tag(:code, file_contents), class: "highlight")
+  defp makeup_file_contents(package, version, filename, file_contents) do
+    case makeup_lexer(filename) do
+      {:ok, lexer} ->
+        task =
+          Task.Supervisor.async_nolink(Preview.Tasks, fn ->
+            Makeup.highlight(file_contents, lexer: lexer)
+          end)
+
+        case Task.yield(task, @makeup_timeout) || Task.shutdown(task, @makeup_timeout) do
+          {:ok, makeup} ->
+            makeup
+
+          {:error, reason} ->
+            name = "#{package} #{version} #{filename}"
+            reason = inspect(reason)
+            Logger.warning("Failed to makeup #{name}, reason: #{reason}")
+
+            default_content(file_contents)
+
+          nil ->
+            name = "#{package} #{version} #{filename}"
+            Logger.warning("Failed to makeup #{name}, timeout")
+            default_content(file_contents)
+        end
+
+      :error ->
+        default_content(file_contents)
     end
+  end
+
+  defp default_content(file_contents) do
+    content_tag(:pre, content_tag(:code, file_contents), class: "highlight")
   end
 
   def default_file(all_files) do
@@ -127,10 +161,15 @@ defmodule PreviewWeb.PreviewLive do
     end
   end
 
-  defp makeup_supported?(filename) do
-    Path.extname(filename) in [".ex", ".exs", ".erl", ".hrl", ".escript"] ||
-      filename in ["rebar.config", "rebar.config.script"] ||
-      String.ends_with?(filename, ".app.src")
+  defp makeup_lexer(filename) do
+    cond do
+      Path.extname(filename) in [".ex", ".exs"] -> {:ok, ElixirLexer}
+      Path.extname(filename) in [".eex", ".heex"] -> {:ok, EExLexer}
+      Path.extname(filename) in [".erl", ".hrl", ".escript"] -> {:ok, ErlangLexer}
+      filename in ["rebar.config", "rebar.config.script"] -> {:ok, ErlangLexer}
+      String.ends_with?(filename, ".app.src") -> {:ok, ErlangLexer}
+      true -> :error
+    end
   end
 
   defp maybe_assign_selected_line(<<"L", number::binary>>, socket) do
