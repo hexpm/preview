@@ -67,6 +67,10 @@ defmodule Preview.Queue do
                 []
             end
           end)
+          # Handle old packages with broken, non-unique files
+          |> Enum.uniq_by(fn {path, _blob} -> path end)
+          |> Enum.sort()
+
 
         update_package_sitemap(package, files)
         Logger.info("#{key}: done")
