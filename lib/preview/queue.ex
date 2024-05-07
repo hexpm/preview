@@ -169,6 +169,8 @@ defmodule Preview.Queue do
             []
         end
       end)
+      # Handle old packages with broken, non-unique files
+      |> Enum.uniq_by(fn {path, _blob} -> path end)
 
     Preview.Bucket.put_files(package, version, files)
     files

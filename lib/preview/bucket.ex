@@ -53,7 +53,9 @@ defmodule Preview.Bucket do
     key = Path.join("file_lists", "#{package}-#{version}.json")
 
     if json = Preview.Storage.get(bucket, key) do
-      Jason.decode!(json)
+      json
+      |> Jason.decode!()
+      |> Enum.uniq()
     end
   end
 
