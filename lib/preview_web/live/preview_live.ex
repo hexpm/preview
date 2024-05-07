@@ -136,11 +136,31 @@ defmodule PreviewWeb.PreviewLive do
   end
 
   def default_file(all_files) do
-    Enum.find(all_files, &(&1 |> String.downcase() |> String.starts_with?("readme"))) ||
-      Enum.find(all_files, &(&1 == "mix.exs")) ||
-      Enum.find(all_files, &(&1 == "rebar.config")) ||
-      Enum.find(all_files, &(&1 == "Makefile")) ||
+    default_files =
+      Enum.filter(all_files, fn file ->
+        case default_file_priority(file) do
+          {:ok, _} -> true
+          :error -> false
+        end
+      end)
+
+    if default_files == [] do
       hd(all_files)
+    else
+      default_files
+      |> Enum.sort_by(&default_file_priority/1)
+      |> List.first()
+    end
+  end
+
+  @default_file_priority ["mix.exs", "rebar.config", "Makefile"] |> Enum.with_index(2) |> Map.new()
+
+  defp default_file_priority(file) do
+    if file |> String.downcase() |> String.starts_with?("readme") do
+      {:ok, 1}
+    else
+      Map.fetch(@default_file_priority, file)
+    end
   end
 
   defp file_contents_or_default(package, version, filename) do
