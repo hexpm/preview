@@ -151,7 +151,9 @@ defmodule PreviewWeb.PreviewLive do
     end
   end
 
-  @default_file_priority ["mix.exs", "rebar.config", "Makefile"] |> Enum.with_index(2) |> Map.new()
+  @default_file_priority ["mix.exs", "rebar.config", "Makefile"]
+                         |> Enum.with_index(2)
+                         |> Map.new()
 
   defp default_file_priority(file) do
     if file |> String.downcase() |> String.starts_with?("readme") do

@@ -71,7 +71,6 @@ defmodule Preview.Queue do
           |> Enum.uniq_by(fn {path, _blob} -> path end)
           |> Enum.sort()
 
-
         update_package_sitemap(package, files)
         Logger.info("#{key}: done")
 

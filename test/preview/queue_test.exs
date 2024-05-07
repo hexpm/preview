@@ -89,7 +89,7 @@ defmodule Preview.QueueTest do
     ref = Broadway.test_message(Preview.Queue, put_message(key))
     assert_receive {:ack, ^ref, [_], []}, 1000
 
-    assert Bucket.get_file_list(package, "1.0.0") == ["lib/foo.exs", "file"]
+    assert Bucket.get_file_list(package, "1.0.0") == ["file", "lib/foo.exs"]
     assert Bucket.get_file(package, "1.0.0", "lib/foo.exs") == "Foo"
     assert Bucket.get_file(package, "1.0.0", "file") == "file"
   end
