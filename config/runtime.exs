@@ -9,7 +9,7 @@ if config_env() == :prod do
     queue_concurrency: String.to_integer(System.fetch_env!("PREVIEW_QUEUE_CONCURRENCY")),
     fastly_key: System.fetch_env!("PREVIEW_FASTLY_KEY"),
     fastly_repo: System.fetch_env!("PREVIEW_FASTLY_REPO"),
-    plausible_url: "https://stats.hex.pm/js/index.js"
+    plausible_url: "https://stats.hex.pm/js/plausible.js"
 
   config :preview, :repo_bucket,
     implementation: Preview.Storage.S3,
