@@ -45,6 +45,14 @@ defmodule Preview.Application do
     %{default: [size: 50, count: 1, conn_max_idle_time: 10_000]}
   end
 
+  def sentry_before_send(%Sentry.Event{original_exception: exception} = event) do
+    cond do
+      Plug.Exception.status(exception) < 500 -> nil
+      Sentry.DefaultEventFilter.exclude_exception?(exception, event.source) -> nil
+      true -> event
+    end
+  end
+
   if Mix.env() == :prod do
     defp goth_spec() do
       credentials =
