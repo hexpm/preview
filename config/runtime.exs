@@ -19,12 +19,18 @@ if config_env() == :prod do
     implementation: Preview.Storage.GCS,
     name: System.fetch_env!("PREVIEW_BUCKET")
 
+  config :preview, PreviewWeb.Endpoint,
+    http: [port: String.to_integer(System.fetch_env!("PREVIEW_PORT"))],
+    url: [host: System.fetch_env!("PREVIEW_HOST")],
+    secret_key_base: System.fetch_env!("PREVIEW_SECRET_KEY_BASE")
+
   config :ex_aws,
     access_key_id: System.fetch_env!("PREVIEW_AWS_ACCESS_KEY_ID"),
     secret_access_key: System.fetch_env!("PREVIEW_AWS_ACCESS_KEY_SECRET")
 
-  config :rollbax,
-    access_token: System.fetch_env!("PREVIEW_ROLLBAR_ACCESS_TOKEN")
+  config :sentry,
+    dsn: System.fetch_env!("PREVIEW_SENTRY_DSN"),
+    environment_name: System.fetch_env!("PREVIEW_ENV")
 
   beam_port = String.to_integer(System.fetch_env!("BEAM_PORT"))
 

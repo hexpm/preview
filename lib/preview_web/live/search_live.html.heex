@@ -12,7 +12,7 @@
     />
     <div class="suggestions" id="results">
       <%= for app <- @results do %>
-        <span class="suggestion" phx-click={"search_" <> app} onclick=""><%= app %></span>
+        <span class="suggestion" phx-click={"search_" <> app} onclick="">{app}</span>
       <% end %>
     </div>
   </form>
@@ -24,7 +24,7 @@
           <label for="from">Version</label>
           <select name="from">
             <%= for vsn <- @versions do %>
-              <option value={vsn}><%= vsn %></option>
+              <option value={vsn}>{vsn}</option>
             <% end %>
           </select>
         </div>

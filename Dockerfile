@@ -1,4 +1,8 @@
-FROM hexpm/elixir:1.14.3-erlang-25.2.1-alpine-3.17.0 as build
+ARG ELIXIR_VERSION=1.17.3
+ARG ERLANG_VERSION=27.2
+ARG ALPINE_VERSION=3.20.3
+
+FROM hexpm/elixir:${ELIXIR_VERSION}-erlang-${ERLANG_VERSION}-alpine-${ALPINE_VERSION} AS build
 
 # install build dependencies
 RUN apk add --update git build-base nodejs yarn
@@ -32,11 +36,11 @@ RUN mix compile
 
 # build release
 COPY rel rel
-RUN mix release
+RUN mix do sentry.package_source_code, release
 
 # prepare release image
-FROM alpine:3.17.0 AS app
-RUN apk add --update bash openssl libstdc++
+FROM alpine:${ALPINE_VERSION} AS app
+RUN apk add --no-cache --update bash openssl libstdc++
 
 RUN mkdir /app
 WORKDIR /app

@@ -1,10 +1,6 @@
 name: CI
 
-on:
-  pull_request:
-  push:
-    branches:
-      - main
+on: [push, pull_request]
 
 jobs:
   test:
@@ -16,8 +12,8 @@ jobs:
 
       - uses: erlef/setup-elixir@v1
         with:
-          otp-version: 25.2.1
-          elixir-version: 1.14.3
+          otp-version: 27.2
+          elixir-version: 1.17.3
 
       - run: mix deps.get
       - run: mix deps.compile

@@ -3,13 +3,13 @@
     <label for="file_chooser">Select File:</label>
     <select class="file-select" name="file_chooser">
       <%= for filename <- @all_files do %>
-        <option {selected(@filename, filename)} value={filename}><%= filename %></option>
+        <option {selected(@filename, filename)} value={filename}>{filename}</option>
       <% end %>
     </select>
   </form>
   <%= if @filename && @file_contents do %>
     <div class="code_file">
-      <h2><%= @filename %></h2>
+      <h2>{@filename}</h2>
       <style>
         <%= raw Makeup.stylesheet(Makeup.Styles.HTML.StyleMap.lovelace_style()) %>
       </style>
@@ -20,7 +20,7 @@
             <li phx-hook="updateHash" id={"L#{ln}"} data-line-number={ln}></li>
           <% end %>
         </ul>
-        <%= raw(@makeup_file_contents) %>
+        {raw(@makeup_file_contents)}
       </section>
     </div>
   <% end %>

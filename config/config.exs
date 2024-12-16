@@ -32,14 +32,10 @@ config :preview, PreviewWeb.Endpoint,
   live_view: [signing_salt: "oPF55p/T"]
 
 # Configures Elixir's Logger
-config :logger, :console,
-  format: "$time $metadata[$level] $message\n",
-  metadata: [:request_id]
+config :logger, :default_formatter, format: "$metadata[$level] $message\n"
 
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
-
-config :rollbax, enabled: false
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

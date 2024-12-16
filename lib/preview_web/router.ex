@@ -1,7 +1,6 @@
 defmodule PreviewWeb.Router do
   use PreviewWeb, :router
   use Plug.ErrorHandler
-  use PreviewWeb.Plugs.Rollbax
 
   pipeline :browser do
     plug :accepts, ["html"]
