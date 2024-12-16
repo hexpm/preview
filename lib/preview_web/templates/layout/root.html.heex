@@ -11,7 +11,7 @@
     <%= if assigns[:canonical] do %>
       <link rel="canonical" href={assigns[:canonical]} />
     <% end %>
-    <%= csrf_meta_tag() %>
+    {csrf_meta_tag()}
     <.live_title suffix=" | Hex Preview">
       {assigns[:page_title] || "Home"}
     </.live_title>
@@ -44,7 +44,7 @@
     </header>
 
     <main role="main" class="main container">
-      <%= @inner_content %>
+      {@inner_content}
     </main>
 
     <nav class="footer">
@@ -84,7 +84,7 @@
           </div>
 
           <div class="column copyright">
-            <p><%= Date.utc_today().year %> © Six Colors AB.</p>
+            <p>{Date.utc_today().year} © Six Colors AB.</p>
             <p>
               Powered by the <a href="https://www.erlang.org/">Erlang VM</a>
               and the <a href="https://elixir-lang.org/">Elixir programming language</a>.
