@@ -6,6 +6,7 @@ defmodule Preview.Application do
   use Application
 
   def start(_type, _args) do
+    :logger.add_handler(:my_sentry_handler, Sentry.LoggerHandler, %{})
     setup_tmp_dir()
 
     children = [
