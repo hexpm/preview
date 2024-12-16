@@ -12,7 +12,6 @@ import Config
 config :preview, PreviewWeb.Endpoint,
   http: [compress: true],
   url: [scheme: "https", port: 443],
-  load_from_system_env: true,
   cache_static_manifest: "priv/static/cache_manifest.json"
 
 config :preview,
@@ -21,7 +20,9 @@ config :preview,
   gcs_put_debounce: 3000
 
 # Do not print debug messages in production
-config :logger, level: :info, metadata: [:request_id]
+config :logger, level: :info
+
+config :logger, :default_formatter, metadata: [:request_id]
 
 config :sasl, sasl_error_logger: false
 

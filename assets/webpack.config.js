@@ -1,52 +1,46 @@
 const path = require('path');
-const glob = require('glob');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = (env, options) => {
-  const devMode = options.mode !== 'production';
-
   return {
     optimization: {
       minimizer: [
-        new TerserPlugin({ cache: true, parallel: true, sourceMap: devMode }),
+        new TerserPlugin(),
         new CssMinimizerPlugin(),
       ]
     },
-    entry: {
-      'app': glob.sync('./vendor/**/*.js').concat(['./js/app.js'])
-    },
+    entry: [
+      './js/app.js'
+    ],
     output: {
-      filename: '[name].js',
-      path: path.resolve(__dirname, '../priv/static/js'),
-      publicPath: '/js/',
+      filename: 'js/app.js',
+      path: path.resolve(__dirname, '../priv/static'),
     },
-    mode: devMode ? 'development' : 'production',
-    devtool: devMode ? 'eval-cheap-module-source-map' : undefined,
     module: {
       rules: [
         {
-          test: /\.js$/,
-          exclude: /node_modules/,
-          use: {
-            loader: 'babel-loader'
-          }
-        },
-        {
-          test: /\.[s]?css$/,
+          test: /\.scss$/,
           use: [
             MiniCssExtractPlugin.loader,
-            'css-loader',
-            'sass-loader',
-          ],
+            {
+              loader: "css-loader",
+              options: { url: false }
+            },
+            "sass-loader"
+          ]
+        },
+        {
+          test: /\.css$/,
+          use: [MiniCssExtractPlugin.loader, 'css-loader']
         }
       ]
     },
     plugins: [
-      new MiniCssExtractPlugin({ filename: '../css/app.css' }),
-      new CopyWebpackPlugin({ patterns: [{ from: 'static/', to: '../' }] })
+      new MiniCssExtractPlugin({ filename: 'css/app.css' }),
+      new CopyWebpackPlugin({ patterns: [{ from: 'static/', to: '.' }] }),
     ]
   }
 };

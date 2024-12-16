@@ -12,7 +12,9 @@
       <link rel="canonical" href={assigns[:canonical]} />
     <% end %>
     <%= csrf_meta_tag() %>
-    <%= live_title_tag(assigns[:page_title] || "Home", suffix: " | Hex Preview") %>
+    <.live_title suffix=" | Hex Preview">
+      {assigns[:page_title] || "Home"}
+    </.live_title>
     <link phx-track-static rel="stylesheet" href={Routes.static_path(@conn, "/css/app.css")} />
     <script
       defer

@@ -40,7 +40,7 @@ defmodule PreviewWeb.Endpoint do
 
   plug PreviewWeb.Plugs.Status
   plug Plug.RequestId
-  plug Logster.Plugs.Logger, excludes: [:params]
+  plug Logster.Plugs.Logger, excludes: [:params], log: :info
   plug Plug.Telemetry, event_prefix: [:phoenix, :endpoint]
 
   plug Plug.Parsers,
@@ -57,25 +57,4 @@ defmodule PreviewWeb.Endpoint do
   end
 
   plug PreviewWeb.Router
-
-  def init(_key, config) do
-    if config[:load_from_system_env] do
-      port = System.fetch_env!("PREVIEW_PORT")
-
-      case Integer.parse(port) do
-        {_int, ""} ->
-          host = Application.fetch_env!(:preview, :host)
-          secret_key_base = System.fetch_env!("PREVIEW_SECRET_KEY_BASE")
-          config = put_in(config[:http][:port], port)
-          config = put_in(config[:url][:host], host)
-          config = put_in(config[:secret_key_base], secret_key_base)
-          {:ok, config}
-
-        :error ->
-          {:ok, config}
-      end
-    else
-      {:ok, config}
-    end
-  end
 end
