@@ -40,6 +40,7 @@ defmodule Preview.MixProject do
       {:makeup_eex, "~> 1.0"},
       {:makeup_elixir, "~> 1.0"},
       {:makeup_erlang, "~> 1.0"},
+      {:makeup_syntect, "~> 0.1"},
       {:makeup, "~> 1.0"},
       {:mint, "~> 1.1"},
       {:phoenix_html, "~> 4.0"},

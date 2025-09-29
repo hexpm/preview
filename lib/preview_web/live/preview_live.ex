@@ -101,10 +101,10 @@ defmodule PreviewWeb.PreviewLive do
 
   defp makeup_file_contents(package, version, filename, file_contents) do
     case makeup_lexer(filename) do
-      {:ok, lexer} ->
+      {:ok, {lexer, opts}} ->
         task =
           Task.Supervisor.async_nolink(Preview.Tasks, fn ->
-            Makeup.highlight(file_contents, lexer: lexer)
+            Makeup.highlight(file_contents, lexer: lexer, lexer_options: opts)
           end)
 
         case Task.yield(task, @makeup_timeout) || Task.shutdown(task, @makeup_timeout) do
@@ -183,12 +183,29 @@ defmodule PreviewWeb.PreviewLive do
 
   defp makeup_lexer(filename) do
     cond do
-      Path.extname(filename) in [".ex", ".exs"] -> {:ok, ElixirLexer}
-      Path.extname(filename) in [".eex", ".heex"] -> {:ok, EExLexer}
-      Path.extname(filename) in [".erl", ".hrl", ".escript"] -> {:ok, ErlangLexer}
-      filename in ["rebar.config", "rebar.config.script"] -> {:ok, ErlangLexer}
-      String.ends_with?(filename, ".app.src") -> {:ok, ErlangLexer}
-      true -> :error
+      Path.extname(filename) in [".ex", ".exs"] ->
+        {:ok, {ElixirLexer, []}}
+
+      Path.extname(filename) in [".eex", ".heex"] ->
+        {:ok, {EExLexer, []}}
+
+      Path.extname(filename) in [".erl", ".hrl", ".escript"] ->
+        {:ok, {ErlangLexer, []}}
+
+      filename in ["rebar.config", "rebar.config.script"] ->
+        {:ok, {ErlangLexer, []}}
+
+      String.ends_with?(filename, ".app.src") ->
+        {:ok, {ErlangLexer, []}}
+
+      true ->
+        extension =
+          case Path.extname(filename) do
+            "." <> ext -> ext
+            other -> other
+          end
+
+        Makeup.Registry.fetch_lexer_by_extension(extension)
     end
   end
 

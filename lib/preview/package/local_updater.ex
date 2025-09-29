@@ -10,6 +10,7 @@ defmodule Preview.Package.LocalUpdater do
     Logger.debug("Skipping version updater")
 
     Preview.Package.Store.fill([
+      {"phoenix_live_view", ["1.0.0"]},
       {"decimal", ["2.0.0"]},
       {"ecto", ["0.2.0"]},
       {"telemetry", ["0.4.2"]}

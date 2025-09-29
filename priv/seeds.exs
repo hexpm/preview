@@ -9,6 +9,9 @@ Preview.Storage.put(repo_bucket, "tarballs/decimal-2.0.0.tar", data)
 {:ok, {200, _, data}} = :hex_repo.get_tarball(:hex_core.default_config(), "ecto", "0.2.0")
 Preview.Storage.put(repo_bucket, "tarballs/ecto-0.2.0.tar", data)
 
+{:ok, {200, _, data}} = :hex_repo.get_tarball(:hex_core.default_config(), "phoenix_live_view", "1.0.0")
+Preview.Storage.put(repo_bucket, "tarballs/phoenix_live_view-1.0.0.tar", data)
+
 message = %{
   "Records" => [
     %{
@@ -22,6 +25,10 @@ message = %{
     %{
       "eventName" => "ObjectCreated:Put",
       "s3" => %{"object" => %{"key" => "tarballs/ecto-0.2.0.tar"}}
+    },
+    %{
+      "eventName" => "ObjectCreated:Put",
+      "s3" => %{"object" => %{"key" => "tarballs/phoenix_live_view-1.0.0.tar"}}
     }
   ]
 }
