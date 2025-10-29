@@ -24,9 +24,11 @@
     >
     </script>
 
-    <%= if plausible_url = Application.get_env(:preview, :plausible_url) do %>
-      <% host = Application.fetch_env!(:preview, :host) %>
-      <script async defer data-domain={host} src={plausible_url}>
+    <%= if host = Application.get_env(:preview, :host) do %>
+      <script async defer src={"https://s.#{host}/js/script.js"}>
+      </script>
+      <script>
+        window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};plausible.init({endpoint:"https://s.<%= host %>/api/event"})
       </script>
     <% end %>
   </head>

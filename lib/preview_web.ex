@@ -19,7 +19,7 @@ defmodule PreviewWeb do
 
   def controller do
     quote do
-      use Phoenix.Controller, namespace: PreviewWeb
+      use Phoenix.Controller, formats: [:html, :json]
 
       import Plug.Conn
       import PreviewWeb.Gettext
