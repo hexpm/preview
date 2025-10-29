@@ -1,5 +1,6 @@
 defmodule PreviewWeb.SitemapController do
   use PreviewWeb, :controller
+  plug :put_format, "xml"
 
   def index(conn, _params) do
     bucket = Application.get_env(:preview, :preview_bucket)
