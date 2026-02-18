@@ -55,6 +55,7 @@ defmodule Preview.MixProject do
       {:telemetry_metrics, "~> 1.0"},
       {:telemetry_poller, "~> 1.0"},
       {:floki, ">= 0.0.0", only: :test},
+      {:lazy_html, ">= 0.1.0", only: :test},
       {:mox, "~> 1.0", only: :test}
     ]
   end
