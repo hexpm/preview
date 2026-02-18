@@ -23,8 +23,18 @@ defmodule PreviewWeb.PreviewLive do
 
     if all_files = Preview.Bucket.get_file_list(package, version) do
       filename =
-        if params["filename"] && params["filename"] != [] do
-          Path.join(params["filename"])
+        case params["filename"] do
+          [_ | _] = parts -> Path.join(parts)
+          binary when is_binary(binary) and binary != "" -> binary
+          _ -> nil
+        end
+
+      # Validate that the filename exists in the package's file list.
+      # Without this check, Path.join resolves "../" segments before the
+      # key reaches the bucket, allowing traversal to other bucket keys.
+      filename =
+        if filename in all_files do
+          filename
         else
           default_file(all_files)
         end
