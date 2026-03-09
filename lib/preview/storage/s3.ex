@@ -11,6 +11,14 @@ defmodule Preview.Storage.S3 do
     end
   end
 
+  @impl true
+  def get_to_file(bucket, key, dest, _opts) do
+    case ExAws.S3.download_file(bucket, key, dest) |> ExAws.request() do
+      {:ok, _} -> :ok
+      {:error, {:http_error, 404, _}} -> nil
+    end
+  end
+
   def list(bucket, prefix) do
     ExAws.S3.list_objects(bucket, prefix: prefix)
     |> ExAws.stream!()

@@ -16,6 +16,14 @@ defmodule Preview.HTTP do
     |> read_response()
   end
 
+  def put_file(url, headers, path, opts \\ []) do
+    body = {:stream, File.stream!(path, 65_536)}
+
+    Finch.build(:put, url, headers, body)
+    |> Finch.request(Preview.Finch, opts)
+    |> read_response()
+  end
+
   def delete(url, headers, opts \\ []) do
     Finch.build(:delete, url, headers)
     |> Finch.request(Preview.Finch, opts)

@@ -29,6 +29,11 @@ defmodule Preview.Hex.Adapter do
     {:ok, {status, resp_headers, resp_body}}
   end
 
+  @impl true
+  def request_to_file(_method, _uri, _req_headers, _req_body, _filename, _config) do
+    raise "not implemented"
+  end
+
   defp prepare_headers(req_headers, content_type) do
     if content_type do
       req_headers

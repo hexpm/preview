@@ -10,7 +10,8 @@ defmodule Preview.MixProject do
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
       releases: releases(),
-      deps: deps()
+      deps: deps(),
+      listeners: [Phoenix.CodeReloader]
     ]
   end
 
@@ -34,7 +35,7 @@ defmodule Preview.MixProject do
       {:gettext, "~> 0.11"},
       {:goth, "~> 1.4"},
       {:hackney, "~> 1.20"},
-      {:hex_core, "~> 0.8"},
+      {:hex_core, "~> 0.15.0"},
       {:jason, "~> 1.0"},
       {:logster, "~> 1.0.0"},
       {:makeup_eex, "~> 1.0"},
