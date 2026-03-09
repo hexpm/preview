@@ -28,11 +28,17 @@ defmodule Preview.Storage do
     @type status :: 100..599
     @type headers :: %{String.t() => String.t()}
 
+    @callback head(bucket, key, opts) :: {status, headers} | nil
     @callback get(bucket, key, opts) :: body | nil
     @callback list(bucket, prefix) :: [key]
     @callback put(bucket, key, body, opts) :: term
     @callback put_file(bucket, key, source :: String.t(), opts) :: term
     @callback delete_many(bucket, [key]) :: [term]
+  end
+
+  def head(bucket, key, opts \\ []) do
+    {impl, name} = bucket(bucket)
+    impl.head(name, key, opts)
   end
 
   def list(bucket, prefix) do

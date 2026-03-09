@@ -4,6 +4,12 @@ defmodule Preview.HTTP do
 
   require Logger
 
+  def head(url, headers, opts \\ []) do
+    Finch.build(:head, url, headers)
+    |> Finch.request(Preview.Finch, opts)
+    |> read_response()
+  end
+
   def get(url, headers, opts \\ []) do
     Finch.build(:get, url, headers)
     |> Finch.request(Preview.Finch, opts)

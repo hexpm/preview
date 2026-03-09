@@ -70,6 +70,22 @@ defmodule Preview.Bucket do
     Preview.Storage.get(bucket, key)
   end
 
+  def file_size(package, version, filename) do
+    bucket = Application.get_env(:preview, :preview_bucket)
+    key = Path.join(["files", package, version, filename])
+
+    case Preview.Storage.head(bucket, key) do
+      {200, headers} ->
+        case headers["content-length"] do
+          nil -> nil
+          size -> String.to_integer(size)
+        end
+
+      nil ->
+        nil
+    end
+  end
+
   defp delete_old_files(original_file_list, new_file_list) do
     bucket = Application.get_env(:preview, :preview_bucket)
     Preview.Storage.delete_many(bucket, original_file_list -- new_file_list)

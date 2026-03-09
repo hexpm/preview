@@ -10,6 +10,16 @@ defmodule Preview.Storage.Local do
   end
 
   @impl true
+  def head(bucket, key, _opts) do
+    path = path(bucket, key)
+
+    case File.stat(path) do
+      {:ok, %{size: size}} -> {200, %{"content-length" => to_string(size)}}
+      {:error, _} -> nil
+    end
+  end
+
+  @impl true
   def get(bucket, key, _opts) do
     case File.read(path(bucket, key)) do
       {:ok, content} -> content

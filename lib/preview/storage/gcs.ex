@@ -6,6 +6,16 @@ defmodule Preview.Storage.GCS do
   require Logger
 
   @impl true
+  def head(bucket, key, _opts) do
+    url = url(bucket, key)
+
+    case Preview.HTTP.retry("gcs", url, fn -> Preview.HTTP.head(url, headers()) end) do
+      {:ok, 200, headers, _body} -> {200, Map.new(headers)}
+      {:ok, 404, _headers, _body} -> nil
+    end
+  end
+
+  @impl true
   def get(bucket, key, _opts) do
     url = url(bucket, key)
 
