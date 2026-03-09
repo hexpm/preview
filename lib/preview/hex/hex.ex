@@ -14,14 +14,10 @@ defmodule Preview.Hex do
 
   defp impl(), do: Application.get_env(:preview, :hex_impl)
 
-  def unpack_tarball(tarball, :memory) do
-    with {:ok, contents} <- :hex_tarball.unpack(tarball, :memory) do
-      {:ok, contents}
-    end
-  end
-
-  def unpack_tarball(tarball, path) when is_binary(path) do
-    with {:ok, _} <- :hex_tarball.unpack(tarball, String.to_charlist(path)) do
+  def unpack_tarball(tarball_path, output_path)
+      when is_binary(tarball_path) and is_binary(output_path) do
+    with {:ok, _} <-
+           :hex_tarball.unpack({:file, to_charlist(tarball_path)}, to_charlist(output_path)) do
       :ok
     end
   end

@@ -5,19 +5,24 @@ defmodule Preview.BucketTest do
   @repo_bucket Application.compile_env(:preview, :repo_bucket)
   @preview_bucket Application.compile_env(:preview, :preview_bucket)
 
-  test "get_tarball/2" do
+  test "get_tarball_to_file/2" do
     package = Fake.random(:package)
-    assert Bucket.get_tarball(package, "0.1.0") == :error
+    assert Bucket.get_tarball_to_file(package, "0.1.0") == :error
 
     Storage.put(@repo_bucket, "tarballs/#{package}-0.1.0.tar", "data")
-    assert Bucket.get_tarball(package, "0.1.0") == {:ok, "data"}
+    assert {:ok, path} = Bucket.get_tarball_to_file(package, "0.1.0")
+    assert File.read!(path) == "data"
   end
 
-  describe "put_files/3" do
+  describe "put_files/4" do
     test "upload files" do
       package = Fake.random(:package)
-      files = [{"README.md", "readme"}, {"lib/foo.ex", "foo"}]
-      Bucket.put_files(package, "0.1.0", files)
+      dir = Preview.TmpDir.tmp_dir("test")
+      File.write!(Path.join(dir, "README.md"), "readme")
+      File.mkdir_p!(Path.join(dir, "lib"))
+      File.write!(Path.join(dir, "lib/foo.ex"), "foo")
+
+      Bucket.put_files(package, "0.1.0", dir, ["README.md", "lib/foo.ex"])
 
       file_list = Storage.get(@preview_bucket, "file_lists/#{package}-0.1.0.json")
       assert Jason.decode(file_list) == {:ok, ["README.md", "lib/foo.ex"]}
@@ -28,11 +33,14 @@ defmodule Preview.BucketTest do
 
     test "delete old files" do
       package = Fake.random(:package)
-      files = [{"README.md", "readme"}, {"lib/foo.ex", "foo"}]
-      Bucket.put_files(package, "0.1.0", files)
+      dir = Preview.TmpDir.tmp_dir("test")
+      File.write!(Path.join(dir, "README.md"), "readme")
+      File.mkdir_p!(Path.join(dir, "lib"))
+      File.write!(Path.join(dir, "lib/foo.ex"), "foo")
+      Bucket.put_files(package, "0.1.0", dir, ["README.md", "lib/foo.ex"])
 
-      files = [{"README.md", "readme"}, {"lib/bar.ex", "bar"}]
-      Bucket.put_files(package, "0.1.0", files)
+      File.write!(Path.join(dir, "lib/bar.ex"), "bar")
+      Bucket.put_files(package, "0.1.0", dir, ["README.md", "lib/bar.ex"])
 
       file_list = Storage.get(@preview_bucket, "file_lists/#{package}-0.1.0.json")
       assert Jason.decode(file_list) == {:ok, ["README.md", "lib/bar.ex"]}

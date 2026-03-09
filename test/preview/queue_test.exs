@@ -53,7 +53,9 @@ defmodule Preview.QueueTest do
 
     package = Fake.random(:package)
     key = "tarballs/#{package}-1.0.0.tar"
-    Bucket.put_files(package, "1.0.0", [{"README.md", "readme"}])
+    dir = Preview.TmpDir.tmp_dir("test")
+    File.write!(Path.join(dir, "README.md"), "readme")
+    Bucket.put_files(package, "1.0.0", dir, ["README.md"])
 
     ref = Broadway.test_message(Preview.Queue, delete_message(key))
     assert_receive {:ack, ^ref, [_], []}, 1000
@@ -64,7 +66,6 @@ defmodule Preview.QueueTest do
     assert Storage.get(@preview_bucket, "sitemaps/sitemap.xml") =~ "<sitemapindex"
   end
 
-  @tag :capture_log
   test "unsafe paths" do
     package = Fake.random(:package)
     Mox.set_mox_global()
@@ -86,12 +87,15 @@ defmodule Preview.QueueTest do
 
     Storage.put(@repo_bucket, key, tarball)
 
-    ref = Broadway.test_message(Preview.Queue, put_message(key))
-    assert_receive {:ack, ^ref, [_], []}, 1000
+    log =
+      ExUnit.CaptureLog.capture_log(fn ->
+        ref = Broadway.test_message(Preview.Queue, put_message(key))
+        assert_receive {:ack, ^ref, [_], []}, 1000
+      end)
 
-    assert Bucket.get_file_list(package, "1.0.0") == ["file", "lib/foo.exs"]
-    assert Bucket.get_file(package, "1.0.0", "lib/foo.exs") == "Foo"
-    assert Bucket.get_file(package, "1.0.0", "file") == "file"
+    assert log =~ "Failed to unpack"
+    assert log =~ "unsafe_path"
+    refute Bucket.get_file_list(package, "1.0.0")
   end
 
   defp put_message(key) do

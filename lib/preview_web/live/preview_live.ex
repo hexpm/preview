@@ -174,20 +174,21 @@ defmodule PreviewWeb.PreviewLive do
   end
 
   defp file_contents_or_default(package, version, filename) do
-    file_contents = Preview.Bucket.get_file(package, version, filename)
-
-    cond do
-      !file_contents ->
+    case Preview.Bucket.file_size(package, version, filename) do
+      nil ->
         raise Exception, plug_status: 404
 
-      not String.valid?(file_contents) ->
-        "Contents for binary files are not shown."
+      size when size > @max_file_size ->
+        "File is too large to be displayed #{Float.round(size / 1_000_000, 1)}MB."
 
-      byte_size(file_contents) > @max_file_size ->
-        "File is too large to be displayed #{div(byte_size(file_contents), 1_000_000)}MB."
+      _size ->
+        file_contents = Preview.Bucket.get_file(package, version, filename)
 
-      true ->
-        file_contents
+        cond do
+          !file_contents -> raise Exception, plug_status: 404
+          not String.valid?(file_contents) -> "Contents for binary files are not shown."
+          true -> file_contents
+        end
     end
   end
 

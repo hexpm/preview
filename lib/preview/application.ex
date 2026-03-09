@@ -10,6 +10,7 @@ defmodule Preview.Application do
     setup_tmp_dir()
 
     children = [
+      Preview.TmpDir,
       PreviewWeb.Telemetry,
       {Phoenix.PubSub, name: Preview.PubSub},
       {Task.Supervisor, name: Preview.Tasks},

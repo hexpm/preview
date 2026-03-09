@@ -53,26 +53,14 @@ defmodule Preview.Queue do
 
     case key_components(key) do
       {:ok, package, version} ->
-        {:ok, tarball} = Preview.Bucket.get_tarball(package, version)
-        {:ok, %{contents: contents}} = Preview.Hex.unpack_tarball(tarball, :memory)
+        case extract_package(package, version) do
+          {:ok, _dir, file_paths} ->
+            update_package_sitemap(package, file_paths)
+            Logger.info("#{key}: done")
 
-        files =
-          Enum.flat_map(contents, fn {path, blob} ->
-            case safe_charlist_path(path) do
-              {:ok, path} ->
-                [{path, blob}]
-
-              :error ->
-                Logger.error("Unsafe path from #{package} #{version}: #{path}")
-                []
-            end
-          end)
-          # Handle old packages with broken, non-unique files
-          |> Enum.uniq_by(fn {path, _blob} -> path end)
-          |> Enum.sort()
-
-        update_package_sitemap(package, files)
-        Logger.info("#{key}: done")
+          :error ->
+            :ok
+        end
 
       :error ->
         Logger.info("#{key}: skip")
@@ -93,25 +81,29 @@ defmodule Preview.Queue do
 
     case key_components(key) do
       {:ok, package, version} ->
-        files = create_package(package, version)
+        case create_package(package, version) do
+          {:ok, file_paths} ->
+            if Version.compare(Preview.Utils.latest_version(package), version) == :eq do
+              Preview.Debouncer.debounce(
+                Preview.Debouncer,
+                {:latest_version, package},
+                @gcs_put_debounce,
+                fn ->
+                  Preview.Bucket.update_latest_version(package, version)
+                end
+              )
 
-        if Version.compare(Preview.Utils.latest_version(package), version) == :eq do
-          Preview.Debouncer.debounce(
-            Preview.Debouncer,
-            {:latest_version, package},
-            @gcs_put_debounce,
-            fn ->
-              Preview.Bucket.update_latest_version(package, version)
+              update_package_sitemap(package, file_paths)
+              update_index_sitemap()
             end
-          )
 
-          update_package_sitemap(package, files)
-          update_index_sitemap()
+            purge_key(package, version)
+            elapsed = System.os_time(:millisecond) - start
+            Logger.info("FINISHED UPLOADING CONTENTS #{key} #{elapsed}ms")
+
+          :error ->
+            :ok
         end
-
-        purge_key(package, version)
-        elapsed = System.os_time(:millisecond) - start
-        Logger.info("FINISHED UPLOADING CONTENTS #{key} #{elapsed}ms")
 
       :error ->
         :skip
@@ -155,29 +147,53 @@ defmodule Preview.Queue do
     {package, version}
   end
 
+  defp extract_package(package, version) do
+    {:ok, tarball_path} = Preview.Bucket.get_tarball_to_file(package, version)
+    output_dir = Preview.TmpDir.tmp_dir("package")
+
+    case Preview.Hex.unpack_tarball(tarball_path, output_dir) do
+      :ok ->
+        file_paths =
+          output_dir
+          |> Path.join("**")
+          |> Path.wildcard(match_dot: true)
+          |> Enum.filter(&File.regular?(&1, raw: true))
+          |> Enum.flat_map(fn full_path ->
+            relative = Path.relative_to(full_path, output_dir)
+
+            if relative == "hex_metadata.config" do
+              []
+            else
+              case safe_path(Path.split(relative), []) do
+                {:ok, path} ->
+                  [Path.join(path)]
+
+                :error ->
+                  Logger.error("Unsafe path from #{package} #{version}: #{relative}")
+                  []
+              end
+            end
+          end)
+          |> Enum.uniq()
+          |> Enum.sort()
+
+        {:ok, output_dir, file_paths}
+
+      {:error, reason} ->
+        Logger.error("Failed to unpack #{package} #{version}: #{inspect(reason)}")
+        :error
+    end
+  end
+
   def create_package(package, version) do
-    # TODO: Handle errors
-    # TODO: This does not handle symlinks
-    {:ok, tarball} = Preview.Bucket.get_tarball(package, version)
-    {:ok, tarball_contents} = Preview.Hex.unpack_tarball(tarball, :memory)
+    case extract_package(package, version) do
+      {:ok, dir, file_paths} ->
+        Preview.Bucket.put_files(package, version, dir, file_paths)
+        {:ok, file_paths}
 
-    files =
-      Enum.flat_map(tarball_contents.contents, fn {path, blob} ->
-        case safe_charlist_path(path) do
-          {:ok, path} ->
-            [{path, blob}]
-
-          :error ->
-            Logger.error("Unsafe path from #{package} #{version}: #{path}")
-            []
-        end
-      end)
-      # Handle old packages with broken, non-unique files
-      |> Enum.uniq_by(fn {path, _blob} -> path end)
-      |> Enum.sort()
-
-    Preview.Bucket.put_files(package, version, files)
-    files
+      :error ->
+        :error
+    end
   end
 
   def delete_package(package, version) do
@@ -197,11 +213,10 @@ defmodule Preview.Queue do
     Logger.info("UPDATED INDEX SITEMAP")
   end
 
-  defp update_package_sitemap(package, files) do
+  defp update_package_sitemap(package, file_paths) do
     Logger.info("UPDATING PACKAGE SITEMAP #{package}")
 
-    files = for {path, _content} <- files, do: path
-    body = Preview.Sitemaps.render_package(package, files, DateTime.utc_now())
+    body = Preview.Sitemaps.render_package(package, file_paths, DateTime.utc_now())
     Preview.Bucket.upload_package_sitemap(package, body)
 
     Logger.info("UPDATED PACKAGE SITEMAP #{package}")
@@ -237,13 +252,6 @@ defmodule Preview.Queue do
       "preview/package/#{package}",
       "preview/package/#{package}/version/#{version}"
     ])
-  end
-
-  defp safe_charlist_path(list) do
-    case list |> List.to_string() |> Path.split() |> safe_path([]) do
-      {:ok, path} -> {:ok, Path.join(path)}
-      :error -> :error
-    end
   end
 
   defp safe_path(["." | rest], acc), do: safe_path(rest, acc)

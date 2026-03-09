@@ -6,6 +6,16 @@ defmodule Preview.Storage.GCS do
   require Logger
 
   @impl true
+  def head(bucket, key, _opts) do
+    url = url(bucket, key)
+
+    case Preview.HTTP.retry("gcs", url, fn -> Preview.HTTP.head(url, headers()) end) do
+      {:ok, 200, headers, _body} -> {200, Map.new(headers)}
+      {:ok, 404, _headers, _body} -> nil
+    end
+  end
+
+  @impl true
   def get(bucket, key, _opts) do
     url = url(bucket, key)
 
@@ -22,6 +32,19 @@ defmodule Preview.Storage.GCS do
 
   @impl true
   def put(bucket, key, body, opts) do
+    upload(bucket, key, opts, fn url, headers ->
+      Preview.HTTP.put(url, headers, body)
+    end)
+  end
+
+  @impl true
+  def put_file(bucket, key, source, opts) do
+    upload(bucket, key, opts, fn url, headers ->
+      Preview.HTTP.put_file(url, headers, source)
+    end)
+  end
+
+  defp upload(bucket, key, opts, fun) do
     url = url(bucket, key)
 
     headers =
@@ -34,7 +57,7 @@ defmodule Preview.Storage.GCS do
 
     headers = filter_nil_values(headers)
 
-    case Preview.HTTP.retry("gcs", url, fn -> Preview.HTTP.put(url, headers, body) end) do
+    case Preview.HTTP.retry("gcs", url, fn -> fun.(url, headers) end) do
       {:ok, 200, _headers, _body} ->
         Logger.info("file upload success #{url}")
         :ok

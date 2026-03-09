@@ -10,10 +10,31 @@ defmodule Preview.Storage.Local do
   end
 
   @impl true
+  def head(bucket, key, _opts) do
+    path = path(bucket, key)
+
+    case File.stat(path) do
+      {:ok, %{size: size}} -> {200, %{"content-length" => to_string(size)}}
+      {:error, _} -> nil
+    end
+  end
+
+  @impl true
   def get(bucket, key, _opts) do
     case File.read(path(bucket, key)) do
       {:ok, content} -> content
       {:error, _} -> nil
+    end
+  end
+
+  def get_to_file(bucket, key, dest, _opts) do
+    source = path(bucket, key)
+
+    if File.regular?(source) do
+      File.cp!(source, dest)
+      :ok
+    else
+      nil
     end
   end
 
@@ -22,6 +43,13 @@ defmodule Preview.Storage.Local do
     path = path(bucket, key)
     File.mkdir_p!(Path.dirname(path))
     File.write!(path, body)
+  end
+
+  @impl true
+  def put_file(bucket, key, source, _opts) do
+    path = path(bucket, key)
+    File.mkdir_p!(Path.dirname(path))
+    File.cp!(source, path)
   end
 
   @impl true

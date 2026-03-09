@@ -4,6 +4,12 @@ defmodule Preview.HTTP do
 
   require Logger
 
+  def head(url, headers, opts \\ []) do
+    Finch.build(:head, url, headers)
+    |> Finch.request(Preview.Finch, opts)
+    |> read_response()
+  end
+
   def get(url, headers, opts \\ []) do
     Finch.build(:get, url, headers)
     |> Finch.request(Preview.Finch, opts)
@@ -11,6 +17,14 @@ defmodule Preview.HTTP do
   end
 
   def put(url, headers, body, opts \\ []) do
+    Finch.build(:put, url, headers, body)
+    |> Finch.request(Preview.Finch, opts)
+    |> read_response()
+  end
+
+  def put_file(url, headers, path, opts \\ []) do
+    body = {:stream, File.stream!(path, 65_536)}
+
     Finch.build(:put, url, headers, body)
     |> Finch.request(Preview.Finch, opts)
     |> read_response()
