@@ -179,7 +179,7 @@ defmodule PreviewWeb.PreviewLive do
         raise Exception, plug_status: 404
 
       size when size > @max_file_size ->
-        "File is too large to be displayed #{div(size, 1_000_000)}MB."
+        "File is too large to be displayed #{Float.round(size / 1_000_000, 1)}MB."
 
       _size ->
         file_contents = Preview.Bucket.get_file(package, version, filename)
