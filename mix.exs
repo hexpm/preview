@@ -51,7 +51,7 @@ defmodule Preview.MixProject do
       {:phoenix_view, "~> 2.0"},
       {:phoenix, "~> 1.7"},
       {:plug_cowboy, "~> 2.0"},
-      {:sentry, "~> 10.8"},
+      {:sentry, "~> 12.0"},
       {:sweet_xml, "~> 0.7.0"},
       {:telemetry_metrics, "~> 1.0"},
       {:telemetry_poller, "~> 1.0"},
