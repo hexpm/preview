@@ -15,14 +15,15 @@ defmodule Preview.TmpDirTest do
   test "cleanup on normal process exit" do
     test_pid = self()
 
-    Task.start(fn ->
-      file = Preview.TmpDir.tmp_file("test")
-      dir = Preview.TmpDir.tmp_dir("test")
-      send(test_pid, {:paths, file, dir})
-    end)
+    {:ok, pid} =
+      Task.start(fn ->
+        file = Preview.TmpDir.tmp_file("test")
+        dir = Preview.TmpDir.tmp_dir("test")
+        send(test_pid, {:paths, file, dir})
+      end)
 
     assert_receive {:paths, file, dir}
-    Process.sleep(100)
+    await_cleanup(pid)
 
     refute File.exists?(file)
     refute File.exists?(dir)
@@ -32,15 +33,16 @@ defmodule Preview.TmpDirTest do
   test "cleanup on process crash" do
     test_pid = self()
 
-    Task.start(fn ->
-      file = Preview.TmpDir.tmp_file("test")
-      dir = Preview.TmpDir.tmp_dir("test")
-      send(test_pid, {:paths, file, dir})
-      raise "crash"
-    end)
+    {:ok, pid} =
+      Task.start(fn ->
+        file = Preview.TmpDir.tmp_file("test")
+        dir = Preview.TmpDir.tmp_dir("test")
+        send(test_pid, {:paths, file, dir})
+        raise "crash"
+      end)
 
     assert_receive {:paths, file, dir}
-    Process.sleep(100)
+    await_cleanup(pid)
 
     refute File.exists?(file)
     refute File.exists?(dir)
@@ -49,24 +51,31 @@ defmodule Preview.TmpDirTest do
   test "multiple paths for one process" do
     test_pid = self()
 
-    Task.start(fn ->
-      paths =
-        for i <- 1..5 do
-          file = Preview.TmpDir.tmp_file("test-#{i}")
-          dir = Preview.TmpDir.tmp_dir("test-#{i}")
-          {file, dir}
-        end
+    {:ok, pid} =
+      Task.start(fn ->
+        paths =
+          for i <- 1..5 do
+            file = Preview.TmpDir.tmp_file("test-#{i}")
+            dir = Preview.TmpDir.tmp_dir("test-#{i}")
+            {file, dir}
+          end
 
-      send(test_pid, {:paths, paths})
-    end)
+        send(test_pid, {:paths, paths})
+      end)
 
     assert_receive {:paths, paths}
-    Process.sleep(100)
+    await_cleanup(pid)
 
     for {file, dir} <- paths do
       refute File.exists?(file)
       refute File.exists?(dir)
     end
+  end
+
+  defp await_cleanup(pid) do
+    ref = Process.monitor(pid)
+    assert_receive {:DOWN, ^ref, _, _, _}, 5000
+    :sys.get_state(Preview.TmpDir)
   end
 
   test "paths persist while process is alive" do
