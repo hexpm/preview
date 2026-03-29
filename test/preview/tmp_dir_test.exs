@@ -23,7 +23,7 @@ defmodule Preview.TmpDirTest do
       end)
 
     assert_receive {:paths, file, dir}
-    await_cleanup(pid)
+    Preview.TmpDir.await_cleanup(pid)
 
     refute File.exists?(file)
     refute File.exists?(dir)
@@ -42,7 +42,7 @@ defmodule Preview.TmpDirTest do
       end)
 
     assert_receive {:paths, file, dir}
-    await_cleanup(pid)
+    Preview.TmpDir.await_cleanup(pid)
 
     refute File.exists?(file)
     refute File.exists?(dir)
@@ -64,18 +64,12 @@ defmodule Preview.TmpDirTest do
       end)
 
     assert_receive {:paths, paths}
-    await_cleanup(pid)
+    Preview.TmpDir.await_cleanup(pid)
 
     for {file, dir} <- paths do
       refute File.exists?(file)
       refute File.exists?(dir)
     end
-  end
-
-  defp await_cleanup(pid) do
-    ref = Process.monitor(pid)
-    assert_receive {:DOWN, ^ref, _, _, _}, 5000
-    :sys.get_state(Preview.TmpDir)
   end
 
   test "paths persist while process is alive" do
