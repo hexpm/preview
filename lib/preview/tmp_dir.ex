@@ -77,7 +77,12 @@ defmodule Preview.TmpDir do
       GenServer.reply(from, :ok)
     end
 
-    {:noreply, %{state | monitors: MapSet.delete(state.monitors, pid), waiters: Map.delete(state.waiters, pid)}}
+    {:noreply,
+     %{
+       state
+       | monitors: MapSet.delete(state.monitors, pid),
+         waiters: Map.delete(state.waiters, pid)
+     }}
   end
 
   @impl true
