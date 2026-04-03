@@ -37,7 +37,7 @@ defmodule Preview.MixProject do
       {:hackney, "~> 1.20"},
       {:hex_core, "~> 0.15.0"},
       {:jason, "~> 1.0"},
-      {:logster, "~> 1.0.0"},
+      {:logster, "~> 1.1.1"},
       {:makeup_eex, "~> 2.0"},
       {:makeup_elixir, "~> 1.0"},
       {:makeup_erlang, "~> 1.0"},
