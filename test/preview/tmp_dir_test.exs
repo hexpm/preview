@@ -72,6 +72,37 @@ defmodule Preview.TmpDirTest do
     end
   end
 
+  test "cleanup removes paths for calling process" do
+    file = Preview.TmpDir.tmp_file("test")
+    dir = Preview.TmpDir.tmp_dir("test")
+
+    assert File.exists?(file)
+    assert File.dir?(dir)
+
+    Preview.TmpDir.cleanup()
+
+    refute File.exists?(file)
+    refute File.exists?(dir)
+  end
+
+  test "cleanup only removes paths for calling process" do
+    test_pid = self()
+
+    Task.start(fn ->
+      other_file = Preview.TmpDir.tmp_file("other")
+      send(test_pid, {:other_path, other_file})
+      Process.sleep(:infinity)
+    end)
+
+    assert_receive {:other_path, other_file}
+
+    file = Preview.TmpDir.tmp_file("test")
+    Preview.TmpDir.cleanup()
+
+    refute File.exists?(file)
+    assert File.exists?(other_file)
+  end
+
   test "paths persist while process is alive" do
     file = Preview.TmpDir.tmp_file("test")
     dir = Preview.TmpDir.tmp_dir("test")
