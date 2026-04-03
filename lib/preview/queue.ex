@@ -53,13 +53,17 @@ defmodule Preview.Queue do
 
     case key_components(key) do
       {:ok, package, version} ->
-        case extract_package(package, version) do
-          {:ok, _dir, file_paths} ->
-            update_package_sitemap(package, file_paths)
-            Logger.info("#{key}: done")
+        try do
+          case extract_package(package, version) do
+            {:ok, _dir, file_paths} ->
+              update_package_sitemap(package, file_paths)
+              Logger.info("#{key}: done")
 
-          :error ->
-            :ok
+            :error ->
+              :ok
+          end
+        after
+          Preview.TmpDir.cleanup()
         end
 
       :error ->
@@ -186,13 +190,17 @@ defmodule Preview.Queue do
   end
 
   def create_package(package, version) do
-    case extract_package(package, version) do
-      {:ok, dir, file_paths} ->
-        Preview.Bucket.put_files(package, version, dir, file_paths)
-        {:ok, file_paths}
+    try do
+      case extract_package(package, version) do
+        {:ok, dir, file_paths} ->
+          Preview.Bucket.put_files(package, version, dir, file_paths)
+          {:ok, file_paths}
 
-      :error ->
-        :error
+        :error ->
+          :error
+      end
+    after
+      Preview.TmpDir.cleanup()
     end
   end
 
