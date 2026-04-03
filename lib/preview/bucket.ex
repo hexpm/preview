@@ -29,7 +29,8 @@ defmodule Preview.Bucket do
     |> Task.async_stream(
       fn {key, filename} ->
         source = Path.join(dir, filename)
-        Preview.Storage.put_file(bucket, key, source, put_opts(package, version))
+        opts = put_opts(package, version) ++ content_type(filename)
+        Preview.Storage.put_file(bucket, key, source, opts)
       end,
       max_concurrency: 10,
       timeout: 10_000
@@ -134,5 +135,12 @@ defmodule Preview.Bucket do
     ]
 
     [cache_control: "public, max-age=3600", meta: meta]
+  end
+
+  defp content_type(path) do
+    case Path.extname(path) do
+      "." <> ext -> [content_type: MIME.type(ext)]
+      "" -> []
+    end
   end
 end
