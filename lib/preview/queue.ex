@@ -17,7 +17,7 @@ defmodule Preview.Queue do
           queue_url: url,
           max_number_of_messages: concurrency,
           wait_time_seconds: 10,
-          visibility_timeout: 120
+          visibility_timeout: 300
         },
         concurrency: 1
       ],
@@ -44,16 +44,19 @@ defmodule Preview.Queue do
   end
 
   def handle_message(%{data: %{"Records" => records}} = message) do
-    Enum.each(records, &handle_record/1)
+    Enum.each(records, fn record ->
+      run_in_task(fn -> handle_record(record) end)
+    end)
+
     message
   end
 
   def handle_message(%{data: %{"preview:sitemap" => key}} = message) do
     Logger.info("#{key}: start")
 
-    case key_components(key) do
-      {:ok, package, version} ->
-        try do
+    run_in_task(fn ->
+      case key_components(key) do
+        {:ok, package, version} ->
           case extract_package(package, version) do
             {:ok, _dir, file_paths} ->
               update_package_sitemap(package, file_paths)
@@ -62,13 +65,11 @@ defmodule Preview.Queue do
             :error ->
               :ok
           end
-        after
-          Preview.TmpDir.cleanup()
-        end
 
-      :error ->
-        Logger.info("#{key}: skip")
-    end
+        :error ->
+          Logger.info("#{key}: skip")
+      end
+    end)
 
     message
   end
@@ -190,17 +191,13 @@ defmodule Preview.Queue do
   end
 
   def create_package(package, version) do
-    try do
-      case extract_package(package, version) do
-        {:ok, dir, file_paths} ->
-          Preview.Bucket.put_files(package, version, dir, file_paths)
-          {:ok, file_paths}
+    case extract_package(package, version) do
+      {:ok, dir, file_paths} ->
+        Preview.Bucket.put_files(package, version, dir, file_paths)
+        {:ok, file_paths}
 
-        :error ->
-          :error
-      end
-    after
-      Preview.TmpDir.cleanup()
+      :error ->
+        :error
     end
   end
 
@@ -252,6 +249,17 @@ defmodule Preview.Queue do
         end)
       )
     end)
+  end
+
+  defp run_in_task(fun) do
+    task = Task.Supervisor.async(Preview.Tasks, fun)
+
+    case Task.yield(task, :timer.seconds(270)) || Task.shutdown(task) do
+      {:ok, result} -> result
+      {:exit, {exception, stacktrace}} -> reraise(exception, stacktrace)
+      {:exit, reason} -> exit(reason)
+      nil -> raise "task timeout"
+    end
   end
 
   defp purge_key(package, version) do
