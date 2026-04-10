@@ -21,7 +21,7 @@ defmodule PreviewWeb.PreviewLive do
     package = params["package"]
     version = params["version"] || Preview.Bucket.get_latest_version(package)
 
-    if all_files = Preview.Bucket.get_file_list(package, version) do
+    with [_ | _] = all_files <- Preview.Bucket.get_file_list(package, version) do
       filename =
         case params["filename"] do
           [_ | _] = parts -> Path.join(parts)
@@ -55,7 +55,7 @@ defmodule PreviewWeb.PreviewLive do
          canonical: canonical_url(package, filename)
        )}
     else
-      raise Exception, plug_status: 404
+      _ -> raise Exception, plug_status: 404
     end
   end
 
