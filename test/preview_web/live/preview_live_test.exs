@@ -51,6 +51,22 @@ defmodule PreviewWeb.PreviewLiveTest do
 
       assert render(view) =~ "<h2>README.md</h2>"
     end
+
+    test "returns 404 when file list is empty", %{conn: conn} do
+      package = Fake.random(:package)
+      version = "0.1.0"
+      file_list = Jason.encode!([])
+
+      Storage.put(@preview_bucket, "file_lists/#{package}-#{version}.json", file_list)
+      Storage.put(@preview_bucket, "latest_versions/#{package}", version)
+
+      exception =
+        assert_raise PreviewWeb.PreviewLive.Exception, fn ->
+          live(conn, "/preview/#{package}/#{version}")
+        end
+
+      assert exception.plug_status == 404
+    end
   end
 
   describe "default_file/1" do
