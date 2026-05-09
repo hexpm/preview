@@ -27,6 +27,7 @@ defmodule Preview.MixProject do
 
   defp deps do
     [
+      {:bandit, "~> 1.0"},
       {:broadway_sqs, "~> 0.7.0"},
       {:broadway, "~> 1.0"},
       {:ex_aws_s3, "~> 2.0"},
@@ -51,7 +52,6 @@ defmodule Preview.MixProject do
       {:phoenix_live_view, "~> 1.0"},
       {:phoenix_view, "~> 2.0"},
       {:phoenix, "~> 1.7"},
-      {:plug_cowboy, "~> 2.0"},
       {:sentry, "~> 13.0"},
       {:sweet_xml, "~> 0.7.0"},
       {:telemetry_metrics, "~> 1.0"},
