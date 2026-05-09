@@ -21,6 +21,7 @@ config :preview, :preview_bucket,
 
 # Configures the endpoint
 config :preview, PreviewWeb.Endpoint,
+  adapter: Bandit.PhoenixAdapter,
   url: [host: "localhost"],
   secret_key_base: "GhQNRpJEoVuQ3wOfIKRgVn/hRDKKKUQIPjJXAXDwe2gqYxk8UOsgNOghTtr94S3E",
   render_errors: [
