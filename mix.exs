@@ -28,8 +28,10 @@ defmodule Preview.MixProject do
   defp deps do
     [
       {:bandit, "~> 1.0"},
+      {:tidewave, "~> 0.5", only: [:dev]},
       {:broadway_sqs, "~> 0.7.0"},
       {:broadway, "~> 1.0"},
+      {:esbuild, "~> 0.10", runtime: Mix.env() == :dev},
       {:ex_aws_s3, "~> 2.0"},
       {:ex_aws, "~> 2.1"},
       {:finch, "~> 0.21.0"},
@@ -39,6 +41,7 @@ defmodule Preview.MixProject do
       {:hex_core, "~> 0.15.0"},
       {:jason, "~> 1.0"},
       {:logster, "~> 1.1.1"},
+      {:tailwind, "~> 0.4", runtime: Mix.env() == :dev},
       {:makeup_eex, "~> 2.0"},
       {:makeup_elixir, "~> 1.0"},
       {:makeup_erlang, "~> 1.0"},
@@ -64,7 +67,12 @@ defmodule Preview.MixProject do
 
   defp aliases do
     [
-      setup: ["deps.get", "run priv/seeds.exs", "cmd yarn install --cwd assets"]
+      setup: ["deps.get", "run priv/seeds.exs", "esbuild.install", "tailwind.install"],
+      "assets.deploy": [
+        "esbuild preview --minify",
+        "tailwind default --minify",
+        "phx.digest"
+      ]
     ]
   end
 

@@ -3,7 +3,7 @@ defmodule PreviewWeb.SearchLive do
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok, assign(socket, query: "", result: nil, results: %{})}
+    {:ok, assign(socket, query: "", result: nil, results: [], versions: [], from: nil)}
   end
 
   # captures when user starts typing in the search box

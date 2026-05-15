@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
       content={assigns[:meta_description] || "Web based preview of Hex packages"}
@@ -11,92 +11,42 @@
     <%= if assigns[:canonical] do %>
       <link rel="canonical" href={assigns[:canonical]} />
     <% end %>
-    {csrf_meta_tag()}
-    <.live_title suffix=" | Hex Preview">
-      {assigns[:page_title] || "Home"}
+    <%= csrf_meta_tag() %>
+    <.live_title suffix=" | hexpreview">
+      <%= assigns[:page_title] || "Home" %>
     </.live_title>
-    <link phx-track-static rel="stylesheet" href={Routes.static_path(@conn, "/css/app.css")} />
-    <script
-      defer
-      phx-track-static
-      type="text/javascript"
-      src={Routes.static_path(@conn, "/js/app.js")}
-    >
+
+    <%!-- Intentional duplication of the theme resolution logic from assets/js/theme.js.
+          This inline script runs synchronously before any stylesheet or JS bundle is parsed,
+          which prevents a flash of unstyled/wrong-theme content (FOUC).
+          If you change the key name, attribute names, or resolution logic in theme.js,
+          update this script to match. --%>
+    <script>
+      (() => {
+        const key = "hexpm-theme";
+        let stored = null;
+        try { stored = localStorage.getItem(key); } catch (_e) {}
+        const sys = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        const pref = stored === "light" || stored === "dark" ? stored : "system";
+        const theme = pref === "system" ? sys : pref;
+        document.documentElement.setAttribute("data-theme", theme);
+        document.documentElement.setAttribute("data-theme-preference", pref);
+        document.documentElement.style.colorScheme = theme;
+      })();
     </script>
 
+    <link rel="icon" type="image/svg+xml" href={~p"/images/hex-full.svg"} />
+    <link phx-track-static rel="stylesheet" href={~p"/assets/app.css"} />
+    <script defer phx-track-static type="text/javascript" src={~p"/assets/app.js"}></script>
+
     <%= if host = Application.get_env(:preview, :host) do %>
-      <script async defer src={"https://s.#{host}/js/script.js"}>
-      </script>
+      <script async defer src={"https://s.#{host}/js/script.js"}></script>
       <script>
         window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};plausible.init({endpoint:"https://s.<%= host %>/api/event"})
       </script>
     <% end %>
   </head>
   <body>
-    <header>
-      <section class="header">
-        <div class="container">
-          <h1 class="logo">
-            <a href="/">
-              <img src={Routes.static_path(@conn, "/images/hexpreview.svg")} alt="hexpreview" />
-            </a>
-          </h1>
-        </div>
-      </section>
-    </header>
-
-    <main role="main" class="main container">
-      {@inner_content}
-    </main>
-
-    <nav class="footer">
-      <div class="container">
-        <div class="row">
-          <div class="column">
-            <h4>About Hex</h4>
-            <ul>
-              <li><a href="https://hex.pm/about">About</a></li>
-              <li><a href="https://hex.pm/blog">Blog</a></li>
-              <li><a href="https://hex.pm/sponsors">Sponsors</a></li>
-              <li><a href="https://github.com/hexpm">GitHub</a></li>
-              <li><a href="https://twitter.com/hexpm">Twitter</a></li>
-            </ul>
-          </div>
-
-          <div class="column">
-            <h4>Help</h4>
-            <ul>
-              <li><a href="https://hex.pm/docs">Documentation</a></li>
-              <li><a href="https://github.com/hexpm/specifications">Specifications</a></li>
-              <li><a href="https://github.com/hexpm/hex/issues">Report Client Issue</a></li>
-              <li><a href="https://github.com/hexpm/hexpm/issues">Report General Issue</a></li>
-              <li><a href="mailto:support@hex.pm">Contact Support</a></li>
-            </ul>
-          </div>
-
-          <div class="column">
-            <h4>Policies and Terms</h4>
-            <ul>
-              <li><a href="https://hex.pm/policies/codeofconduct">Code of Conduct</a></li>
-              <li><a href="https://hex.pm/policies/termsofservice">Terms of Service</a></li>
-              <li><a href="https://hex.pm/policies/privacy">Privacy Policy</a></li>
-              <li><a href="https://hex.pm/policies/copyright">Copyright Policy</a></li>
-              <li><a href="https://hex.pm/policies/dispute">Dispute Policy</a></li>
-            </ul>
-          </div>
-
-          <div class="column copyright">
-            <p>{Date.utc_today().year} © Six Colors AB.</p>
-            <p>
-              Powered by the <a href="https://www.erlang.org/">Erlang VM</a>
-              and the <a href="https://elixir-lang.org/">Elixir programming language</a>.
-            </p>
-          </div>
-        </div>
-      </div>
-    </nav>
-
-    <script type="text/javascript" src={Routes.static_path(@conn, "/js/app.js")}>
-    </script>
+    <%= @inner_content %>
   </body>
 </html>

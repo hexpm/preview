@@ -1,34 +1,52 @@
-<div class="search-area">
-  <form phx-change="suggest" phx-submit="suggest" class="search-form">
+<div class="flex-1 flex flex-col items-center w-full py-16 px-4">
+  <h1 class="text-h5 font-bold text-grey-800 dark:text-grey-100 mb-2">Package Preview</h1>
+  <p class="text-grey-400 dark:text-grey-300 text-sm mb-8">Browse the source of any Hex package</p>
+
+  <form phx-change="suggest" phx-submit="suggest" class="w-full max-w-sm flex flex-col gap-3">
     <input
-      class="search-input"
+      autocomplete="off"
+      autofocus
+      class="w-full px-4 py-2 border border-grey-200 dark:border-grey-600 rounded-lg text-grey-700 dark:text-grey-200 placeholder-grey-300 focus:border-primary-400 bg-white dark:bg-grey-800 text-sm"
       type="text"
       name="q"
       value={@query}
-      placeholder="Search..."
-      list="results"
-      autocomplete="off"
-      autofocus
+      placeholder="Search package..."
     />
-    <div class="suggestions" id="results">
-      <%= for app <- @results do %>
-        <span class="suggestion" phx-click={"search_" <> app} onclick="">{app}</span>
-      <% end %>
-    </div>
+
+    <%= if @results != [] do %>
+      <div class="flex flex-wrap gap-2 items-center text-sm text-grey-400 dark:text-grey-300">
+        <span>Did you mean:</span>
+        <%= for app <- @results do %>
+          <button
+            type="button"
+            class="px-2 py-0.5 bg-primary-100 dark:bg-primary-900/40 text-primary-700 dark:text-primary-400 rounded-md text-xs font-medium hover:bg-primary-200 dark:hover:bg-primary-800/50 transition-colors cursor-pointer"
+            phx-click={"search_" <> app}
+          ><%= app %></button>
+        <% end %>
+      </div>
+    <% end %>
   </form>
 
   <%= if @result do %>
-    <form phx-change="select_version" class="version-form">
-      <div class="version-area">
-        <div class="select-area">
-          <label for="from">Version</label>
-          <select name="from">
+    <form phx-change="select_version" class="w-full max-w-sm mt-6">
+      <div class="flex flex-col gap-4">
+        <div class="flex flex-col gap-1">
+          <label for="from-select" class="text-xs font-medium text-grey-500 dark:text-grey-400 uppercase tracking-wider">Version</label>
+          <select
+            name="from"
+            id="from-select"
+            class="w-full px-3 py-2 border border-grey-200 dark:border-grey-600 rounded-lg text-grey-700 dark:text-grey-200 text-sm bg-white dark:bg-grey-800 focus:border-primary-400"
+          >
             <%= for vsn <- @versions do %>
-              <option value={vsn}>{vsn}</option>
+              <option value={vsn}><%= vsn %></option>
             <% end %>
           </select>
         </div>
-        <button class="diff-button" type="button" phx-click="go">Preview</button>
+        <button
+          type="button"
+          phx-click="go"
+          class="w-full py-2 px-4 bg-primary-600 hover:bg-primary-700 disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-semibold rounded-lg transition-colors"
+        >Preview</button>
       </div>
     </form>
   <% end %>

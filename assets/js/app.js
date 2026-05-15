@@ -1,63 +1,62 @@
-// We need to import the CSS so that webpack will load it.
-// The MiniCssExtractPlugin is used to separate it out into
-// its own CSS file.
-import "../css/app.scss"
-
-// webpack automatically bundles all modules in your
-// entry points. Those entry points can be configured
-// in "webpack.config.js".
-//
-// Import deps with the dep name or local files with a relative path, for example:
-//
-//     import {Socket} from "phoenix"
-//     import socket from "./socket"
-//
 import "phoenix_html"
+import { initializeTheme } from "./theme"
+initializeTheme()
+
 import { Socket } from "phoenix"
-import NProgress from "nprogress"
 import { LiveSocket } from "phoenix_live_view"
 
 let Hooks = {}
+
 Hooks.updateHash = {
-    mounted() {
-        this.el.addEventListener("click", e => {
-            let loc = window.location;
-            let url = loc.protocol + '//' + loc.host + loc.pathname + '#L' + this.el.dataset.lineNumber;
-            history.pushState(history.state, document.title, url);
-            update_hash()
-            e.preventDefault();
-        });
-    }
+  mounted() {
+    this.el.addEventListener("click", e => {
+      const loc = window.location
+      const url = loc.protocol + "//" + loc.host + loc.pathname + "#L" + this.el.dataset.lineNumber
+      history.pushState(history.state, document.title, url)
+      updateHash()
+      e.preventDefault()
+    })
+  }
 }
 
 window.onhashchange = function () {
-    update_hash()
+  updateHash()
 }
 
-function update_hash() {
-    let hash = location.hash
-    // clear existing highlighted lines
-    Array.from(document.getElementsByClassName("highlighted")).forEach(function (n, i) { n.classList.remove('highlighted') })
+function updateHash() {
+  const hash = location.hash
 
-    if (hash.startsWith("#L")) {
-        let id = hash.slice(1)
-        document.getElementById(id).classList.add("highlighted");
+  Array.from(document.getElementsByClassName("highlighted")).forEach((n) => {
+    n.classList.remove("highlighted")
+  })
+
+  if (hash.startsWith("#L")) {
+    const id = hash.slice(1)
+    const el = document.getElementById(id)
+    if (el) {
+      el.classList.add("highlighted")
+      el.scrollIntoView({ block: "center" })
     }
+  }
 }
 
-let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
-let liveSocket = new LiveSocket("/live", Socket, { params: { _csrf_token: csrfToken }, hooks: Hooks })
+const backToTop = document.getElementById("back-to-top")
+if (backToTop) {
+  window.addEventListener("scroll", () => {
+    const visible = window.scrollY > 400
+    backToTop.classList.toggle("opacity-0", !visible)
+    backToTop.classList.toggle("pointer-events-none", !visible)
+  }, { passive: true })
+}
 
-// Show progress bar on live navigation and form submits
-window.addEventListener("phx:page-loading-start", info => NProgress.start())
-window.addEventListener("phx:page-loading-stop", info => { NProgress.done(); update_hash(); })
+const csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
+const liveSocket = new LiveSocket("/live", Socket, {
+  params: { _csrf_token: csrfToken },
+  hooks: Hooks,
+})
 
-// connect if there are any LiveViews on the page
+window.addEventListener("phx:page-loading-stop", () => updateHash())
+
 liveSocket.connect()
 
-// expose liveSocket on window for web console debug logs and latency simulation:
-// >> liveSocket.enableDebug()
-// >> liveSocket.enableLatencySim(1000)  // enabled for duration of browser session
-// >> liveSocket.disableLatencySim()
 window.liveSocket = liveSocket
-
