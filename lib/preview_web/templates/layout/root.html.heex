@@ -11,9 +11,9 @@
     <%= if assigns[:canonical] do %>
       <link rel="canonical" href={assigns[:canonical]} />
     <% end %>
-    <%= csrf_meta_tag() %>
+    {csrf_meta_tag()}
     <.live_title suffix=" | hexpreview">
-      <%= assigns[:page_title] || "Home" %>
+      {assigns[:page_title] || "Home"}
     </.live_title>
 
     <%!-- Intentional duplication of the theme resolution logic from assets/js/theme.js.
@@ -37,16 +37,18 @@
 
     <link rel="icon" type="image/svg+xml" href={~p"/images/hex-full.svg"} />
     <link phx-track-static rel="stylesheet" href={~p"/assets/app.css"} />
-    <script defer phx-track-static type="text/javascript" src={~p"/assets/app.js"}></script>
+    <script defer phx-track-static type="text/javascript" src={~p"/assets/app.js"}>
+    </script>
 
     <%= if host = Application.get_env(:preview, :host) do %>
-      <script async defer src={"https://s.#{host}/js/script.js"}></script>
+      <script async defer src={"https://s.#{host}/js/script.js"}>
+      </script>
       <script>
         window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};plausible.init({endpoint:"https://s.<%= host %>/api/event"})
       </script>
     <% end %>
   </head>
   <body>
-    <%= @inner_content %>
+    {@inner_content}
   </body>
 </html>

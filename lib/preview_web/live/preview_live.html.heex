@@ -1,14 +1,19 @@
 <%= if @all_files != [] do %>
   <div class="flex-1 flex flex-col gap-4">
     <form phx-change="select_file" class="flex flex-col gap-1.5">
-      <label for="file_chooser" class="text-xs font-medium text-grey-500 dark:text-grey-400 uppercase tracking-wider">Select File</label>
+      <label
+        for="file_chooser"
+        class="text-xs font-medium text-grey-500 dark:text-grey-400 uppercase tracking-wider"
+      >
+        Select File
+      </label>
       <select
         name="file_chooser"
         id="file_chooser"
         class="w-full max-w-xl px-3 py-2 border border-grey-200 dark:border-grey-600 rounded-lg text-grey-700 dark:text-grey-200 text-sm bg-white dark:bg-grey-800 focus:border-primary-400 font-mono"
       >
         <%= for filename <- @all_files do %>
-          <option {selected(@filename, filename)} value={filename}><%= filename %></option>
+          <option {selected(@filename, filename)} value={filename}>{filename}</option>
         <% end %>
       </select>
     </form>
@@ -16,10 +21,18 @@
     <%= if @filename && @file_contents do %>
       <div class="code-file">
         <div class="px-4 py-3 border-b border-grey-100 dark:border-grey-700 flex items-center gap-2">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="h-4 w-4 text-grey-400 dark:text-grey-400 shrink-0" aria-hidden="true">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 16 16"
+            fill="currentColor"
+            class="h-4 w-4 text-grey-400 dark:text-grey-400 shrink-0"
+            aria-hidden="true"
+          >
             <path d="M3.75 1.5a.25.25 0 0 0-.25.25v11.5c0 .138.112.25.25.25h8.5a.25.25 0 0 0 .25-.25V6h-2.75A1.75 1.75 0 0 1 8 4.25V1.5H3.75ZM9.5 1.69V4.25c0 .138.112.25.25.25h2.56L9.5 1.69ZM2 1.75C2 .784 2.784 0 3.75 0h5.586c.464 0 .909.184 1.237.513l3.914 3.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0 1 13.25 16h-9.5A1.75 1.75 0 0 1 2 14.25V1.75Z" />
           </svg>
-          <h2 class="font-mono text-sm font-semibold text-grey-700 dark:text-grey-200 break-all"><%= @filename %></h2>
+          <h2 class="font-mono text-sm font-semibold text-grey-700 dark:text-grey-200 break-all">
+            {@filename}
+          </h2>
         </div>
 
         <style>
@@ -27,13 +40,13 @@
         </style>
 
         <div class="code-file-body">
-          <% lines = String.split(@file_contents, "\n", trim: true) |> length() %>
+          <% lines = String.split(@file_contents, "\n") |> length() %>
           <ul class="left-gutter">
             <%= for ln <- 1..lines do %>
               <li phx-hook="updateHash" id={"L#{ln}"} data-line-number={ln}></li>
             <% end %>
           </ul>
-          <%= raw(@makeup_file_contents) %>
+          {raw(@makeup_file_contents)}
         </div>
       </div>
     <% end %>

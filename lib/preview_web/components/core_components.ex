@@ -17,7 +17,6 @@ defmodule PreviewWeb.CoreComponents do
     <nav class="bg-grey-800 w-full font-sans">
       <div class="max-w-7xl mx-auto px-4 lg:px-8">
         <div class="flex items-center h-[72px] gap-8">
-
           <a href={~p"/"} class="shrink-0 flex items-center gap-3">
             <img src={~p"/images/hex-full.svg"} alt="hex logo" class="h-8 w-auto" />
             <span class="text-white text-2xl font-bold tracking-tight">hexpreview</span>
@@ -31,7 +30,6 @@ defmodule PreviewWeb.CoreComponents do
             <.nav_link href="https://hex.pm">hex.pm</.nav_link>
             <.theme_toggle />
           </div>
-
         </div>
       </div>
     </nav>
@@ -52,8 +50,18 @@ defmodule PreviewWeb.CoreComponents do
         class="shrink-0 flex items-center gap-1.5 px-2 py-1 rounded-md text-grey-200 hover:text-white hover:bg-grey-700 text-xs font-medium transition-colors"
         aria-label="Back to search"
       >
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="h-3.5 w-3.5" aria-hidden="true">
-          <path fill-rule="evenodd" d="M14 8a.75.75 0 0 1-.75.75H4.56l3.22 3.22a.75.75 0 1 1-1.06 1.06l-4.5-4.5a.75.75 0 0 1 0-1.06l4.5-4.5a.75.75 0 0 1 1.06 1.06L4.56 7.25h8.69A.75.75 0 0 1 14 8Z" clip-rule="evenodd" />
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 16 16"
+          fill="currentColor"
+          class="h-3.5 w-3.5"
+          aria-hidden="true"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M14 8a.75.75 0 0 1-.75.75H4.56l3.22 3.22a.75.75 0 1 1-1.06 1.06l-4.5-4.5a.75.75 0 0 1 0-1.06l4.5-4.5a.75.75 0 0 1 1.06 1.06L4.56 7.25h8.69A.75.75 0 0 1 14 8Z"
+            clip-rule="evenodd"
+          />
         </svg>
         Search
       </a>
@@ -61,10 +69,16 @@ defmodule PreviewWeb.CoreComponents do
       <div class="h-4 w-px bg-grey-600 shrink-0"></div>
 
       <div class="flex items-center gap-2 min-w-0 overflow-hidden">
-        <span class="shrink-0 text-xs font-medium text-grey-400 uppercase tracking-wider">preview</span>
-        <span class="text-primary-100 font-mono text-sm font-semibold truncate mb-px"><%= @package %></span>
+        <span class="shrink-0 text-xs font-medium text-grey-400 uppercase tracking-wider">
+          preview
+        </span>
+        <span class="text-primary-100 font-mono text-sm font-semibold truncate mb-px">
+          {@package}
+        </span>
         <%= if @version do %>
-          <span class="shrink-0 px-1.5 py-0.5 rounded bg-primary-900 text-primary-200 font-mono text-xs"><%= @version %></span>
+          <span class="shrink-0 px-1.5 py-0.5 rounded bg-primary-900 text-primary-200 font-mono text-xs">
+            {@version}
+          </span>
         <% end %>
       </div>
     </div>
@@ -82,7 +96,9 @@ defmodule PreviewWeb.CoreComponents do
     <a
       href={@href}
       class="px-3 py-1.5 rounded-md text-grey-300 hover:text-white hover:bg-grey-700 text-sm font-medium transition-colors"
-    ><%= render_slot(@inner_block) %></a>
+    >
+      {render_slot(@inner_block)}
+    </a>
     """
   end
 
@@ -102,18 +118,44 @@ defmodule PreviewWeb.CoreComponents do
       >
         <span class="sr-only">Change color theme</span>
         <span data-theme-icon="light">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-5 w-5" aria-hidden="true">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            class="h-5 w-5"
+            aria-hidden="true"
+          >
             <path d="M12 2.25a.75.75 0 0 1 .75.75v2.25a.75.75 0 0 1-1.5 0V3a.75.75 0 0 1 .75-.75ZM7.5 12a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM18.894 6.166a.75.75 0 0 0-1.06-1.06l-1.591 1.59a.75.75 0 1 0 1.06 1.061l1.591-1.59ZM21.75 12a.75.75 0 0 1-.75.75h-2.25a.75.75 0 0 1 0-1.5H21a.75.75 0 0 1 .75.75ZM17.834 18.894a.75.75 0 0 0 1.06-1.06l-1.59-1.591a.75.75 0 1 0-1.061 1.06l1.59 1.591ZM12 18a.75.75 0 0 1 .75.75V21a.75.75 0 0 1-1.5 0v-2.25A.75.75 0 0 1 12 18ZM7.166 17.834a.75.75 0 0 0-1.06 1.06l1.59 1.591a.75.75 0 1 0 1.061-1.06l-1.59-1.591ZM6 12a.75.75 0 0 1-.75.75H3a.75.75 0 0 1 0-1.5h2.25A.75.75 0 0 1 6 12ZM6.166 6.166a.75.75 0 0 0 1.06 1.06l1.59-1.591a.75.75 0 1 0-1.061-1.06l-1.59 1.591Z" />
           </svg>
         </span>
         <span data-theme-icon="dark">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-5 w-5" aria-hidden="true">
-            <path fill-rule="evenodd" d="M9.528 1.718a.75.75 0 0 1 .162.819A8.97 8.97 0 0 0 9 6a9 9 0 0 0 9 9 8.97 8.97 0 0 0 3.463-.69.75.75 0 0 1 .981.98 10.503 10.503 0 0 1-9.694 6.46c-5.799 0-10.5-4.7-10.5-10.5 0-4.368 2.667-8.112 6.46-9.694a.75.75 0 0 1 .818.162Z" clip-rule="evenodd" />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            class="h-5 w-5"
+            aria-hidden="true"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M9.528 1.718a.75.75 0 0 1 .162.819A8.97 8.97 0 0 0 9 6a9 9 0 0 0 9 9 8.97 8.97 0 0 0 3.463-.69.75.75 0 0 1 .981.98 10.503 10.503 0 0 1-9.694 6.46c-5.799 0-10.5-4.7-10.5-10.5 0-4.368 2.667-8.112 6.46-9.694a.75.75 0 0 1 .818.162Z"
+              clip-rule="evenodd"
+            />
           </svg>
         </span>
         <span data-theme-icon="system">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-5 w-5" aria-hidden="true">
-            <path fill-rule="evenodd" d="M2.25 5.25a3 3 0 0 1 3-3h13.5a3 3 0 0 1 3 3V15a3 3 0 0 1-3 3h-3v.257c0 .597.237 1.17.659 1.591l.621.622a.75.75 0 0 1-.53 1.28h-9a.75.75 0 0 1-.53-1.28l.621-.622a2.25 2.25 0 0 0 .659-1.59V18h-3a3 3 0 0 1-3-3V5.25Zm1.5 0v9.75c0 .83.672 1.5 1.5 1.5h13.5c.828 0 1.5-.672 1.5-1.5V5.25a1.5 1.5 0 0 0-1.5-1.5H5.25a1.5 1.5 0 0 0-1.5 1.5Z" clip-rule="evenodd" />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            class="h-5 w-5"
+            aria-hidden="true"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M2.25 5.25a3 3 0 0 1 3-3h13.5a3 3 0 0 1 3 3V15a3 3 0 0 1-3 3h-3v.257c0 .597.237 1.17.659 1.591l.621.622a.75.75 0 0 1-.53 1.28h-9a.75.75 0 0 1-.53-1.28l.621-.622a2.25 2.25 0 0 0 .659-1.59V18h-3a3 3 0 0 1-3-3V5.25Zm1.5 0v9.75c0 .83.672 1.5 1.5 1.5h13.5c.828 0 1.5-.672 1.5-1.5V5.25a1.5 1.5 0 0 0-1.5-1.5H5.25a1.5 1.5 0 0 0-1.5 1.5Z"
+              clip-rule="evenodd"
+            />
           </svg>
         </span>
       </button>
@@ -127,7 +169,13 @@ defmodule PreviewWeb.CoreComponents do
           data-theme-choice="light"
           class="w-full flex items-center gap-2 px-4 py-2 text-sm text-grey-200 hover:bg-grey-600 transition-colors cursor-pointer"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-4 w-4 shrink-0" aria-hidden="true">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            class="h-4 w-4 shrink-0"
+            aria-hidden="true"
+          >
             <path d="M12 2.25a.75.75 0 0 1 .75.75v2.25a.75.75 0 0 1-1.5 0V3a.75.75 0 0 1 .75-.75ZM7.5 12a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM18.894 6.166a.75.75 0 0 0-1.06-1.06l-1.591 1.59a.75.75 0 1 0 1.06 1.061l1.591-1.59ZM21.75 12a.75.75 0 0 1-.75.75h-2.25a.75.75 0 0 1 0-1.5H21a.75.75 0 0 1 .75.75ZM17.834 18.894a.75.75 0 0 0 1.06-1.06l-1.59-1.591a.75.75 0 1 0-1.061 1.06l1.59 1.591ZM12 18a.75.75 0 0 1 .75.75V21a.75.75 0 0 1-1.5 0v-2.25A.75.75 0 0 1 12 18ZM7.166 17.834a.75.75 0 0 0-1.06 1.06l1.59 1.591a.75.75 0 1 0 1.061-1.06l-1.59-1.591ZM6 12a.75.75 0 0 1-.75.75H3a.75.75 0 0 1 0-1.5h2.25A.75.75 0 0 1 6 12ZM6.166 6.166a.75.75 0 0 0 1.06 1.06l1.59-1.591a.75.75 0 1 0-1.061-1.06l-1.59 1.591Z" />
           </svg>
           Light
@@ -137,8 +185,18 @@ defmodule PreviewWeb.CoreComponents do
           data-theme-choice="dark"
           class="w-full flex items-center gap-2 px-4 py-2 text-sm text-grey-200 hover:bg-grey-600 transition-colors cursor-pointer"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-4 w-4 shrink-0" aria-hidden="true">
-            <path fill-rule="evenodd" d="M9.528 1.718a.75.75 0 0 1 .162.819A8.97 8.97 0 0 0 9 6a9 9 0 0 0 9 9 8.97 8.97 0 0 0 3.463-.69.75.75 0 0 1 .981.98 10.503 10.503 0 0 1-9.694 6.46c-5.799 0-10.5-4.7-10.5-10.5 0-4.368 2.667-8.112 6.46-9.694a.75.75 0 0 1 .818.162Z" clip-rule="evenodd" />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            class="h-4 w-4 shrink-0"
+            aria-hidden="true"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M9.528 1.718a.75.75 0 0 1 .162.819A8.97 8.97 0 0 0 9 6a9 9 0 0 0 9 9 8.97 8.97 0 0 0 3.463-.69.75.75 0 0 1 .981.98 10.503 10.503 0 0 1-9.694 6.46c-5.799 0-10.5-4.7-10.5-10.5 0-4.368 2.667-8.112 6.46-9.694a.75.75 0 0 1 .818.162Z"
+              clip-rule="evenodd"
+            />
           </svg>
           Dark
         </button>
@@ -147,8 +205,18 @@ defmodule PreviewWeb.CoreComponents do
           data-theme-choice="system"
           class="w-full flex items-center gap-2 px-4 py-2 text-sm text-grey-200 hover:bg-grey-600 transition-colors cursor-pointer"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-4 w-4 shrink-0" aria-hidden="true">
-            <path fill-rule="evenodd" d="M2.25 5.25a3 3 0 0 1 3-3h13.5a3 3 0 0 1 3 3V15a3 3 0 0 1-3 3h-3v.257c0 .597.237 1.17.659 1.591l.621.622a.75.75 0 0 1-.53 1.28h-9a.75.75 0 0 1-.53-1.28l.621-.622a2.25 2.25 0 0 0 .659-1.59V18h-3a3 3 0 0 1-3-3V5.25Zm1.5 0v9.75c0 .83.672 1.5 1.5 1.5h13.5c.828 0 1.5-.672 1.5-1.5V5.25a1.5 1.5 0 0 0-1.5-1.5H5.25a1.5 1.5 0 0 0-1.5 1.5Z" clip-rule="evenodd" />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            class="h-4 w-4 shrink-0"
+            aria-hidden="true"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M2.25 5.25a3 3 0 0 1 3-3h13.5a3 3 0 0 1 3 3V15a3 3 0 0 1-3 3h-3v.257c0 .597.237 1.17.659 1.591l.621.622a.75.75 0 0 1-.53 1.28h-9a.75.75 0 0 1-.53-1.28l.621-.622a2.25 2.25 0 0 0 .659-1.59V18h-3a3 3 0 0 1-3-3V5.25Zm1.5 0v9.75c0 .83.672 1.5 1.5 1.5h13.5c.828 0 1.5-.672 1.5-1.5V5.25a1.5 1.5 0 0 0-1.5-1.5H5.25a1.5 1.5 0 0 0-1.5 1.5Z"
+              clip-rule="evenodd"
+            />
           </svg>
           System
         </button>
@@ -212,7 +280,7 @@ defmodule PreviewWeb.CoreComponents do
       rel="noopener noreferrer"
       aria-label={@label}
     >
-      <%= render_slot(@inner_block) %>
+      {render_slot(@inner_block)}
     </a>
     """
   end
@@ -231,9 +299,21 @@ defmodule PreviewWeb.CoreComponents do
         <.footer_link_column>
           <.footer_link href="https://hex.pm/docs" label="Documentation" />
           <.footer_link href="https://hex.pm/docs/faq" label="FAQ" />
-          <.footer_link href="https://github.com/hexpm/specifications" label="Specifications" external />
-          <.footer_link href="https://github.com/hexpm/hex/issues" label="Report Client Issue" external />
-          <.footer_link href="https://github.com/hexpm/hexpm/issues" label="Report General Issue" external />
+          <.footer_link
+            href="https://github.com/hexpm/specifications"
+            label="Specifications"
+            external
+          />
+          <.footer_link
+            href="https://github.com/hexpm/hex/issues"
+            label="Report Client Issue"
+            external
+          />
+          <.footer_link
+            href="https://github.com/hexpm/hexpm/issues"
+            label="Report General Issue"
+            external
+          />
           <.footer_link href="mailto:security@hex.pm" label="Report Security Issue" />
           <.footer_link href="mailto:support@hex.pm" label="Contact Support" />
         </.footer_link_column>
@@ -255,7 +335,7 @@ defmodule PreviewWeb.CoreComponents do
   defp footer_link_column(assigns) do
     ~H"""
     <div class="flex flex-col gap-3 font-medium leading-4">
-      <%= render_slot(@inner_block) %>
+      {render_slot(@inner_block)}
     </div>
     """
   end
@@ -272,7 +352,7 @@ defmodule PreviewWeb.CoreComponents do
       target={if @external, do: "_blank"}
       rel={if @external, do: "noopener noreferrer"}
     >
-      <%= @label %>
+      {@label}
     </a>
     """
   end
@@ -282,13 +362,15 @@ defmodule PreviewWeb.CoreComponents do
     <div class="bg-grey-700">
       <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col items-center gap-3 text-sm text-grey-200 md:flex-row md:justify-between">
         <p class="text-center leading-[14px] md:text-left">
-          Copyright <%= Date.utc_today().year %>. Six Colors AB.
+          Copyright {Date.utc_today().year}. Six Colors AB.
         </p>
         <p class="text-center leading-[18px] md:text-right">
           Powered by the
           <a href="https://www.erlang.org/" class="underline hover:text-grey-300">Erlang VM</a>
           and the
-          <a href="https://elixir-lang.org/" class="underline hover:text-grey-300">Elixir Programming Language</a>
+          <a href="https://elixir-lang.org/" class="underline hover:text-grey-300">
+            Elixir Programming Language
+          </a>
         </p>
       </div>
     </div>

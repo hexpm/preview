@@ -37,7 +37,7 @@ function setPreference(preference) {
 function closeAllMenus() {
   document.querySelectorAll("[data-theme-menu]").forEach((menu) => {
     menu.classList.add("hidden")
-    const toggle = menu.closest("[data-theme-toggle]") || menu.parentElement?.querySelector("[data-theme-toggle]")
+    const toggle = menu.parentElement?.querySelector("[data-theme-toggle]")
     if (toggle) toggle.setAttribute("aria-expanded", "false")
   })
 }
