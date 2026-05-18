@@ -25,7 +25,11 @@ defmodule PreviewWeb.Endpoint do
     at: "/",
     from: :preview,
     gzip: true,
-    only: ~w(css fonts images js favicon.ico robots.txt)
+    only: PreviewWeb.static_paths()
+
+  if Mix.env() == :dev do
+    plug Tidewave
+  end
 
   # Code reloading can be explicitly enabled under the
   # :code_reloader configuration of your endpoint.

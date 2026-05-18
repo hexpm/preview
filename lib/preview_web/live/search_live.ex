@@ -3,13 +3,24 @@ defmodule PreviewWeb.SearchLive do
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok, assign(socket, query: "", result: nil, results: %{})}
+    {:ok, assign(socket, query: "", result: nil, results: [], versions: [], from: nil)}
   end
 
   # captures when user starts typing in the search box
   @impl true
   def handle_event("suggest", %{"q" => query}, socket) do
     {:noreply, assign(socket, results: search(query), query: query)}
+  end
+
+  # captures when user submits (Enter) — jump straight to the version selector
+  # if the query is an exact package name, otherwise fall back to suggestions.
+  def handle_event("submit", %{"q" => query}, socket) do
+    if query != "" and query in Preview.Package.Store.get_names() do
+      send(self(), {:search, query})
+      {:noreply, assign(socket, query: query, results: [])}
+    else
+      {:noreply, assign(socket, results: search(query), query: query)}
+    end
   end
 
   # captures when user clicks on a suggestion

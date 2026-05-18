@@ -1,0 +1,356 @@
+/* Self-hosted fonts (Inter v20 + JetBrains Mono v24, variable weight, latin + latin-ext) */
+/* latin-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 100 800;
+  font-display: swap;
+  src: url('/fonts/inter-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 100 800;
+  font-display: swap;
+  src: url('/fonts/inter-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('/fonts/jetbrains-mono-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('/fonts/jetbrains-mono-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@import "tailwindcss";
+@import "../vendor/css/makeup.css";
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
+/* Tell Tailwind where to scan for classes */
+@source "../../lib";
+@source "../js";
+
+/*
+ * Hexpreview Design System (based on hex.pm / hexdiff)
+ */
+
+@theme {
+  /* ===== BREAKPOINTS ===== */
+  --breakpoint-xs: 480px;
+
+  /* ===== TYPOGRAPHY ===== */
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  --text-h1: 3.75rem;
+  --text-h1--line-height: 1.2;
+  --text-h2: 3rem;
+  --text-h2--line-height: 1.25;
+  --text-h3: 2.5rem;
+  --text-h3--line-height: 1.2;
+  --text-h4: 2rem;
+  --text-h4--line-height: 1.25;
+  --text-h5: 1.5rem;
+  --text-h5--line-height: 1.33;
+  --text-h6: 1.25rem;
+  --text-h6--line-height: 1.4;
+  --text-body: 1rem;
+  --text-body--line-height: 1.5;
+  --text-small: 0.875rem;
+  --text-small--line-height: 1.43;
+  --text-caption: 0.75rem;
+  --text-caption--line-height: 1.5;
+
+  /* ===== COLORS ===== */
+
+  /* Primary Palette (Brand Purple) */
+  --color-primary-900: #2b1551;
+  --color-primary-800: #3d2165;
+  --color-primary-700: #523079;
+  --color-primary-600: #69438d;
+  --color-primary-500: #8769a4;
+  --color-primary-400: #a58ebb;
+  --color-primary-300: #c3b4d1;
+  --color-primary-200: #e1d9e8;
+  --color-primary-100: #f0edf4;
+  --color-primary-50: #f7f5f9;
+
+  /* Green Palette */
+  --color-green-900: #054333;
+  --color-green-800: #085438;
+  --color-green-700: #0c643c;
+  --color-green-600: #11753d;
+  --color-green-500: #419164;
+  --color-green-400: #70ac8b;
+  --color-green-300: #a0c8b1;
+  --color-green-200: #cfe3d8;
+  --color-green-100: #e8f2ec;
+  --color-green-50: #f3f8f5;
+
+  /* Blue Palette (Info/Links) */
+  --color-blue-900: #04237d;
+  --color-blue-800: #07329b;
+  --color-blue-700: #0a44b9;
+  --color-blue-600: #0f59d8;
+  --color-blue-500: #3f7ae0;
+  --color-blue-400: #6f9be8;
+  --color-blue-300: #9fbdef;
+  --color-blue-200: #cfdef7;
+  --color-blue-100: #e7effc;
+  --color-blue-50: #f3f6fd;
+
+  /* Yellow Palette (Warning / line highlight) */
+  --color-yellow-900: #8a5912;
+  --color-yellow-800: #ac751d;
+  --color-yellow-700: #cd942a;
+  --color-yellow-600: #efb63a;
+  --color-yellow-500: #f2c561;
+  --color-yellow-400: #f5d389;
+  --color-yellow-300: #f9e2b0;
+  --color-yellow-200: #fcf0d8;
+  --color-yellow-100: #fef8ec;
+  --color-yellow-50: #fefbf5;
+
+  /* Red Palette (Danger) */
+  --color-red-900: #620e32;
+  --color-red-800: #7a1638;
+  --color-red-700: #92203c;
+  --color-red-600: #aa2c3f;
+  --color-red-500: #bb5665;
+  --color-red-400: #cc808c;
+  --color-red-300: #ddabb2;
+  --color-red-200: #eed5d9;
+  --color-red-100: #f7eaec;
+  --color-red-50: #faf4f5;
+
+  /* Grey Palette */
+  --color-grey-950: #02060d;
+  --color-grey-900: #030913;
+  --color-grey-800: #0d1829;
+  --color-grey-700: #1c2a3a;
+  --color-grey-600: #304254;
+  --color-grey-500: #445668;
+  --color-grey-400: #61758a;
+  --color-grey-300: #91a4b7;
+  --color-grey-200: #cad5e0;
+  --color-grey-100: #e1e8f0;
+  --color-grey-50: #f0f5f9;
+
+  /* Code viewer specific tokens */
+  --color-code-line-highlight: #fffbc2;
+}
+
+/* ===== GLOBAL BASE STYLES ===== */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-size: 16px;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    color: var(--color-grey-700);
+    background-color: white;
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  /* LiveView injects an anonymous wrapper div inside <main> —
+     can't add classes to it, so CSS is the only option */
+  main > div {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  a {
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  code,
+  pre {
+    font-family: var(--font-mono);
+  }
+
+  select {
+    padding-right: 2rem;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%2361758a'%3E%3Cpath fill-rule='evenodd' d='M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z' clip-rule='evenodd'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.5rem center;
+    background-size: 1rem;
+  }
+
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible,
+  button:focus-visible {
+    outline: 2px solid var(--color-primary-500);
+    outline-offset: 2px;
+  }
+
+  td {
+    border: 0;
+    padding: 1px;
+  }
+}
+
+/* ===== CODE FILE VIEWER =====
+   These styles support Makeup syntax-highlighted output, which is rendered
+   as raw HTML server-side and cannot be styled with Tailwind utilities. */
+
+.code-file {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 21px;
+  color: var(--color-grey-700);
+  background-color: white;
+  border: 1px solid var(--color-grey-200);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.code-file-body {
+  position: relative;
+  overflow-x: auto;
+  overflow-y: clip;
+  padding-bottom: 1.5rem;
+}
+
+.code-file pre.highlight {
+  position: relative;
+  background: transparent;
+  margin: 0;
+  padding: 1rem 1rem 1rem 4.5rem;
+}
+
+.code-file pre.highlight code {
+  padding-left: 0;
+  background: transparent;
+}
+
+.code-file ul.left-gutter {
+  position: absolute;
+  left: 0;
+  top: 0;
+  list-style: none;
+  padding: 1rem 0;
+  margin: 0;
+  width: 4rem;
+  user-select: none;
+}
+
+.code-file ul.left-gutter li {
+  padding: 0 0.75rem 0 0;
+  margin: 0;
+  font-size: 13px;
+  height: 21px;
+  line-height: 21px;
+  text-align: right;
+  cursor: pointer;
+  color: var(--color-grey-300);
+  font-variant-numeric: tabular-nums;
+}
+
+.code-file ul.left-gutter li:hover {
+  color: var(--color-grey-500);
+}
+
+.code-file ul.left-gutter li::before {
+  content: attr(data-line-number);
+}
+
+.code-file ul.left-gutter li.highlighted {
+  color: var(--color-grey-700);
+  font-weight: 600;
+  background-color: var(--color-code-line-highlight);
+}
+
+/* ===== CODE VIEWER DARK MODE ===== */
+[data-theme=dark] .code-file {
+  background-color: var(--color-grey-900);
+  border-color: var(--color-grey-700);
+  color: var(--color-grey-200);
+}
+
+[data-theme=dark] .code-file ul.left-gutter li {
+  color: var(--color-grey-500);
+}
+
+[data-theme=dark] .code-file ul.left-gutter li:hover {
+  color: var(--color-grey-300);
+}
+
+[data-theme=dark] {
+  --color-code-line-highlight: #3d3100;
+}
+
+[data-theme=dark] .code-file ul.left-gutter li.highlighted {
+  color: var(--color-grey-100);
+  background-color: var(--color-code-line-highlight);
+}
+
+/* ===== THEME TOGGLE ===== */
+/* All icons hidden by default; only the active preference's icon is shown */
+[data-theme-toggle] [data-theme-icon] {
+  display: none;
+}
+
+html[data-theme-preference="light"] [data-theme-toggle] [data-theme-icon="light"] {
+  display: inline-flex;
+}
+
+html[data-theme-preference="dark"] [data-theme-toggle] [data-theme-icon="dark"] {
+  display: inline-flex;
+}
+
+html[data-theme-preference="system"] [data-theme-toggle] [data-theme-icon="system"] {
+  display: inline-flex;
+}
+
+/* Highlight the active choice in the dropdown */
+[data-theme-menu] [data-theme-choice] {
+  font-weight: normal;
+}
+
+html[data-theme-preference="light"] [data-theme-menu] [data-theme-choice="light"],
+html[data-theme-preference="dark"] [data-theme-menu] [data-theme-choice="dark"],
+html[data-theme-preference="system"] [data-theme-menu] [data-theme-choice="system"] {
+  font-weight: 600;
+}
+
+/* ===== LIVEVIEW STATUS CLASSES ===== */
+.phx-no-feedback.invalid-feedback,
+.phx-no-feedback .invalid-feedback {
+  display: none;
+}
+
+.phx-click-loading {
+  opacity: 0.5;
+  transition: opacity 1s ease-out;
+}
+
+.phx-disconnected {
+  cursor: wait;
+}
+
+.phx-disconnected * {
+  pointer-events: none;
+}

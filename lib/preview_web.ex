@@ -7,6 +7,7 @@ defmodule PreviewWeb do
 
       use PreviewWeb, :controller
       use PreviewWeb, :view
+      use PreviewWeb, :html
 
   The definitions below will be executed for every view,
   controller, etc, so keep them short and clean, focused
@@ -16,6 +17,8 @@ defmodule PreviewWeb do
   below. Instead, define any helper function in modules
   and import those modules here.
   """
+
+  def static_paths, do: ~w(assets fonts images)
 
   def controller do
     quote do
@@ -33,11 +36,19 @@ defmodule PreviewWeb do
         root: "lib/preview_web/templates",
         namespace: PreviewWeb
 
-      # Import convenience functions from controllers
       import Phoenix.Controller,
         only: [get_flash: 1, get_flash: 2, view_module: 1, view_template: 1]
 
-      # Include shared imports and aliases for views
+      unquote(view_helpers())
+    end
+  end
+
+  def html do
+    quote do
+      use Phoenix.Component
+
+      import Phoenix.Controller, only: [view_module: 1]
+
       unquote(view_helpers())
     end
   end
@@ -45,7 +56,7 @@ defmodule PreviewWeb do
   def live_view do
     quote do
       use Phoenix.LiveView,
-        layout: {PreviewWeb.LayoutView, :live}
+        layout: {PreviewWeb.LayoutView, :app}
 
       unquote(view_helpers())
     end
@@ -83,15 +94,20 @@ defmodule PreviewWeb do
       import Phoenix.HTML.Form
       use PhoenixHTMLHelpers
 
-      # Import LiveView helpers (live_render, live_component, live_patch, etc)
-      import Phoenix.LiveView.Helpers
+      # Phoenix.Component for functional components and ~H sigil
+      import Phoenix.Component
+
+      # Verified routes (~p sigil)
+      use Phoenix.VerifiedRoutes,
+        endpoint: PreviewWeb.Endpoint,
+        router: PreviewWeb.Router,
+        statics: PreviewWeb.static_paths()
 
       # Import basic rendering functionality (render, render_layout, etc)
       import Phoenix.View
 
       import PreviewWeb.ErrorHelpers
       import PreviewWeb.Gettext
-      import Phoenix.Component
       alias PreviewWeb.Router.Helpers, as: Routes
     end
   end

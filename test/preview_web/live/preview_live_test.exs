@@ -35,21 +35,21 @@ defmodule PreviewWeb.PreviewLiveTest do
       {:ok, view, _html} =
         live(conn, "/preview/#{package}/#{version}/show/lib/foo.ex")
 
-      assert render(view) =~ "<h2>lib/foo.ex</h2>"
+      assert has_element?(view, "h2", "lib/foo.ex")
     end
 
     test "filename from query parameter", %{conn: conn, package: package, version: version} do
       {:ok, view, _html} =
         live(conn, "/preview/#{package}/#{version}?filename=include%2Fheader.hrl")
 
-      assert render(view) =~ "<h2>include/header.hrl</h2>"
+      assert has_element?(view, "h2", "include/header.hrl")
     end
 
     test "default file when no filename given", %{conn: conn, package: package, version: version} do
       {:ok, view, _html} =
         live(conn, "/preview/#{package}/#{version}")
 
-      assert render(view) =~ "<h2>README.md</h2>"
+      assert has_element?(view, "h2", "README.md")
     end
 
     test "returns 404 when file list is empty", %{conn: conn} do
