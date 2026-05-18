@@ -35,10 +35,6 @@
           </h2>
         </div>
 
-        <style>
-          <%= raw Makeup.stylesheet(Makeup.Styles.HTML.StyleMap.lovelace_style()) %>
-        </style>
-
         <div class="code-file-body">
           <% lines = String.split(@file_contents, "\n") |> length() %>
           <ul class="left-gutter">

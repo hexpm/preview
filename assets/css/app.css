@@ -37,6 +37,7 @@
 }
 
 @import "tailwindcss";
+@import "../vendor/css/makeup.css";
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
 /* Tell Tailwind where to scan for classes */
