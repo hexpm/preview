@@ -34,7 +34,7 @@ defmodule Preview.MixProject do
       {:esbuild, "~> 0.10", runtime: Mix.env() == :dev},
       {:ex_aws_s3, "~> 2.0"},
       {:ex_aws, "~> 2.1"},
-      {:finch, "~> 0.21.0"},
+      {:finch, "~> 0.22.0"},
       {:gettext, "~> 1.0"},
       {:goth, "~> 1.4"},
       {:hackney, "~> 1.20"},
