@@ -38,7 +38,7 @@ defmodule Preview.MixProject do
       {:gettext, "~> 1.0"},
       {:goth, "~> 1.4"},
       {:hackney, "~> 1.20"},
-      {:hex_core, "~> 0.15.0"},
+      {:hex_core, "~> 0.16.0"},
       {:jason, "~> 1.0"},
       {:logster, "~> 1.1.1"},
       {:tailwind, "~> 0.4", runtime: Mix.env() == :dev},
