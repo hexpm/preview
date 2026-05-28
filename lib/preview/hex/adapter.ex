@@ -1,14 +1,12 @@
 defmodule Preview.Hex.Adapter do
   @behaviour :hex_http
 
-  @opts [follow_redirect: true, max_redirect: 5]
-
   @impl true
   def request(:get, uri, req_headers, _req_body, _config) do
     req_headers = prepare_headers(req_headers, nil)
 
     {:ok, status, resp_headers, resp_body} =
-      Preview.HTTP.retry("hex_adapter", uri, fn -> Preview.HTTP.get(uri, req_headers, @opts) end)
+      Preview.HTTP.retry("hex_adapter", uri, fn -> Preview.HTTP.get(uri, req_headers) end)
 
     # :hex_core expects headers to be a Map
     resp_headers = Map.new(resp_headers)
@@ -21,7 +19,7 @@ defmodule Preview.Hex.Adapter do
 
     {:ok, status, resp_headers, resp_body} =
       Preview.HTTP.retry("hex_adapter", uri, fn ->
-        Preview.HTTP.put(uri, req_headers, payload, @opts)
+        Preview.HTTP.put(uri, req_headers, payload)
       end)
 
     # :hex_core expects headers to be a Map
