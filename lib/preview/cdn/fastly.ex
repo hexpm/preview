@@ -21,28 +21,24 @@ defmodule Preview.CDN.Fastly do
     :ok
   end
 
-  defp auth() do
-    Application.get_env(:preview, :fastly_key)
-  end
+  defp auth(), do: Application.get_env(:preview, :fastly_key)
 
   defp post(url, body) do
     url = @fastly_url <> url
 
     headers = [
-      "fastly-key": auth(),
-      accept: "application/json",
-      "content-type": "application/json"
+      {"fastly-key", auth()},
+      {"accept", "application/json"},
+      {"content-type", "application/json"}
     ]
 
     body = Jason.encode!(body)
 
-    Preview.HTTP.retry("fastly", url, fn -> :hackney.post(url, headers, body, []) end)
-    |> read_body()
+    Preview.HTTP.retry("fastly", url, fn -> Preview.HTTP.post(url, headers, body) end)
+    |> decode_body()
   end
 
-  defp read_body({:ok, status, headers, client}) do
-    {:ok, body} = :hackney.body(client)
-
+  defp decode_body({:ok, status, headers, body}) do
     body =
       case Jason.decode(body) do
         {:ok, map} -> map
@@ -51,4 +47,6 @@ defmodule Preview.CDN.Fastly do
 
     {:ok, status, headers, body}
   end
+
+  defp decode_body({:error, _} = error), do: error
 end
