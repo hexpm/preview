@@ -56,6 +56,7 @@ defmodule Preview.MixProject do
       {:phoenix_live_view, "~> 1.0"},
       {:phoenix_view, "~> 2.0"},
       {:phoenix, "~> 1.7"},
+      {:req, "~> 0.5"},
       {:sentry, "~> 13.0"},
       {:sweet_xml, "~> 0.7.0"},
       {:telemetry_metrics, "~> 1.0"},
