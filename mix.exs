@@ -37,7 +37,6 @@ defmodule Preview.MixProject do
       {:finch, "~> 0.22.0"},
       {:gettext, "~> 1.0"},
       {:goth, "~> 1.4"},
-      {:hackney, "~> 1.20"},
       {:hex_core, "~> 0.17.0"},
       {:jason, "~> 1.0"},
       {:logster, "~> 1.1.1"},
@@ -48,7 +47,6 @@ defmodule Preview.MixProject do
       {:makeup_erlang, "~> 1.0"},
       {:makeup_gleam, "~> 1.0"},
       {:makeup_syntect, "~> 0.1"},
-      {:mint, "~> 1.1"},
       {:phoenix_html, "~> 4.0"},
       {:phoenix_html_helpers, "~> 1.0"},
       {:phoenix_live_dashboard, "~> 0.7"},
@@ -56,12 +54,14 @@ defmodule Preview.MixProject do
       {:phoenix_live_view, "~> 1.0"},
       {:phoenix_view, "~> 2.0"},
       {:phoenix, "~> 1.7"},
+      {:req, "~> 0.5"},
       {:sentry, "~> 13.0"},
       {:sweet_xml, "~> 0.7.0"},
       {:telemetry_metrics, "~> 1.0"},
       {:telemetry_poller, "~> 1.0"},
       {:floki, ">= 0.0.0", only: :test},
       {:lazy_html, ">= 0.1.0", only: :test},
+      {:bypass, "~> 2.1", only: :test},
       {:mox, "~> 1.0", only: :test}
     ]
   end

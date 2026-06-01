@@ -16,6 +16,12 @@ defmodule Preview.HTTP do
     |> read_response()
   end
 
+  def post(url, headers, body, opts \\ []) do
+    Finch.build(:post, url, headers, body)
+    |> Finch.request(Preview.Finch, opts)
+    |> read_response()
+  end
+
   def put(url, headers, body, opts \\ []) do
     Finch.build(:put, url, headers, body)
     |> Finch.request(Preview.Finch, opts)

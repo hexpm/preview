@@ -57,6 +57,9 @@ config :logger, :default_formatter, format: "$metadata[$level] $message\n"
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 
+config :ex_aws, http_client: ExAws.Request.Req
+config :sentry, client: Preview.SentryClient
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env()}.exs"
