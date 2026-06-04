@@ -28,6 +28,39 @@ defmodule PreviewWeb.PreviewLiveTest do
     %{package: package, version: version}
   end
 
+  defp put_package(package, version, filename, contents) do
+    file_list = Jason.encode!([filename])
+
+    Storage.put(@preview_bucket, "file_lists/#{package}-#{version}.json", file_list)
+    Storage.put(@preview_bucket, "files/#{package}/#{version}/#{filename}", contents)
+    Storage.put(@preview_bucket, "latest_versions/#{package}", version)
+  end
+
+  describe "syntax highlighting" do
+    test "highlights BEAM-language source", %{conn: conn} do
+      package = Fake.random(:package)
+      version = "0.1.0"
+      put_package(package, version, "lib/foo.ex", "defmodule Foo do\n  x = 1\nend\n")
+
+      {:ok, _view, html} = live(conn, "/preview/#{package}/#{version}/show/lib/foo.ex")
+
+      # Highlighting wraps each token in its own <span>, so the source text is
+      # no longer contiguous in the output.
+      refute html =~ "defmodule Foo do"
+    end
+
+    test "renders non-BEAM files as plain text", %{conn: conn} do
+      package = Fake.random(:package)
+      version = "0.1.0"
+      put_package(package, version, "data.json", "[1, 2, 3]\n")
+
+      {:ok, _view, html} = live(conn, "/preview/#{package}/#{version}/show/data.json")
+
+      # JSON is not highlighted, so the contents stay intact.
+      assert html =~ "[1, 2, 3]"
+    end
+  end
+
   describe "mount/3" do
     setup [:setup_package]
 
