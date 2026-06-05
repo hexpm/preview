@@ -49,6 +49,19 @@ defmodule PreviewWeb.PreviewLiveTest do
       refute html =~ "defmodule Foo do"
     end
 
+    test "highlights HEEx templates", %{conn: conn} do
+      package = Fake.random(:package)
+      version = "0.1.0"
+      put_package(package, version, "lib/page.html.heex", "<div><%= @x %></div>\n")
+
+      {:ok, _view, html} = live(conn, "/preview/#{package}/#{version}/show/lib/page.html.heex")
+
+      # The HEEx lexer requires makeup_html to be registered; without it
+      # highlighting raises and the file falls back to escaped plain text with
+      # no token spans.
+      assert html =~ ~s|<span class="nt">div</span>|
+    end
+
     test "renders non-BEAM files as plain text", %{conn: conn} do
       package = Fake.random(:package)
       version = "0.1.0"
