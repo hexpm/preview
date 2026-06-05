@@ -46,6 +46,7 @@ defmodule Preview.MixProject do
       {:makeup_elixir, "~> 1.0"},
       {:makeup_erlang, "~> 1.0"},
       {:makeup_gleam, "~> 1.0"},
+      {:makeup_html, "~> 0.2.0"},
       {:phoenix_html, "~> 4.0"},
       {:phoenix_html_helpers, "~> 1.0"},
       {:phoenix_live_dashboard, "~> 0.7"},
