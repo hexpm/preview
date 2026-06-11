@@ -37,7 +37,7 @@ defmodule Preview.MixProject do
       {:finch, "~> 0.22.0"},
       {:gettext, "~> 1.0"},
       {:goth, "~> 1.4"},
-      {:hex_core, "~> 0.17.0"},
+      {:hex_core, "~> 0.18.0"},
       {:jason, "~> 1.0"},
       {:logster, "~> 1.1.1"},
       {:tailwind, "~> 0.4", runtime: Mix.env() == :dev},
