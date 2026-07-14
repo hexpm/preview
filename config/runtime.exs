@@ -1,18 +1,39 @@
 import Config
 
 if config_env() == :prod do
+  queue_enabled =
+    case System.get_env("PREVIEW_QUEUE_ENABLED", "true") do
+      "true" ->
+        true
+
+      "false" ->
+        false
+
+      value ->
+        raise "invalid PREVIEW_QUEUE_ENABLED #{inspect(value)}; expected \"true\" or \"false\""
+    end
+
   config :preview,
     host: System.fetch_env!("PREVIEW_HOST"),
     repo_url: System.fetch_env!("PREVIEW_REPO_URL"),
     repo_public_key: System.fetch_env!("PREVIEW_REPO_PUBLIC_KEY"),
-    queue_id: System.fetch_env!("PREVIEW_QUEUE_ID"),
-    queue_concurrency: String.to_integer(System.fetch_env!("PREVIEW_QUEUE_CONCURRENCY")),
-    fastly_key: System.fetch_env!("PREVIEW_FASTLY_KEY"),
-    fastly_repo: System.fetch_env!("PREVIEW_FASTLY_REPO")
+    queue_enabled: queue_enabled
 
-  config :preview, :repo_bucket,
-    implementation: Preview.Storage.S3,
-    name: System.fetch_env!("PREVIEW_REPO_BUCKET")
+  if queue_enabled do
+    config :preview,
+      queue_id: System.fetch_env!("PREVIEW_QUEUE_ID"),
+      queue_concurrency: String.to_integer(System.fetch_env!("PREVIEW_QUEUE_CONCURRENCY")),
+      fastly_key: System.fetch_env!("PREVIEW_FASTLY_KEY"),
+      fastly_repo: System.fetch_env!("PREVIEW_FASTLY_REPO")
+
+    config :preview, :repo_bucket,
+      implementation: Preview.Storage.S3,
+      name: System.fetch_env!("PREVIEW_REPO_BUCKET")
+
+    config :ex_aws,
+      access_key_id: System.fetch_env!("PREVIEW_AWS_ACCESS_KEY_ID"),
+      secret_access_key: System.fetch_env!("PREVIEW_AWS_ACCESS_KEY_SECRET")
+  end
 
   config :preview, :preview_bucket,
     implementation: Preview.Storage.GCS,
@@ -22,10 +43,6 @@ if config_env() == :prod do
     http: [port: String.to_integer(System.fetch_env!("PREVIEW_PORT"))],
     url: [host: System.fetch_env!("PREVIEW_HOST")],
     secret_key_base: System.fetch_env!("PREVIEW_SECRET_KEY_BASE")
-
-  config :ex_aws,
-    access_key_id: System.fetch_env!("PREVIEW_AWS_ACCESS_KEY_ID"),
-    secret_access_key: System.fetch_env!("PREVIEW_AWS_ACCESS_KEY_SECRET")
 
   config :sentry,
     dsn: System.fetch_env!("PREVIEW_SENTRY_DSN"),
