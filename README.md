@@ -4,9 +4,6 @@ This repository is archived. Hex Preview is maintained as part of
 [hexpm/hexpm](https://github.com/hexpm/hexpm): its web interface and background
 processing both run in the Hexpm application.
 
-Infrastructure for the Preview object bucket and its public edge routes remains
-in [hexpm/hexpm-ops](https://github.com/hexpm/hexpm-ops).
-
 ## License
 
     Copyright 2020 Six Colors AB
