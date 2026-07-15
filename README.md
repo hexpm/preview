@@ -1,24 +1,11 @@
 # Preview
 
-Webbased display for the contents of a Hex release.
+This repository is archived. Hex Preview is maintained as part of
+[hexpm/hexpm](https://github.com/hexpm/hexpm): its web interface and background
+processing both run in the Hexpm application.
 
-## Contributing
-
-### Setup
-
-1. Run `mix setup` to install Hex and NPM dependencies
-2. Run `mix test`
-3. Run `mix phx.server` and visit [http://localhost:4005/](http://localhost:4005/)
-
-### Test routes
-After running `mix setup`, two packages will be available for testing locally.
-
-1. [Decimal 2.0.0](http://localhost:4005/preview/decimal/2.0.0)
-2. [Ecto 0.2.0](http://localhost:4005/preview/ecto/0.2.0)
-
-### Updating dependencies
-
-If Hex or NPM dependencies are outdated run `mix setup` again.
+Infrastructure for the Preview object bucket and its public edge routes remains
+in [hexpm/hexpm-ops](https://github.com/hexpm/hexpm-ops).
 
 ## License
 
