@@ -9,23 +9,26 @@ defmodule Preview.Application do
     :logger.add_handler(:my_sentry_handler, Sentry.LoggerHandler, %{})
     setup_tmp_dir()
 
-    children = [
+    children = children(Application.fetch_env!(:preview, :queue_enabled))
+
+    opts = [strategy: :one_for_one, name: Preview.Supervisor]
+    Supervisor.start_link(children, opts)
+  end
+
+  def children(queue_enabled) when is_boolean(queue_enabled) do
+    common = [
       Preview.TmpDir,
       PreviewWeb.Telemetry,
       {Phoenix.PubSub, name: Preview.PubSub},
       {Task.Supervisor, name: Preview.Tasks},
       {Finch, name: Preview.Finch, pools: finch_pools()},
       goth_spec(),
-      {Preview.Debouncer, name: Preview.Debouncer},
-      Preview.Queue,
       PreviewWeb.Endpoint,
       package_spec()
     ]
 
-    # See https://hexdocs.pm/elixir/Supervisor.html
-    # for other strategies and supported options
-    opts = [strategy: :one_for_one, name: Preview.Supervisor]
-    Supervisor.start_link(children, opts)
+    queue = [{Preview.Debouncer, name: Preview.Debouncer}, Preview.Queue]
+    common ++ if(queue_enabled, do: queue, else: [])
   end
 
   # Tell Phoenix to update the endpoint configuration
